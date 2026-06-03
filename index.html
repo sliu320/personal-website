@@ -196,8 +196,36 @@
       pointer-events:none; -webkit-user-drag:none;
     }
     #sky-img  { z-index:0; transition:opacity 3s ease; }
+    /* sky-anim shares z-index:0 — DOM order puts it above sky-img, below tree-img */
+    #sky-anim {
+      position:absolute; top:0; left:0; height:100vh; width:100%;
+      z-index:0; pointer-events:none; overflow:hidden;
+    }
     #tree-img { z-index:1; transition:filter 5s ease; }
     #room-image { z-index:2; transition:filter 5s ease; position:relative; }
+
+    /* Drifting sky clouds (clear / sunset = slow, overcast = fast) */
+    .sky-cloud {
+      position:absolute;
+      border-radius:50%;
+      will-change:transform;
+      animation:sky-drift linear infinite;
+    }
+    @keyframes sky-drift {
+      from { transform:translateX(calc(-100px - var(--cw,80px))); }
+      to   { transform:translateX(calc(100% + var(--cw,80px) + 100px)); }
+    }
+
+    /* Stars */
+    .sky-star {
+      position:absolute; border-radius:50%; background:#fff;
+      animation:star-twinkle ease-in-out infinite;
+      will-change:opacity, transform;
+    }
+    @keyframes star-twinkle {
+      0%,100% { opacity:var(--sd,0.08); transform:scale(1); }
+      50%      { opacity:var(--sb,0.75); transform:scale(1.35); }
+    }
 
     /* ============================================================
        LIGHTING OVERLAYS
@@ -1248,6 +1276,8 @@
   <div id="room-wrapper">
     <!-- Layer 1: Sky — time-of-day + weather, shows through transparent window cutout (src set by JS) -->
     <img id="sky-img"   class="room-layer" src="" alt="" draggable="false" style="opacity:0">
+    <!-- Layer 1b: Sky animations — clouds or stars rendered on top of sky, behind trees -->
+    <div id="sky-anim"></div>
     <!-- Layer 2: Trees — always visible, tinted by lighting -->
     <img id="tree-img"  class="room-layer" src="assets/images/sky/trees.png"   alt="" draggable="false">
     <!-- Layer 3: Room — transparent window so sky + trees show through -->
@@ -1963,6 +1993,138 @@ function applyLighting() {
   if (!lampOn) { setLampOverlays(false); }
 
   document.getElementById('time-badge').textContent = cfg.label;
+
+  // Sky animations react to sky type (clouds for clear/sunset/overcast, stars for night)
+  updateSkyAnims(cfg.sky);
+}
+
+/* ============================================================
+   SKY ANIMATIONS — clouds (clear/sunset/overcast) + stars (night)
+============================================================ */
+let _currentSkyAnim = null;
+
+function updateSkyAnims(skyName) {
+  // Stars only show with no precipitation
+  const hasPrecip = (currentWeather === 'rain' || currentWeather === 'snow' || currentWeather === 'storm');
+  const effectiveSky = (skyName === 'night' && hasPrecip) ? 'overcast' : skyName;
+
+  if (_currentSkyAnim === effectiveSky) return;
+  _currentSkyAnim = effectiveSky;
+
+  const el = document.getElementById('sky-anim');
+  if (!el) return;
+  el.innerHTML = '';
+
+  if (effectiveSky === 'clear' || effectiveSky === 'sunset') {
+    _spawnSkyCloud(el, false);
+  } else if (effectiveSky === 'overcast' || effectiveSky === 'cloudy') {
+    _spawnSkyCloud(el, true);
+  } else if (effectiveSky === 'night') {
+    _spawnStars(el);
+  }
+}
+
+function _spawnSkyCloud(container, fast) {
+  // fast = overcast (darker, quicker roll); slow = clear/sunset (white, gentle drift)
+  const count = fast ? 8 : 5;
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement('div');
+    c.className = 'sky-cloud';
+    const w   = 55 + Math.random() * 130;
+    const h   = (fast ? 0.52 : 0.38) * w;
+    const dur = fast ? (5 + Math.random() * 7) : (28 + Math.random() * 28);
+    const alpha = 0.35 + Math.random() * 0.3;
+    const blur  = fast ? 15 : 10;
+    const color = fast
+      ? `rgba(${115+Math.random()*35},${125+Math.random()*35},${145+Math.random()*30},${alpha})`
+      : `rgba(255,255,255,${alpha})`;
+    c.style.cssText = `
+      width:${w}px; height:${h}px; --cw:${w}px;
+      top:${2 + Math.random() * 68}%;
+      background:${color};
+      filter:blur(${blur}px);
+      animation-duration:${dur}s;
+      animation-delay:-${(Math.random() * dur).toFixed(1)}s;
+    `;
+    container.appendChild(c);
+  }
+}
+
+function _spawnStars(container) {
+  for (let i = 0; i < 38; i++) {
+    const s  = document.createElement('div');
+    s.className = 'sky-star';
+    const sz     = 1 + Math.random() * 2.2;
+    const dim    = 0.04 + Math.random() * 0.14;
+    const bright = 0.45 + Math.random() * 0.55;
+    const dur    = 1.8 + Math.random() * 5.5;
+    s.style.cssText = `
+      width:${sz}px; height:${sz}px;
+      left:${Math.random() * 100}%;
+      top:${Math.random() * 82}%;
+      --sd:${dim.toFixed(2)}; --sb:${bright.toFixed(2)};
+      animation-duration:${dur.toFixed(1)}s;
+      animation-delay:-${(Math.random() * dur).toFixed(1)}s;
+    `;
+    container.appendChild(s);
+  }
+}
+
+/* ============================================================
+   LEAF RUSTLE — periodic burst from tree, every ~60 seconds
+============================================================ */
+let _rustleTimer = null;
+
+function _scheduleRustle() {
+  clearTimeout(_rustleTimer);
+  _rustleTimer = setTimeout(_doRustle, 45000 + Math.random() * 30000); // 45–75s
+}
+
+function _doRustle() {
+  // 1. Wobble tree-img using Web Animations API
+  const treeImg = document.getElementById('tree-img');
+  if (treeImg) {
+    treeImg.animate([
+      { transform:'rotate(0deg)'    },
+      { transform:'rotate(0.6deg)'  },
+      { transform:'rotate(-0.9deg)' },
+      { transform:'rotate(1.0deg)'  },
+      { transform:'rotate(-0.7deg)' },
+      { transform:'rotate(0.4deg)'  },
+      { transform:'rotate(0deg)'    },
+    ], { duration:1200, easing:'ease-in-out' });
+  }
+
+  // 2. Burst of 4–6 leaves via existing window-anim system
+  if (typeof LEAF_COLORS !== 'undefined') {
+    const anim = document.getElementById('window-anim');
+    if (anim) {
+      const count = 4 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          const leaf = document.createElement('div');
+          leaf.className = 'leaf';
+          const h    = anim.offsetHeight || 300;
+          const size = 6 + Math.random() * 8;
+          const sway = (Math.random() - 0.4) * 85;
+          const spin = 110 + Math.random() * 270;
+          const dur  = 2600 + Math.random() * 3800;
+          leaf.style.cssText = `
+            left:${8 + Math.random() * 78}%;
+            top:-14px;
+            width:${size}px; height:${size * 1.55}px;
+            background:${LEAF_COLORS[Math.floor(Math.random() * LEAF_COLORS.length)]};
+            --lfy:${h + 20}px; --lfx:${sway}px; --lfr:${spin}deg;
+            animation-duration:${dur}ms;
+          `;
+          anim.appendChild(leaf);
+          setTimeout(() => leaf.remove(), dur + 200);
+        }, i * 170);
+      }
+    }
+  }
+
+  _scheduleRustle(); // self-reschedule
 }
 
 /* ============================================================
@@ -1976,6 +2138,10 @@ function setWeather(name) {
   // Remove all weather classes
   WEATHERS.forEach(w => document.body.classList.remove('weather-' + w));
   if (name !== 'clear') document.body.classList.add('weather-' + name);
+
+  // Re-evaluate sky animations (precipitation hides stars)
+  _currentSkyAnim = null;
+  updateSkyAnims(getTimeCfg().sky);
 
   // Rain overlay (existing)
   const rainEl = document.getElementById('ov-rain');
@@ -2823,8 +2989,15 @@ function scheduleLeaf() {
 }
 // Kick off after entering room
 setTimeout(() => {
-  if (document.body.classList.contains('room-entered')) scheduleLeaf();
-  else document.getElementById('entry-door').addEventListener('click', () => setTimeout(scheduleLeaf, 2800), { once:true });
+  if (document.body.classList.contains('room-entered')) {
+    scheduleLeaf();
+    _scheduleRustle();
+  } else {
+    document.getElementById('entry-door').addEventListener('click', () => {
+      setTimeout(scheduleLeaf,   2800);
+      setTimeout(_scheduleRustle, 5000 + Math.random() * 20000); // first rustle 5–25s in
+    }, { once:true });
+  }
 }, 3000);
 
 // Sync with time-of-day
