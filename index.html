@@ -241,33 +241,27 @@
       transition:opacity 1.8s ease, background 1.8s ease;
     }
     #ov-lamp-pool {
-      /* Lower pool — warm light spilling onto desk, shelf, books below */
+      /* Wide warm pool — spills across desk, chair, half the floor */
       position:absolute;
-      left:44%; top:22%; width:38%; height:55%;
-      border-radius:50%; filter:blur(55px); z-index:3; opacity:0;
-      background:radial-gradient(ellipse at 55% 20%,
-        rgba(255,195,80,0.32) 0%,
-        rgba(255,165,45,0.14) 35%,
-        rgba(230,120,20,0.04) 65%,
-        transparent 85%);
+      left:28%; top:18%; width:58%; height:72%;
+      border-radius:50%; filter:blur(70px); z-index:3; opacity:0;
+      background:radial-gradient(ellipse at 52% 18%,
+        rgba(255,200,85,0.50) 0%,
+        rgba(255,165,50,0.28) 30%,
+        rgba(240,130,25,0.12) 58%,
+        rgba(200,90,10,0.04) 78%,
+        transparent 92%);
       transition:opacity 2s ease, background 2s ease;
       pointer-events:none;
     }
     #ov-lamp-flicker {
-      /* Very subtle inner flicker for realism */
+      /* Occasional flicker — driven by JS, no CSS loop */
       position:absolute;
-      left:62%; top:3%; width:8%; height:22%;
-      border-radius:50%; filter:blur(14px); z-index:4; opacity:0;
-      background:radial-gradient(circle, rgba(255,230,140,0.55) 0%, transparent 70%);
+      left:60%; top:2%; width:10%; height:26%;
+      border-radius:50%; filter:blur(16px); z-index:4; opacity:0;
+      background:radial-gradient(circle, rgba(255,235,150,0.65) 0%, transparent 70%);
       pointer-events:none;
-      animation:lamp-flicker 4.8s ease-in-out infinite;
-    }
-    @keyframes lamp-flicker {
-      0%,100% { opacity:var(--lf-base,0); }
-      22%     { opacity:calc(var(--lf-base,0) * 0.82); }
-      47%     { opacity:calc(var(--lf-base,0) * 1.06); }
-      63%     { opacity:calc(var(--lf-base,0) * 0.91); }
-      85%     { opacity:calc(var(--lf-base,0) * 1.03); }
+      transition:opacity 0.06s ease;
     }
     #ov-lamp-edison {
       left:41%; top:10%; width:10%; height:35%;
@@ -644,17 +638,17 @@
       z-index: 4;
       opacity: 0;
       transition: opacity 2.2s ease;
-      /* Elliptical mask: centered below the lamp bulb, spreading to desk/shelf */
+      /* Broad mask — lamp warmth restores the desk, chair, and floor area */
       -webkit-mask-image: radial-gradient(
-        ellipse 20% 42% at 63% 40%,
-        black 0%, rgba(0,0,0,0.85) 22%, rgba(0,0,0,0.45) 52%, transparent 75%
+        ellipse 48% 68% at 60% 42%,
+        black 0%, rgba(0,0,0,0.92) 20%, rgba(0,0,0,0.60) 48%, rgba(0,0,0,0.20) 68%, transparent 85%
       );
       mask-image: radial-gradient(
-        ellipse 20% 42% at 63% 40%,
-        black 0%, rgba(0,0,0,0.85) 22%, rgba(0,0,0,0.45) 52%, transparent 75%
+        ellipse 48% 68% at 60% 42%,
+        black 0%, rgba(0,0,0,0.92) 20%, rgba(0,0,0,0.60) 48%, rgba(0,0,0,0.20) 68%, transparent 85%
       );
-      /* Slight warmth — incandescent is a touch warmer than daylight */
-      filter: sepia(0.06) saturate(1.04) brightness(1.03);
+      /* Warm incandescent correction */
+      filter: sepia(0.12) saturate(1.08) brightness(1.05) hue-rotate(-5deg);
     }
     #lamp-reveal img {
       height: 100vh; width: auto; display: block;
@@ -1852,20 +1846,20 @@ function renderHobbiesBag() {
 const TIME_CONFIGS = [
   {
     hours:[0,1,2,3,4], label:'late night',
-    imgFilter:  'saturate(0.5) brightness(0.58) hue-rotate(10deg)',
-    ambient:    'rgba(28,8,88,0.78)',                    // rich deep purple-indigo
-    ambient2:   'rgba(0,20,80,0.30)',                    // secondary cool blue layer
-    window:     'rgba(140,175,255,0.22)',                // pale blue moonlight spill
+    imgFilter:  'saturate(1.1) brightness(0.52) hue-rotate(185deg)',  // shift warm→deep blue
+    ambient:    'rgba(15,8,95,0.72)',                    // saturated indigo blanket
+    ambient2:   'rgba(80,20,140,0.22)',                  // purple screen layer
+    window:     'rgba(255,110,200,0.42)',                // pink/magenta moonlight glow
     moonlight:  true,
-    sky:        'night',   // assets/images/sky/night.png
-    cubeOpacity:0.55, cubeBg:'radial-gradient(circle,rgba(255,195,75,0.42) 0%,transparent 70%)',
+    sky:        'night',
+    cubeOpacity:0.60, cubeBg:'radial-gradient(circle,rgba(255,200,80,0.48) 0%,transparent 70%)',
   },
   {
     hours:[5,6], label:'pre-dawn',
-    imgFilter:  'saturate(0.62) brightness(0.74)',
-    ambient:    'rgba(70,22,115,0.48)',                  // vivid violet pre-dawn
-    ambient2:   'rgba(10,30,100,0.20)',
-    window:     'rgba(185,195,255,0.22)',                // blue-gray sky waking
+    imgFilter:  'saturate(0.95) brightness(0.62) hue-rotate(160deg)',
+    ambient:    'rgba(55,15,100,0.55)',                  // violet pre-dawn
+    ambient2:   'rgba(20,30,120,0.20)',
+    window:     'rgba(210,140,255,0.28)',                // soft lavender sky waking
     moonlight:  true,
     sky:        'cloudy',
     cubeOpacity:0.30, cubeBg:'radial-gradient(circle,rgba(255,195,75,0.28) 0%,transparent 70%)',
@@ -1912,23 +1906,23 @@ const TIME_CONFIGS = [
   },
   {
     hours:[19,20], label:'dusk',
-    imgFilter:  'saturate(0.85) brightness(0.86)',
-    ambient:    'rgba(90,35,145,0.42)',                  // deep saturated purple dusk
-    ambient2:   'rgba(0,10,80,0.18)',
-    window:     'rgba(130,70,200,0.42)',                 // violet twilight window
+    imgFilter:  'saturate(1.05) brightness(0.72) hue-rotate(140deg)',
+    ambient:    'rgba(70,20,120,0.50)',                  // rich purple dusk
+    ambient2:   'rgba(20,8,80,0.20)',
+    window:     'rgba(220,90,255,0.38)',                 // violet/pink twilight
     moonlight:  false,
     sky:        'overcast',
     cubeOpacity:0.32, cubeBg:'radial-gradient(circle,rgba(255,190,70,0.26) 0%,transparent 70%)',
   },
   {
     hours:[21,22,23], label:'night',
-    imgFilter:  'saturate(0.55) brightness(0.65) hue-rotate(8deg)',
-    ambient:    'rgba(20,5,75,0.72)',                    // saturated blue-purple night
-    ambient2:   'rgba(0,15,70,0.28)',                    // cool blue depth
-    window:     'rgba(130,180,255,0.24)',                // cool moonlight blue
+    imgFilter:  'saturate(1.15) brightness(0.55) hue-rotate(190deg)', // warm→cobalt blue
+    ambient:    'rgba(12,6,90,0.75)',                    // deep cobalt night
+    ambient2:   'rgba(90,20,150,0.20)',                  // purple screen lift
+    window:     'rgba(255,100,195,0.45)',                // pink/magenta moon glow
     moonlight:  true,
     sky:        'night',
-    cubeOpacity:0.50, cubeBg:'radial-gradient(circle,rgba(255,200,80,0.40) 0%,transparent 70%)',
+    cubeOpacity:0.55, cubeBg:'radial-gradient(circle,rgba(255,200,80,0.45) 0%,transparent 70%)',
   },
 ];
 function getTimeCfg() { const h=new Date().getHours(); return TIME_CONFIGS.find(c=>c.hours.includes(h))||TIME_CONFIGS[3]; }
@@ -2684,32 +2678,60 @@ function loadPositions() {
    LAMP TOGGLE
 ============================================================ */
 let lampOn = false;
+let _lampFlickerTimer = null;
+
 function setLampOverlays(on) {
   const cube    = document.getElementById('ov-lamp-cube');
   const pool    = document.getElementById('ov-lamp-pool');
   const flicker = document.getElementById('ov-lamp-flicker');
   const reveal  = document.getElementById('lamp-reveal');
   if (on) {
-    // Full bright: cube halo + desk pool + flicker + reveal (restore saturation)
-    cube.style.background    = 'radial-gradient(circle,rgba(255,210,90,0.50) 0%,rgba(255,170,40,0.18) 55%,transparent 80%)';
-    cube.style.opacity       = '1';
-    pool.style.opacity       = '0.92';
-    pool.style.background    = 'radial-gradient(ellipse at 55% 20%,rgba(255,200,85,0.40) 0%,rgba(255,155,40,0.18) 40%,rgba(220,110,20,0.06) 65%,transparent 85%)';
-    flicker.style.setProperty('--lf-base', '0.72');
-    flicker.style.opacity    = '0.72';
-    reveal.style.opacity     = '0.92';
+    cube.style.background = 'radial-gradient(circle,rgba(255,215,95,0.60) 0%,rgba(255,175,45,0.22) 52%,transparent 80%)';
+    cube.style.opacity    = '1';
+    pool.style.opacity    = '1';
+    pool.style.background = ''; // use CSS default (expanded pool)
+    flicker.style.opacity = '0.80';
+    reveal.style.opacity  = '1';
+    _scheduleLampFlicker();
   } else {
+    clearTimeout(_lampFlickerTimer);
     const cfg = getTimeCfg();
-    cube.style.background    = cfg.cubeBg || '';
-    cube.style.opacity       = cfg.cubeOpacity;
-    pool.style.opacity       = (cfg.cubeOpacity * 0.95).toFixed(2);
-    pool.style.background    = '';
-    const flickBase = cfg.cubeOpacity > 0.3 ? cfg.cubeOpacity * 0.7 : 0;
-    flicker.style.setProperty('--lf-base', flickBase.toFixed(2));
-    flicker.style.opacity    = flickBase.toFixed(2);
-    // Reveal: show proportionally to how lamp-like the time config is
-    reveal.style.opacity     = cfg.cubeOpacity > 0.25 ? (cfg.cubeOpacity * 0.82).toFixed(2) : '0';
+    cube.style.background = cfg.cubeBg || '';
+    cube.style.opacity    = cfg.cubeOpacity;
+    pool.style.opacity    = (cfg.cubeOpacity * 0.90).toFixed(2);
+    pool.style.background = '';
+    const flickBase = cfg.cubeOpacity > 0.3 ? cfg.cubeOpacity * 0.65 : 0;
+    flicker.style.opacity = flickBase.toFixed(2);
+    reveal.style.opacity  = cfg.cubeOpacity > 0.25 ? Math.min(0.95, cfg.cubeOpacity * 0.90).toFixed(2) : '0';
   }
+}
+
+function _scheduleLampFlicker() {
+  clearTimeout(_lampFlickerTimer);
+  if (!lampOn) return;
+  // Fire every 40–55 seconds
+  _lampFlickerTimer = setTimeout(_doLampFlicker, 40000 + Math.random() * 15000);
+}
+
+function _doLampFlicker() {
+  if (!lampOn) return;
+  const flicker = document.getElementById('ov-lamp-flicker');
+  const cube    = document.getElementById('ov-lamp-cube');
+  const reveal  = document.getElementById('lamp-reveal');
+  // A quick 4-step dip-and-recover (total ~320ms, barely perceptible but real)
+  const steps = [
+    { t:0,   fo:0.25, co:0.55, ro:0.65 },
+    { t:90,  fo:0.72, co:0.90, ro:0.88 },
+    { t:180, fo:0.40, co:0.70, ro:0.75 },
+    { t:260, fo:0.80, co:1.00, ro:1.00 },
+  ];
+  steps.forEach(s => setTimeout(() => {
+    if (!lampOn) return;
+    flicker.style.opacity = s.fo.toFixed(2);
+    cube.style.opacity    = s.co.toFixed(2);
+    reveal.style.opacity  = s.ro.toFixed(2);
+  }, s.t));
+  _scheduleLampFlicker(); // queue next
 }
 document.getElementById('hs-lamp-toggle').addEventListener('click', e => {
   if (editMode) return; e.stopPropagation();
