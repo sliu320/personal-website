@@ -1,0 +1,2739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Susy Liu</title>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html, body { width:100%; height:100%; overflow:hidden; background:#0d0b08; font-family:'Georgia','Times New Roman',serif; }
+
+    /* ============================================================
+       ENTRY SCREEN
+    ============================================================ */
+    #entry {
+      position:fixed; inset:0; z-index:200;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      background:radial-gradient(ellipse at 50% 60%, #1a1208 0%, #0a0806 100%);
+      transition:opacity 1.4s ease;
+    }
+    #entry.fade-out { opacity:0; pointer-events:none; }
+
+    #entry-name {
+      font-size:clamp(2rem,5vw,4rem);
+      font-weight:300; color:#f0e2c8;
+      letter-spacing:0.3em;
+      margin-bottom:0.4rem;
+    }
+    #entry-tagline {
+      color:#7a6a52; font-size:clamp(0.78rem,1.6vw,0.92rem);
+      letter-spacing:0.2em; margin-bottom:3.5rem;
+    }
+
+    /* Door */
+    .door-scene {
+      perspective:1200px;
+      display:flex; flex-direction:column; align-items:center;
+    }
+    .door-wrap {
+      width:160px; height:260px;
+      position:relative;
+      cursor:pointer;
+    }
+    /* Frame */
+    .door-frame {
+      position:absolute; inset:0;
+      border:6px solid #6b4e28;
+      border-radius:3px 3px 0 0;
+      box-shadow:0 0 50px rgba(200,150,80,0.08), inset 0 0 20px rgba(0,0,0,0.3);
+    }
+    /* Warm glow revealed behind door */
+    .door-glow {
+      position:absolute; inset:0;
+      background:radial-gradient(ellipse at 50% 60%, rgba(255,210,120,0.55) 0%, rgba(255,170,60,0.2) 45%, transparent 75%);
+      border-radius:2px 2px 0 0;
+      opacity:0;
+      transition:opacity 0.6s ease 0.4s;
+    }
+    .door-wrap.opening .door-glow { opacity:1; }
+
+    /* Door leaf */
+    .door-leaf {
+      position:absolute; inset:0;
+      background:linear-gradient(160deg, #c8914a 0%, #a06828 35%, #bc8840 60%, #8a5820 100%);
+      border-radius:2px 2px 0 0;
+      transform-origin:left center;
+      transform-style:preserve-3d;
+      transition:transform 1.3s cubic-bezier(0.4,0,0.2,1);
+      box-shadow:2px 0 12px rgba(0,0,0,0.5);
+    }
+    .door-wrap.opening .door-leaf { transform:rotateY(-76deg); }
+
+    /* Door panels (raised effect) */
+    .door-leaf::before, .door-leaf::after {
+      content:'';
+      position:absolute; left:14px; right:14px;
+      border:1.5px solid rgba(80,40,5,0.35);
+      border-radius:2px;
+      box-shadow:inset 0 1px 4px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.08);
+    }
+    .door-leaf::before { top:18px; height:88px; }
+    .door-leaf::after  { top:125px; height:100px; }
+
+    /* Knob */
+    .door-knob {
+      position:absolute; right:18px; top:50%;
+      width:13px; height:13px; border-radius:50%;
+      background:radial-gradient(circle at 35% 30%, #f5d890, #c08a10);
+      box-shadow:0 1px 4px rgba(0,0,0,0.5);
+      transform:translateY(-50%);
+      transition:transform 0.3s;
+    }
+    .door-wrap:hover .door-knob { transform:translateY(-50%) scale(1.15); }
+
+    /* Keyhole */
+    .door-keyhole {
+      position:absolute; right:20px; top:calc(50% + 14px);
+      width:9px; height:9px; border-radius:50%;
+      border:1.5px solid rgba(80,40,5,0.5);
+      transform:translateY(-50%);
+    }
+    .door-keyhole::after {
+      content:''; position:absolute;
+      width:5px; height:7px;
+      background:rgba(80,40,5,0.35);
+      border-radius:0 0 3px 3px;
+      top:6px; left:50%; transform:translateX(-50%);
+    }
+
+    /* Stoop / threshold line */
+    .door-step {
+      width:200px; height:6px;
+      background:linear-gradient(to bottom, #4a3010, #2a1a08);
+      border-radius:0 0 2px 2px;
+      box-shadow:0 4px 15px rgba(0,0,0,0.6);
+    }
+
+    /* Click hint below door */
+    .door-hint {
+      margin-top:1.8rem;
+      color:rgba(200,170,120,0.4);
+      font-size:0.68rem; letter-spacing:0.22em;
+      animation:hint-breathe 2.5s ease-in-out infinite;
+    }
+    @keyframes hint-breathe {
+      0%,100% { opacity:0.4; } 50% { opacity:0.75; }
+    }
+
+    /* Ambient particles (subtle dust motes) */
+    .mote {
+      position:absolute;
+      width:2px; height:2px; border-radius:50%;
+      background:rgba(240,200,120,0.4);
+      animation:float-up linear infinite;
+      pointer-events:none;
+    }
+    @keyframes float-up {
+      from { transform:translateY(0) translateX(0); opacity:0; }
+      20%  { opacity:1; }
+      80%  { opacity:0.6; }
+      to   { transform:translateY(-180px) translateX(var(--dx,15px)); opacity:0; }
+    }
+
+    /* ============================================================
+       ONBOARDING  (appears after entering, fades after 8s)
+    ============================================================ */
+    #onboarding {
+      position:fixed; bottom:3rem; left:50%; transform:translateX(-50%);
+      z-index:90;
+      background:rgba(13,11,8,0.80);
+      backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:40px;
+      padding:0.7rem 1.5rem;
+      display:flex; align-items:center; gap:1rem;
+      opacity:0; pointer-events:none;
+      transition:opacity 0.6s ease;
+      white-space:nowrap;
+      flex-wrap:wrap; justify-content:center;
+    }
+    #onboarding.visible { opacity:1; pointer-events:all; }
+    #onboarding.fade-ob { opacity:0; pointer-events:none; }
+
+    .ob-hint {
+      color:rgba(240,226,200,0.7);
+      font-size:0.74rem; letter-spacing:0.1em;
+      display:flex; align-items:center; gap:0.4rem;
+    }
+    .ob-icon { font-size:0.85rem; }
+    .ob-divider { color:rgba(255,255,255,0.15); font-size:0.9rem; }
+    #ob-got-it {
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.18);
+      color:rgba(240,226,200,0.6);
+      padding:0.25rem 0.9rem; border-radius:20px;
+      font-size:0.7rem; letter-spacing:0.12em;
+      cursor:pointer; font-family:inherit;
+      transition:all 0.2s;
+    }
+    #ob-got-it:hover { background:rgba(255,255,255,0.16); color:rgba(240,226,200,0.9); }
+
+    /* ============================================================
+       ROOM
+    ============================================================ */
+    #room-container {
+      width:100vw; height:100vh; overflow:hidden;
+      cursor:grab; position:relative; user-select:none;
+    }
+    #room-container.dragging { cursor:grabbing; }
+    #room-container.edit-active { cursor:default; }
+    #room-wrapper { position:absolute; top:0; left:0; height:100%; will-change:transform; }
+    #room-image { height:100vh; width:auto; display:block; pointer-events:none; -webkit-user-drag:none; transition:filter 5s ease; }
+
+    /* ============================================================
+       LIGHTING OVERLAYS
+    ============================================================ */
+    .overlay { position:absolute; pointer-events:none; transition:background 5s ease, opacity 5s ease, mix-blend-mode 0s; }
+    #ov-ambient { inset:0; z-index:2; }
+    #ov-window  { left:18%; top:0; width:24%; height:72%; border-radius:0 0 60% 60%; filter:blur(50px); z-index:3; }
+    #ov-lamp-cube {
+      /* Upper lamp glow — close halo around the bulb */
+      left:60%; top:2%; width:16%; height:38%;
+      border-radius:50%; filter:blur(28px); z-index:3; opacity:0;
+      transition:opacity 1.8s ease, background 1.8s ease;
+    }
+    #ov-lamp-pool {
+      /* Lower pool — warm light spilling onto desk, shelf, books below */
+      position:absolute;
+      left:44%; top:22%; width:38%; height:55%;
+      border-radius:50%; filter:blur(55px); z-index:3; opacity:0;
+      background:radial-gradient(ellipse at 55% 20%,
+        rgba(255,195,80,0.32) 0%,
+        rgba(255,165,45,0.14) 35%,
+        rgba(230,120,20,0.04) 65%,
+        transparent 85%);
+      transition:opacity 2s ease, background 2s ease;
+      pointer-events:none;
+    }
+    #ov-lamp-flicker {
+      /* Very subtle inner flicker for realism */
+      position:absolute;
+      left:62%; top:3%; width:8%; height:22%;
+      border-radius:50%; filter:blur(14px); z-index:4; opacity:0;
+      background:radial-gradient(circle, rgba(255,230,140,0.55) 0%, transparent 70%);
+      pointer-events:none;
+      animation:lamp-flicker 4.8s ease-in-out infinite;
+    }
+    @keyframes lamp-flicker {
+      0%,100% { opacity:var(--lf-base,0); }
+      22%     { opacity:calc(var(--lf-base,0) * 0.82); }
+      47%     { opacity:calc(var(--lf-base,0) * 1.06); }
+      63%     { opacity:calc(var(--lf-base,0) * 0.91); }
+      85%     { opacity:calc(var(--lf-base,0) * 1.03); }
+    }
+    #ov-lamp-edison {
+      left:41%; top:10%; width:10%; height:35%;
+      border-radius:50%; filter:blur(28px); z-index:3;
+      background:radial-gradient(circle, rgba(255,200,80,0.22) 0%, transparent 70%);
+    }
+    #ov-rain {
+      inset:0; z-index:4; opacity:0; transition:opacity 2s ease;
+      background-image:repeating-linear-gradient(to bottom, transparent 0px, transparent 18px, rgba(180,200,255,0.07) 19px, rgba(180,200,255,0.07) 20px);
+      background-size:3px 20px; animation:rain-fall 0.4s linear infinite; pointer-events:none;
+    }
+    @keyframes rain-fall { from { background-position:0 0; } to { background-position:0 20px; } }
+
+    /* ============================================================
+       HOTSPOTS
+    ============================================================ */
+    .hotspot {
+      position:absolute; z-index:10; transform:translate(-50%,-50%); cursor:pointer;
+      /* Default ring color: white */
+      --hs-r:255; --hs-g:255; --hs-b:255;
+    }
+    .hs-ring {
+      width:38px; height:38px; border-radius:50%;
+      border:1.5px solid rgba(var(--hs-r),var(--hs-g),var(--hs-b), 0.55);
+      background:rgba(var(--hs-r),var(--hs-g),var(--hs-b), 0.08);
+      backdrop-filter:blur(3px);
+      transition:width 0.25s, height 0.25s, background 0.25s, border-color 0.25s;
+      animation:hs-pulse 2.8s ease-in-out infinite;
+    }
+    .hotspot:hover .hs-ring {
+      width:46px; height:46px;
+      background:rgba(var(--hs-r),var(--hs-g),var(--hs-b), 0.22);
+      border-color:rgba(var(--hs-r),var(--hs-g),var(--hs-b), 0.90);
+      animation:none;
+    }
+    @keyframes hs-pulse { 0%,100%{ transform:scale(1); opacity:0.65; } 50%{ transform:scale(1.12); opacity:1; } }
+    .hs-label {
+      position:absolute; top:46px; left:50%; transform:translateX(-50%);
+      white-space:nowrap; background:rgba(13,11,8,0.72); color:rgba(240,226,200,0.9);
+      font-size:0.68rem; padding:3px 10px; border-radius:20px;
+      letter-spacing:0.08em; opacity:0; pointer-events:none; transition:opacity 0.25s;
+    }
+    .hotspot:hover .hs-label { opacity:1; }
+    /* Invisible / easter-egg rings — truly hidden outside edit mode.
+       Must use !important + animation:none to beat the hs-pulse keyframe opacity. */
+    .hotspot.egg .hs-ring       { opacity:0 !important; animation:none !important; }
+    .hotspot.egg:hover .hs-ring { opacity:0 !important; animation:none !important; }
+    .hotspot.egg .hs-label      { opacity:0 !important; }
+
+    /* Edit mode */
+    body.edit-mode .hotspot { cursor:grab !important; }
+    body.edit-mode .hotspot.dragging-hs { cursor:grabbing !important; z-index:20; }
+    body.edit-mode .hotspot .hs-ring { animation:none !important; border:2px dashed rgba(255,180,50,0.85) !important; background:rgba(255,160,30,0.18) !important; opacity:1 !important; width:42px !important; height:42px !important; }
+    body.edit-mode .hotspot:hover .hs-ring { border-color:rgba(255,220,80,1) !important; background:rgba(255,180,50,0.30) !important; }
+    body.edit-mode .hotspot .hs-label { opacity:1 !important; background:rgba(200,120,0,0.85) !important; color:white !important; font-size:0.72rem !important; }
+    body.edit-mode .hotspot.hs-locked .hs-ring { border:2px solid rgba(80,220,120,0.9) !important; background:rgba(60,200,100,0.18) !important; cursor:default !important; }
+    /* Egg rings in edit mode: visible but clearly ghosted so you know they're invisible to visitors */
+    body.edit-mode .hotspot.egg .hs-ring { opacity:0.32 !important; border:2px dashed rgba(200,160,255,0.65) !important; background:rgba(160,100,255,0.10) !important; animation:none !important; }
+    body.edit-mode .hotspot.egg:hover .hs-ring { opacity:0.65 !important; border-color:rgba(220,180,255,0.9) !important; }
+    body.edit-mode .hotspot.egg .hs-label { opacity:1 !important; background:rgba(100,60,180,0.85) !important; }
+    body.edit-mode .hotspot.hs-locked { cursor:default !important; }
+    body.edit-mode .hotspot.hs-locked .hs-label { background:rgba(30,140,70,0.85) !important; }
+    body.edit-mode .hotspot.egg .hs-ring { opacity:1 !important; }
+
+    /* ============================================================
+       EDIT TOOLBAR & PANEL
+    ============================================================ */
+    #edit-toolbar {
+      position:fixed; top:0; left:0; right:0; z-index:300;
+      background:rgba(20,14,5,0.92); backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(255,180,50,0.3);
+      padding:0.7rem 1.2rem;
+      display:none; align-items:center; gap:1rem; flex-wrap:wrap;
+    }
+    body.edit-mode #edit-toolbar { display:flex; }
+    #edit-toolbar .et-title { color:rgba(255,180,50,0.9); font-size:0.78rem; letter-spacing:0.14em; margin-right:0.5rem; }
+    #edit-toolbar .et-hint  { color:rgba(240,226,200,0.45); font-size:0.72rem; letter-spacing:0.06em; }
+    .et-btn { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); color:rgba(240,226,200,0.85); padding:0.38rem 1rem; border-radius:6px; font-size:0.75rem; letter-spacing:0.1em; cursor:pointer; font-family:inherit; transition:background 0.2s; white-space:nowrap; }
+    .et-btn:hover { background:rgba(255,255,255,0.16); }
+    .et-btn.danger { border-color:rgba(255,80,80,0.4); color:rgba(255,160,160,0.85); }
+
+    #pos-panel {
+      position:fixed; right:0; top:0; bottom:0; z-index:290; width:230px;
+      background:rgba(13,11,8,0.92); backdrop-filter:blur(12px);
+      border-left:1px solid rgba(255,180,50,0.2);
+      padding-top:56px; overflow-y:auto;
+      display:none; flex-direction:column;
+      transition:transform 0.3s ease;
+    }
+    body.edit-mode #pos-panel { display:flex; }
+    #pos-panel.collapsed { transform:translateX(200px); }
+    #pp-collapse-btn {
+      position:sticky; top:0; z-index:2;
+      background:rgba(255,180,50,0.15); border:none; border-bottom:1px solid rgba(255,180,50,0.2);
+      color:rgba(255,200,80,0.8); font-size:0.72rem; letter-spacing:0.1em;
+      padding:0.4rem 1rem; cursor:pointer; font-family:inherit;
+      text-align:left; width:100%;
+      transition:background 0.2s;
+    }
+    #pp-collapse-btn:hover { background:rgba(255,180,50,0.25); }
+    .pp-header { padding:0.9rem 1rem 0.5rem; color:rgba(240,226,200,0.5); font-size:0.68rem; letter-spacing:0.12em; border-bottom:1px solid rgba(255,255,255,0.06); }
+    .pp-row { display:flex; align-items:center; justify-content:space-between; padding:0.45rem 1rem; border-bottom:1px solid rgba(255,255,255,0.04); }
+    .pp-row.is-locked .pp-name { color:rgba(80,220,120,0.85); }
+    .pp-name { font-size:0.72rem; color:rgba(240,226,200,0.65); letter-spacing:0.05em; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .pp-coords { font-size:0.65rem; color:rgba(255,180,50,0.6); letter-spacing:0.03em; text-align:right; }
+    .pp-lock-icon { margin-left:6px; font-size:0.7rem; }
+    .pp-copy-btn { margin:0.8rem 1rem; background:rgba(255,180,50,0.12); border:1px solid rgba(255,180,50,0.35); color:rgba(255,180,50,0.9); padding:0.5rem; border-radius:6px; font-size:0.73rem; letter-spacing:0.1em; cursor:pointer; font-family:inherit; transition:background 0.2s; }
+    .pp-copy-btn:hover { background:rgba(255,180,50,0.22); }
+    .pp-output { margin:0 1rem 1rem; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:0.6rem; font-size:0.62rem; color:rgba(240,226,200,0.5); font-family:'Courier New',monospace; white-space:pre-wrap; word-break:break-all; max-height:180px; overflow-y:auto; display:none; }
+    .pp-output.visible { display:block; }
+
+    #edit-toggle {
+      position:fixed; top:1.2rem; left:1.2rem; z-index:400;
+      background:rgba(255,180,50,0.12); border:1px solid rgba(255,180,50,0.35);
+      color:rgba(255,200,80,0.85); padding:0.38rem 0.9rem; border-radius:6px;
+      font-size:0.72rem; letter-spacing:0.12em; cursor:pointer; font-family:inherit;
+      transition:background 0.25s; display:none;
+    }
+    body.room-entered #edit-toggle { display:block; }
+    #edit-toggle:hover { background:rgba(255,180,50,0.25); }
+    body.edit-mode #edit-toggle { background:rgba(255,180,50,0.28); border-color:rgba(255,200,80,0.7); color:#fff; }
+
+    /* ============================================================
+       MODAL
+    ============================================================ */
+    #modal-bg { position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.45); backdrop-filter:blur(10px); opacity:0; pointer-events:none; transition:opacity 0.4s ease; display:flex; align-items:center; justify-content:center; padding:1.5rem; }
+    #modal-bg.open { opacity:1; pointer-events:all; }
+    #modal { background:#faf5ed; border-radius:14px; padding:2.5rem 2.5rem 2rem; max-width:580px; width:100%; max-height:80vh; overflow-y:auto; position:relative; transform:translateY(22px); transition:transform 0.4s ease; box-shadow:0 30px 80px rgba(0,0,0,0.35); }
+    #modal-bg.open #modal { transform:translateY(0); }
+    #modal-close { position:absolute; top:1.1rem; right:1.2rem; background:none; border:none; font-size:1.6rem; color:#9e8e72; cursor:pointer; line-height:1; transition:color 0.2s; }
+    #modal-close:hover { color:#2a1f0e; }
+    #modal h2 { font-size:1.3rem; font-weight:400; color:#2a1f0e; margin-bottom:1rem; padding-right:2rem; }
+    #modal-body { color:#4a3f2f; line-height:1.75; font-size:0.93rem; }
+    #modal-body p+p { margin-top:0.8rem; }
+    #modal-body a { color:#7a5c2e; text-decoration:underline; text-underline-offset:3px; }
+
+    /* ============================================================
+       NAV MENU
+    ============================================================ */
+    #nav-btn {
+      position:fixed; bottom:2rem; right:2rem; z-index:50;
+      width:42px; height:42px; border-radius:50%;
+      background:rgba(255,255,255,0.12); backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,0.25); cursor:pointer;
+      display:none; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+      transition:background 0.3s;
+    }
+    body.room-entered #nav-btn { display:flex; }
+    #nav-btn:hover { background:rgba(255,255,255,0.22); }
+    #nav-btn span { width:16px; height:1.5px; background:rgba(240,226,200,0.9); display:block; border-radius:2px; }
+    #nav-menu { position:fixed; bottom:5.8rem; right:2rem; z-index:50; background:rgba(13,11,8,0.88); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:0.8rem 0.5rem; min-width:190px; opacity:0; pointer-events:none; transform:translateY(8px); transition:opacity 0.25s, transform 0.25s; }
+    #nav-menu.open { opacity:1; pointer-events:all; transform:translateY(0); }
+    .nav-item { display:block; width:100%; padding:0.55rem 1rem; color:rgba(240,226,200,0.75); font-size:0.82rem; letter-spacing:0.07em; background:none; border:none; text-align:left; cursor:pointer; font-family:inherit; border-radius:8px; transition:background 0.2s, color 0.2s; }
+    .nav-item:hover { background:rgba(255,255,255,0.08); color:rgba(240,226,200,1); }
+
+    #time-badge { position:fixed; top:1.4rem; left:50%; transform:translateX(-50%); z-index:50; color:rgba(240,226,200,0.35); font-size:0.72rem; letter-spacing:0.1em; display:none; }
+    body.room-entered #time-badge { display:block; }
+    body.edit-mode #time-badge { display:none; }
+    body.edit-mode #nav-btn { display:none; }
+
+    /* ============================================================
+       WINDOW AMBIENT ANIMATIONS
+       Adjust --win-* variables to match your image's window position.
+       left/top/width/height are % of image width and viewport height.
+    ============================================================ */
+    #window-anim {
+      position: absolute;
+      /* ↓ Tune these to align with your bay window */
+      left:   14%;
+      top:    0%;
+      width:  28%;
+      height: 54%;
+      z-index: 5;
+      overflow: hidden;
+      pointer-events: none;
+      /* Soft mask so edges blend into the image */
+      -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 40%, black 55%, transparent 100%);
+      mask-image:         radial-gradient(ellipse 90% 90% at 50% 40%, black 55%, transparent 100%);
+    }
+
+    /* Clouds */
+    .cloud {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.52);
+      filter: blur(10px);
+      will-change: transform;
+      animation: cloud-drift linear infinite;
+    }
+    .cloud-1 { width:90px;  height:32px; top:6%;  opacity:0.55; animation-duration:40s; }
+    .cloud-2 { width:140px; height:44px; top:20%; opacity:0.35; animation-duration:58s; animation-delay:-18s; }
+    .cloud-3 { width:70px;  height:26px; top:10%; opacity:0.45; animation-duration:32s; animation-delay:-8s; }
+    .cloud-4 { width:110px; height:36px; top:32%; opacity:0.28; animation-duration:72s; animation-delay:-30s; }
+    @keyframes cloud-drift {
+      from { transform: translateX(-180px); }
+      to   { transform: translateX(calc(400px + 180px)); }
+    }
+
+    /* Falling leaves (replaces crude tree silhouettes) */
+    .leaf {
+      position: absolute;
+      border-radius: 50% 0 50% 0;
+      pointer-events: none;
+      will-change: transform, opacity;
+      transform-origin: 40% 40%;
+      animation: leaf-fall linear forwards;
+    }
+    @keyframes leaf-fall {
+      0%   { transform: translateY(-12px) translateX(0)              rotate(0deg);          opacity: 0;    }
+      8%   { opacity: 0.88; }
+      40%  { transform: translateY(calc(var(--lfy,260px)*0.45))  translateX(calc(var(--lfx,25px)*0.6))  rotate(calc(var(--lfr,190deg)*0.45)); }
+      88%  { opacity: 0.55; }
+      100% { transform: translateY(var(--lfy,260px)) translateX(var(--lfx,25px)) rotate(var(--lfr,190deg)); opacity: 0; }
+    }
+
+    /* Birds */
+    .bird {
+      position: absolute;
+      pointer-events: none;
+      will-change: transform;
+    }
+    .bird-body { position:relative; width:20px; height:8px; }
+    .bird-wing-l, .bird-wing-r {
+      position: absolute; top:0;
+      width:10px; height:5px;
+      border-top: 1.8px solid rgba(35,25,15,0.72);
+      border-radius: 50% 50% 0 0;
+    }
+    .bird-wing-l { left:0;  transform-origin: right bottom; animation: wing-l 0.28s ease-in-out infinite alternate; }
+    .bird-wing-r { right:0; transform-origin: left  bottom; animation: wing-r 0.28s ease-in-out infinite alternate; }
+    @keyframes wing-l { from { transform: rotateX(0) rotateZ(-4deg); } to { transform: rotateX(40deg) rotateZ(6deg); } }
+    @keyframes wing-r { from { transform: rotateX(0) rotateZ( 4deg); } to { transform: rotateX(40deg) rotateZ(-6deg); } }
+
+    /* Bird shadow on room floor */
+    #bird-shadow {
+      position: absolute;
+      width: 28px; height: 10px;
+      background: radial-gradient(ellipse, rgba(0,0,0,0.22) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(4px);
+      pointer-events: none;
+      z-index: 6;
+      opacity: 0;
+      top: 64%; /* adjust to sit on your floor */
+      will-change: left, opacity;
+    }
+
+    /* Dust motes in the light beam */
+    .room-mote {
+      position: absolute;
+      width: 2px; height: 2px;
+      border-radius: 50%;
+      background: rgba(255,215,150,0.55);
+      pointer-events: none;
+      z-index: 6;
+      will-change: transform, opacity;
+      animation: mote-rise linear infinite;
+    }
+    @keyframes mote-rise {
+      0%   { transform: translate(0,0); opacity:0; }
+      12%  { opacity: 0.8; }
+      88%  { opacity: 0.3; }
+      100% { transform: translate(var(--mdx,12px), -130px); opacity:0; }
+    }
+
+    /* ============================================================
+       SPOTIFY MODAL EMBED
+    ============================================================ */
+    #modal-body .spotify-embed-wrap {
+      display:flex; flex-direction:column; gap:0.8rem; align-items:center;
+    }
+    #modal-body .spotify-embed-wrap iframe {
+      border-radius:12px; border:none; width:100%; max-width:480px;
+      box-shadow:0 8px 32px rgba(0,0,0,0.18);
+    }
+    #modal-body .spotify-caption {
+      font-size:0.8rem; color:#9e8472; text-align:center; font-style:italic;
+    }
+
+    /* ============================================================
+       WINDOW CALIBRATION BOX (edit mode only)
+    ============================================================ */
+    #win-calib-box {
+      position:absolute; z-index:40;
+      border:2px solid rgba(0,220,220,0.85);
+      background:rgba(0,220,220,0.06);
+      cursor:move; display:none; box-sizing:border-box;
+    }
+    body.edit-mode #win-calib-box { display:block; }
+    .wcb-label {
+      position:absolute; top:4px; left:6px;
+      font-size:0.58rem; color:rgba(0,220,220,0.95);
+      letter-spacing:0.07em; background:rgba(0,0,0,0.55);
+      padding:2px 7px; border-radius:4px; white-space:nowrap;
+      pointer-events:none; font-family:'Courier New',monospace;
+    }
+    .wcb-handle {
+      position:absolute; width:11px; height:11px;
+      background:rgba(0,220,220,0.9); border-radius:50%; z-index:2;
+    }
+    .wcb-se { bottom:-5px; right:-5px; cursor:se-resize; }
+    .wcb-s  { bottom:-5px; left:50%; transform:translateX(-50%); cursor:s-resize; }
+    .wcb-e  { right:-5px;  top:50%;  transform:translateY(-50%); cursor:e-resize; }
+    .wcb-n  { top:-5px; left:50%; transform:translateX(-50%); cursor:n-resize; }
+    .wcb-w  { left:-5px; top:50%; transform:translateY(-50%); cursor:w-resize; }
+
+    /* ============================================================
+       MODAL EDIT CONTROLS
+    ============================================================ */
+    #modal-edit-btn {
+      position:absolute; top:1.1rem; right:3.4rem;
+      background:none; border:1px solid rgba(122,92,46,0.28);
+      color:rgba(122,92,46,0.55); font-size:0.68rem; padding:0.22rem 0.7rem;
+      border-radius:12px; cursor:pointer; letter-spacing:0.1em;
+      font-family:inherit; transition:all 0.2s;
+    }
+    #modal-edit-btn:hover { background:rgba(122,92,46,0.1); color:rgba(122,92,46,0.9); }
+    #modal-edit-btn.editing { background:rgba(122,92,46,0.15); border-color:rgba(122,92,46,0.6); color:rgba(122,92,46,1); }
+    #modal-body[contenteditable="true"] { outline:none; border:1px dashed rgba(122,92,46,0.3); padding:0.5rem; border-radius:6px; min-height:3rem; }
+    #modal-reset-btn {
+      font-size:0.67rem; color:rgba(200,80,80,0.45); background:none; border:none;
+      cursor:pointer; padding:0.4rem 0; font-family:inherit; display:none; letter-spacing:0.06em;
+    }
+    #modal-reset-btn.visible { display:inline-block; }
+    #modal-reset-btn:hover { color:rgba(200,80,80,0.9); }
+    #modal-edit-hint {
+      font-size:0.64rem; color:rgba(122,92,46,0.4); margin-top:0.6rem;
+      font-style:italic; display:none;
+    }
+    #modal-edit-btn.editing ~ * #modal-edit-hint { display:block; }
+
+    /* ============================================================
+       PANEL — ADD RING + RENAME
+    ============================================================ */
+    .pp-add-section {
+      padding:0.7rem 1rem 1rem; border-top:1px solid rgba(255,180,50,0.2); margin-top:0.3rem;
+    }
+    .pp-add-title { font-size:0.64rem; color:rgba(255,180,50,0.55); letter-spacing:0.12em; margin-bottom:0.45rem; }
+    .pp-input {
+      width:100%; background:rgba(0,0,0,0.35); border:1px solid rgba(255,255,255,0.12);
+      color:rgba(240,226,200,0.85); padding:0.3rem 0.6rem; border-radius:5px;
+      font-size:0.7rem; font-family:inherit; margin-bottom:0.35rem; outline:none;
+      box-sizing:border-box;
+    }
+    .pp-input:focus { border-color:rgba(255,180,50,0.5); }
+    .pp-add-btn {
+      width:100%; background:rgba(255,180,50,0.14); border:1px solid rgba(255,180,50,0.4);
+      color:rgba(255,200,80,0.9); padding:0.38rem; border-radius:6px;
+      font-size:0.72rem; letter-spacing:0.1em; cursor:pointer; font-family:inherit;
+      transition:background 0.2s;
+    }
+    .pp-add-btn:hover { background:rgba(255,180,50,0.27); }
+    .pp-row-actions { display:flex; gap:4px; align-items:center; }
+    .pp-rename-btn { font-size:0.6rem; color:rgba(255,180,50,0.45); background:none; border:none; cursor:pointer; padding:2px 4px; line-height:1; }
+    .pp-rename-btn:hover { color:rgba(255,180,50,0.9); }
+    .pp-del-btn { font-size:0.62rem; color:rgba(255,80,80,0.35); background:none; border:none; cursor:pointer; padding:2px 4px; line-height:1; }
+    .pp-del-btn:hover { color:rgba(255,80,80,0.85); }
+    .pp-inline-edit { display:none; padding:0.3rem 1rem 0.5rem; border-bottom:1px solid rgba(255,255,255,0.05); }
+    .pp-inline-edit.open { display:block; }
+    .pp-inline-input {
+      width:100%; background:rgba(0,0,0,0.35); border:1px solid rgba(255,180,50,0.4);
+      color:rgba(240,226,200,0.9); padding:0.25rem 0.5rem; border-radius:4px;
+      font-size:0.68rem; font-family:inherit; outline:none; box-sizing:border-box;
+    }
+
+    /* ============================================================
+       LAMP REVEAL — masked second image that restores natural saturation
+       in the lamp-lit area (no night filter inside the mask)
+    ============================================================ */
+    #lamp-reveal {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 4;
+      opacity: 0;
+      transition: opacity 2.2s ease;
+      /* Elliptical mask: centered below the lamp bulb, spreading to desk/shelf */
+      -webkit-mask-image: radial-gradient(
+        ellipse 20% 42% at 63% 40%,
+        black 0%, rgba(0,0,0,0.85) 22%, rgba(0,0,0,0.45) 52%, transparent 75%
+      );
+      mask-image: radial-gradient(
+        ellipse 20% 42% at 63% 40%,
+        black 0%, rgba(0,0,0,0.85) 22%, rgba(0,0,0,0.45) 52%, transparent 75%
+      );
+      /* Slight warmth — incandescent is a touch warmer than daylight */
+      filter: sepia(0.06) saturate(1.04) brightness(1.03);
+    }
+    #lamp-reveal img {
+      height: 100vh; width: auto; display: block;
+      pointer-events: none; -webkit-user-drag: none;
+    }
+
+    /* ============================================================
+       PANEL — COLOR PICKER + VISIBILITY TOGGLE
+    ============================================================ */
+    .pp-color-btn {
+      width:16px; height:16px; border-radius:50%;
+      border:1.5px solid rgba(255,255,255,0.3);
+      cursor:pointer; padding:0; flex-shrink:0;
+      transition:transform 0.15s, border-color 0.15s;
+      position:relative;
+    }
+    .pp-color-btn:hover { transform:scale(1.25); border-color:rgba(255,255,255,0.7); }
+    .pp-color-btn input[type="color"] {
+      position:absolute; inset:0; opacity:0; cursor:pointer;
+      width:100%; height:100%; border:none; padding:0;
+    }
+    .pp-vis-btn {
+      font-size:0.65rem; color:rgba(160,200,255,0.45);
+      background:none; border:none; cursor:pointer; padding:2px 4px; line-height:1;
+    }
+    .pp-vis-btn:hover { color:rgba(160,200,255,0.9); }
+    .pp-vis-btn.is-egg { color:rgba(255,200,80,0.6); }
+
+    /* ============================================================
+       RICH MODAL UIs
+    ============================================================ */
+
+    /* ---- Coverflow (Music / Piano) ---- */
+    .cf-scene {
+      background:linear-gradient(160deg,#18100a 0%,#0e0905 100%);
+      border-radius:10px; padding:1.6rem 0.5rem 1.2rem;
+      margin:-0.5rem -0.5rem 0; overflow:hidden; position:relative;
+    }
+    .cf-stage {
+      perspective:700px; height:192px;
+      display:flex; align-items:center; justify-content:center;
+      position:relative;
+    }
+    .cf-card {
+      position:absolute; width:136px; height:136px; border-radius:6px;
+      cursor:pointer; user-select:none;
+      transition:transform 0.48s cubic-bezier(0.4,0,0.2,1), opacity 0.48s ease, box-shadow 0.48s ease;
+    }
+    .cf-art {
+      width:100%; height:100%; border-radius:6px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:2.8rem;
+      box-shadow:0 6px 28px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.07);
+    }
+    .cf-mirror {
+      width:100%; height:44px; margin-top:2px; border-radius:0 0 6px 6px;
+      opacity:0.22; transform:scaleY(-1);
+      -webkit-mask-image:linear-gradient(to top,transparent 0%,rgba(0,0,0,0.5) 100%);
+      mask-image:linear-gradient(to top,transparent 0%,rgba(0,0,0,0.5) 100%);
+      pointer-events:none;
+    }
+    .cf-info { text-align:center; margin-top:1.1rem; }
+    .cf-info .cf-name { font-size:0.9rem; color:rgba(240,226,200,0.9); letter-spacing:0.03em; }
+    .cf-info .cf-sub  { font-size:0.72rem; color:rgba(180,155,120,0.6); margin-top:0.18rem; letter-spacing:0.06em; }
+    .cf-arrows { display:flex; justify-content:center; gap:2.2rem; margin-top:0.9rem; }
+    .cf-arrow {
+      background:none; border:1px solid rgba(255,255,255,0.18);
+      color:rgba(255,255,255,0.55); width:30px; height:30px;
+      border-radius:50%; cursor:pointer; font-size:1.05rem; line-height:28px;
+      font-family:inherit; transition:all 0.18s;
+    }
+    .cf-arrow:hover { background:rgba(255,255,255,0.1); color:white; border-color:rgba(255,255,255,0.45); }
+    .cf-dots { display:flex; justify-content:center; gap:5px; margin-top:0.6rem; }
+    .cf-dot {
+      width:5px; height:5px; border-radius:50%;
+      background:rgba(255,255,255,0.2); transition:background 0.3s, transform 0.3s;
+    }
+    .cf-dot.active { background:rgba(255,255,255,0.75); transform:scale(1.3); }
+    .cf-body-text {
+      color:#5a4a2a; font-size:0.85rem; line-height:1.7; margin-top:1rem;
+      padding:0 0.2rem;
+    }
+    .cf-body-text p+p { margin-top:0.6rem; }
+
+    /* ---- Polaroid Wall (Community) ---- */
+    .polaroid-wall {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:0.75rem; padding:0.3rem 0;
+    }
+    .polaroid {
+      background:#fff; padding:0.45rem 0.45rem 1.4rem;
+      box-shadow:0 4px 14px rgba(0,0,0,0.2);
+      cursor:default; transition:transform 0.22s ease, box-shadow 0.22s ease;
+    }
+    .polaroid:hover { transform:scale(1.07) rotate(0deg) !important; box-shadow:0 10px 28px rgba(0,0,0,0.3); position:relative; z-index:2; }
+    .pol-photo {
+      width:100%; aspect-ratio:1;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.9rem; border-radius:1px;
+      overflow:hidden;
+    }
+    .pol-caption {
+      text-align:center; font-size:0.59rem; color:#555;
+      margin-top:0.35rem; font-style:italic; letter-spacing:0.02em; line-height:1.35;
+    }
+
+    /* ---- Manila Folder (Consulting) ---- */
+    .manila-wrap {
+      position:relative; margin-top:1.4rem;
+    }
+    .manila-tab {
+      position:absolute; top:-1.5rem; left:0;
+      background:#d4b870; border:1px solid rgba(0,0,0,0.14); border-bottom:none;
+      border-radius:6px 6px 0 0; padding:0.22rem 1.1rem;
+      font-size:0.68rem; letter-spacing:0.14em; color:#5a3e10; font-weight:700;
+    }
+    .manila-folder {
+      background:linear-gradient(160deg,#eed98a 0%,#e4c96a 100%);
+      border-radius:0 8px 8px 8px;
+      padding:1rem 1.1rem 1.2rem;
+      box-shadow:inset 0 0 0 1px rgba(0,0,0,0.1), 0 4px 18px rgba(0,0,0,0.12);
+      position:relative;
+    }
+    .manila-stamp {
+      position:absolute; top:0.8rem; right:1rem;
+      border:2px solid rgba(175,35,35,0.48); color:rgba(175,35,35,0.48);
+      font-size:0.58rem; letter-spacing:0.2em; font-weight:700;
+      padding:2px 7px; border-radius:3px; transform:rotate(-8deg);
+      font-family:'Courier New',monospace; pointer-events:none;
+    }
+    .manila-doc {
+      background:#fffef8; padding:0.65rem 0.8rem; margin-bottom:0.55rem;
+      border-radius:2px; box-shadow:0 1px 5px rgba(0,0,0,0.1); position:relative;
+    }
+    .manila-doc:last-child { margin-bottom:0; }
+    .manila-tag  { font-size:0.58rem; letter-spacing:0.14em; color:#8a6a20; font-weight:700; text-transform:uppercase; margin-bottom:0.18rem; }
+    .manila-title { font-size:0.8rem; color:#2a1f0e; font-weight:600; margin-bottom:0.28rem; }
+    .manila-body  { font-size:0.71rem; color:#5a4a2a; line-height:1.6; }
+    .manila-redact {
+      display:inline-block; background:#2a1f0e; color:#2a1f0e;
+      border-radius:1px; padding:0 4px; user-select:none;
+    }
+    .manila-paperclip {
+      position:absolute; top:-8px; right:14px;
+      width:28px; height:40px;
+      border:2px solid #8a9ab0; border-bottom:none;
+      border-radius:10px 10px 0 0;
+      transform:rotate(-8deg);
+    }
+
+    /* ---- Sticky Note Board (Ideas) ---- */
+    .sticky-board {
+      background:#c2a97e;
+      background-image:radial-gradient(circle,rgba(0,0,0,0.06) 1px,transparent 1px);
+      background-size:12px 12px;
+      border-radius:8px; padding:1rem;
+      display:grid; grid-template-columns:repeat(2,1fr);
+      gap:0.85rem; min-height:260px;
+    }
+    .sticky {
+      padding:0.65rem 0.75rem 0.75rem;
+      border-radius:1px;
+      box-shadow:2px 4px 9px rgba(0,0,0,0.22), inset 0 -1px 0 rgba(0,0,0,0.06);
+      font-size:0.74rem; line-height:1.55; color:#2a2018; position:relative;
+      cursor:default;
+    }
+    .sticky::before {
+      content:''; position:absolute; top:-5px; left:50%; transform:translateX(-50%);
+      width:18px; height:7px;
+      background:rgba(0,0,0,0.14); border-radius:0 0 2px 2px;
+    }
+    .sticky-y { background:#fef08a; transform:rotate(-1.8deg); }
+    .sticky-g { background:#bbf7d0; transform:rotate(0.9deg); }
+    .sticky-b { background:#bfdbfe; transform:rotate(-0.6deg); }
+    .sticky-p { background:#e9d5ff; transform:rotate(1.4deg); }
+    .sticky-o { background:#fed7aa; transform:rotate(-1.1deg); }
+    .sticky-hdr {
+      font-size:0.62rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:0.1em; margin-bottom:0.3rem; opacity:0.5;
+    }
+
+    /* ---- Book Shelf (Reading) ---- */
+    .book-shelf-wrap {
+      background:#1e1008; border-radius:8px;
+      padding:1.2rem 1.2rem 1rem; margin:-0.5rem -0.5rem 0;
+    }
+    .shelf-row {
+      display:flex; align-items:flex-end; gap:3px;
+      border-bottom:10px solid #3e2208; padding-bottom:0;
+      margin-bottom:1.1rem; min-height:120px;
+      position:relative;
+    }
+    .shelf-row::after {
+      content:''; position:absolute; bottom:-5px; left:0; right:0;
+      height:4px; background:rgba(255,255,255,0.04); border-radius:0 0 2px 2px;
+    }
+    .book {
+      flex-shrink:0; border-radius:2px 3px 3px 2px;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      cursor:pointer; position:relative; overflow:hidden;
+      box-shadow:2px 0 6px rgba(0,0,0,0.45), inset -2px 0 0 rgba(0,0,0,0.2), inset 1px 0 0 rgba(255,255,255,0.07);
+      transition:transform 0.2s ease;
+      padding:6px 3px;
+    }
+    .book:hover { transform:translateY(-8px); }
+    .book-title {
+      writing-mode:vertical-rl; transform:rotate(180deg);
+      font-size:0.5rem; font-weight:700; letter-spacing:0.04em;
+      line-height:1; text-align:center; padding:0 1px;
+      overflow:hidden; word-break:break-word;
+      font-family:'Georgia',serif;
+    }
+    .book-author {
+      writing-mode:vertical-rl; transform:rotate(180deg);
+      font-size:0.42rem; opacity:0.6; margin-top:4px;
+      text-align:center; overflow:hidden;
+    }
+    .shelf-caption {
+      text-align:center; color:rgba(240,226,200,0.3);
+      font-size:0.64rem; letter-spacing:0.1em; margin-top:0; padding-bottom:0.2rem;
+    }
+    .shelf-bio {
+      color:rgba(240,226,200,0.55); font-size:0.78rem; line-height:1.65;
+      margin-top:0.9rem; padding:0 0.1rem;
+    }
+    .shelf-bio p+p { margin-top:0.55rem; }
+
+    /* ---- Notepad (Contact) ---- */
+    .notepad-wrap {
+      background:#fdf9f0; border-radius:4px 4px 6px 6px;
+      box-shadow:0 4px 20px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1);
+      overflow:hidden; position:relative; margin:-0.3rem 0;
+    }
+    .notepad-top {
+      background:linear-gradient(to bottom,#e8d8c4,#ddc9ac);
+      height:28px; display:flex; align-items:center; justify-content:center;
+      position:relative;
+    }
+    /* Spiral holes */
+    .notepad-top::before {
+      content:'';
+      position:absolute; top:50%; transform:translateY(-50%);
+      left:0; right:0; height:12px;
+      background:repeating-linear-gradient(
+        90deg,
+        transparent 0px, transparent 22px,
+        #b5a28a 22px, #b5a28a 23px,
+        transparent 23px, transparent 30px,
+        #1a1208 30px, #1a1208 38px,
+        transparent 38px, transparent 45px
+      );
+    }
+    .notepad-brand {
+      font-size:0.6rem; letter-spacing:0.18em; color:#8a7a62;
+      font-family:'Courier New',monospace; text-transform:uppercase;
+      position:relative; z-index:1; background:#ddc9ac; padding:0 6px;
+    }
+    .notepad-lines {
+      padding:0.5rem 1.4rem 1.4rem;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0px, transparent 30px,
+          #d4e4f7 30px, #d4e4f7 31px
+        );
+      background-size:100% 31px;
+    }
+    .notepad-label {
+      font-size:0.62rem; letter-spacing:0.14em; color:#9a8a72;
+      text-transform:uppercase; margin-bottom:2px; margin-top:0.7rem;
+    }
+    .notepad-label:first-child { margin-top:0; }
+    .notepad-field {
+      width:100%; background:transparent; border:none; outline:none;
+      font-family:'Georgia',serif; font-size:0.88rem; color:#2a1f0e;
+      line-height:31px; padding:0; resize:none;
+      display:block;
+      /* Each line aligns with notepad rule */
+    }
+    .notepad-field::placeholder { color:rgba(150,130,100,0.4); font-style:italic; }
+    textarea.notepad-field { line-height:1.55; min-height:93px; padding-top:4px; padding-bottom:4px; }
+    .notepad-margin {
+      position:absolute; left:42px; top:0; bottom:0; width:1px;
+      background:rgba(210,100,80,0.28); pointer-events:none;
+    }
+    .notepad-send {
+      display:block; width:calc(100% - 2.8rem); margin:0 1.4rem 1.2rem;
+      background:linear-gradient(135deg,#c8914a,#a06828);
+      border:none; border-radius:4px; padding:0.6rem;
+      font-family:'Georgia',serif; font-size:0.82rem;
+      color:#fdf5e8; letter-spacing:0.1em; cursor:pointer;
+      box-shadow:0 2px 8px rgba(0,0,0,0.18);
+      transition:opacity 0.2s, transform 0.15s;
+    }
+    .notepad-send:hover { opacity:0.88; transform:translateY(-1px); }
+    .notepad-send:active { transform:translateY(0); }
+    .notepad-footer {
+      font-size:0.7rem; color:#9a8a72; text-align:center;
+      padding:0.4rem 1rem 0.9rem; font-style:italic; line-height:1.55;
+    }
+    .notepad-footer a { color:#7a5c2e; }
+
+    /* ---- Trophy Case (Awards) ---- */
+    .trophy-case {
+      background:linear-gradient(160deg,#1a1208 0%,#0e0904 100%);
+      border-radius:8px; padding:1.2rem 1rem 1.2rem;
+      margin:-0.3rem -0.5rem 0;
+    }
+    .trophy-shelf {
+      display:flex; align-items:flex-end; justify-content:center;
+      gap:1.4rem; padding:0.5rem 0.5rem 0.5rem;
+      border-bottom:6px solid #3e2a0a;
+      margin-bottom:0.6rem;
+      position:relative;
+    }
+    .trophy-shelf::after {
+      content:''; position:absolute; bottom:-4px; left:0; right:0;
+      height:3px; background:rgba(255,255,255,0.03);
+    }
+    .trophy-item {
+      display:flex; flex-direction:column; align-items:center;
+      gap:0.2rem; cursor:default;
+      transition:transform 0.2s ease;
+    }
+    .trophy-item:hover { transform:translateY(-4px); }
+    .trophy-icon { font-size:2.4rem; line-height:1; filter:drop-shadow(0 2px 8px rgba(255,200,60,0.4)); }
+    .trophy-icon.big  { font-size:3rem; }
+    .trophy-icon.sml  { font-size:1.8rem; }
+    .trophy-name {
+      font-size:0.55rem; color:rgba(240,220,150,0.7); text-align:center;
+      letter-spacing:0.06em; max-width:72px; line-height:1.3;
+    }
+    .trophy-glow {
+      position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+      width:60%; height:30px; border-radius:50%;
+      background:radial-gradient(ellipse,rgba(255,200,60,0.12) 0%,transparent 70%);
+      pointer-events:none;
+    }
+    .cert-row {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:0.6rem;
+      padding:0.3rem 0 0;
+    }
+    .cert-frame {
+      background:#f8f4ec; border-radius:3px;
+      border:3px solid #c8a84a;
+      box-shadow:2px 2px 8px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(200,170,70,0.3);
+      padding:0.5rem 0.45rem 0.45rem;
+      display:flex; flex-direction:column; align-items:center;
+      cursor:default; transition:transform 0.2s;
+    }
+    .cert-frame:hover { transform:scale(1.04); }
+    .cert-seal { font-size:1.1rem; margin-bottom:0.2rem; }
+    .cert-title { font-size:0.52rem; font-weight:700; text-align:center; color:#2a1f0e; letter-spacing:0.04em; line-height:1.3; }
+    .cert-org   { font-size:0.46rem; color:#7a6a4a; margin-top:0.15rem; text-align:center; letter-spacing:0.06em; }
+    .cert-line  { width:60%; height:1px; background:#c8a84a; margin:0.2rem 0; opacity:0.5; }
+
+    /* ---- Browser / Projects ---- */
+    .browser-chrome {
+      background:linear-gradient(to bottom,#e8e4e0,#d8d4d0);
+      border-radius:8px 8px 0 0;
+      padding:0.5rem 0.6rem 0;
+      box-shadow:0 -1px 0 rgba(0,0,0,0.08);
+      margin:-0.5rem -0.5rem 0;
+    }
+    .browser-bar {
+      display:flex; align-items:center; gap:0.4rem; margin-bottom:0.45rem;
+    }
+    .browser-dots { display:flex; gap:5px; }
+    .browser-dot { width:11px; height:11px; border-radius:50%; }
+    .browser-dot.red    { background:#ff5f57; }
+    .browser-dot.yellow { background:#febc2e; }
+    .browser-dot.green  { background:#28c840; }
+    .browser-url {
+      flex:1; background:rgba(255,255,255,0.75); border-radius:4px;
+      font-size:0.62rem; color:#555; padding:0.2rem 0.6rem;
+      font-family:'Courier New',monospace; letter-spacing:0.02em;
+    }
+    .browser-tabs {
+      display:flex; gap:2px; align-items:flex-end;
+    }
+    .browser-tab {
+      background:rgba(255,255,255,0.5); border-radius:6px 6px 0 0;
+      padding:0.3rem 0.75rem; font-size:0.65rem; color:#555;
+      cursor:pointer; white-space:nowrap;
+      border:1px solid rgba(0,0,0,0.1); border-bottom:none;
+      transition:background 0.15s, color 0.15s;
+      max-width:110px; overflow:hidden; text-overflow:ellipsis;
+    }
+    .browser-tab.active {
+      background:#faf5ed; color:#1a1208; font-weight:600;
+      border-color:rgba(0,0,0,0.08);
+    }
+    .browser-tab:hover:not(.active) { background:rgba(255,255,255,0.75); }
+    .browser-content {
+      background:#faf5ed;
+      border-left:1px solid rgba(0,0,0,0.08); border-right:1px solid rgba(0,0,0,0.08);
+      margin:0 -0.5rem; padding:1.1rem 1.2rem 1.3rem;
+      min-height:220px;
+    }
+    .project-panel { display:none; }
+    .project-panel.active { display:block; }
+    .project-title { font-size:1rem; color:#2a1f0e; font-weight:600; margin-bottom:0.3rem; }
+    .project-tags  { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:0.7rem; }
+    .project-tag   {
+      font-size:0.6rem; letter-spacing:0.1em; padding:2px 8px;
+      border-radius:20px; background:rgba(122,92,46,0.1);
+      color:rgba(122,92,46,0.8); border:1px solid rgba(122,92,46,0.2);
+    }
+    .project-desc  { font-size:0.82rem; color:#4a3f2f; line-height:1.7; margin-bottom:0.8rem; }
+    .project-demo  {
+      background:linear-gradient(135deg,#1a1208,#0e0904);
+      border-radius:6px; height:120px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:2rem; cursor:pointer;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06);
+      position:relative; overflow:hidden;
+      transition:opacity 0.2s;
+    }
+    .project-demo:hover { opacity:0.85; }
+    .project-demo-label {
+      position:absolute; bottom:8px; right:10px;
+      font-size:0.6rem; color:rgba(255,255,255,0.4); letter-spacing:0.1em;
+    }
+    .project-link { font-size:0.75rem; color:#7a5c2e; text-decoration:underline; cursor:pointer; margin-top:0.5rem; display:inline-block; }
+    .browser-status {
+      background:rgba(0,0,0,0.04); border-top:1px solid rgba(0,0,0,0.06);
+      padding:0.2rem 0.6rem; font-size:0.58rem; color:#888;
+      font-family:'Courier New',monospace; margin:0 -0.5rem;
+      letter-spacing:0.04em;
+    }
+
+    /* ---- Hobbies Bag ---- */
+    .bag-scene {
+      position:relative; display:flex; flex-direction:column; align-items:center;
+      padding:0.5rem 0 0; min-height:260px;
+    }
+    .sports-bag {
+      width:220px; height:110px; position:relative;
+      background:linear-gradient(160deg,#2a3a5a 0%,#1a2840 100%);
+      border-radius:50px 50px 40px 40px / 40px 40px 35px 35px;
+      box-shadow:0 8px 28px rgba(0,0,0,0.4), inset 0 2px 0 rgba(255,255,255,0.08);
+    }
+    /* Bag zipper */
+    .sports-bag::before {
+      content:''; position:absolute; top:22px; left:15px; right:15px; height:2px;
+      background:repeating-linear-gradient(90deg,#8090b0 0px,#8090b0 6px,#5a6a8a 6px,#5a6a8a 10px);
+      border-radius:2px;
+    }
+    /* Bag stripe */
+    .sports-bag::after {
+      content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
+      width:80px; height:100%; border-left:3px solid rgba(255,255,255,0.08); border-right:3px solid rgba(255,255,255,0.08);
+      border-radius:inherit;
+    }
+    .bag-handle {
+      width:70px; height:22px; position:absolute; top:-18px; left:50%; transform:translateX(-50%);
+      border:4px solid #3a4a6a; border-bottom:none;
+      border-radius:14px 14px 0 0;
+    }
+    .bag-label {
+      position:absolute; top:34px; left:50%; transform:translateX(-50%);
+      font-size:0.5rem; letter-spacing:0.18em; color:rgba(255,255,255,0.3);
+      text-transform:uppercase; white-space:nowrap;
+    }
+    .bag-items {
+      display:flex; align-items:flex-end; justify-content:center;
+      gap:1.6rem; margin-top:0.8rem; padding:0 0.5rem;
+      flex-wrap:wrap;
+    }
+    .bag-item {
+      display:flex; flex-direction:column; align-items:center; gap:0.3rem;
+      cursor:default; transition:transform 0.2s ease;
+    }
+    .bag-item:hover { transform:translateY(-5px); }
+    .bag-item-icon { font-size:2.8rem; line-height:1; }
+    .bag-item-name { font-size:0.62rem; color:#7a6a52; letter-spacing:0.06em; text-align:center; }
+    .bag-item-desc { font-size:0.58rem; color:#9a8a72; text-align:center; max-width:80px; line-height:1.3; font-style:italic; }
+    .hobbies-note {
+      font-size:0.8rem; color:#7a6a52; line-height:1.7; margin-top:1.1rem;
+      text-align:center; font-style:italic; padding:0 0.5rem;
+    }
+
+    /* Subtle curtain flutter (overlay, not the actual curtain pixels) */
+    #curtain-flutter {
+      position: absolute;
+      top: 0; left: 30%; /* roughly over the hanging curtains */
+      width: 6%; height: 65%;
+      background: rgba(240,225,190,0.025);
+      transform-origin: top center;
+      animation: curtain-flutter 7s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 6;
+      filter: blur(3px);
+    }
+    @keyframes curtain-flutter {
+      0%,100% { transform: skewX(-0.4deg) scaleX(1.000); }
+      35%      { transform: skewX( 0.8deg) scaleX(1.003); }
+      70%      { transform: skewX(-0.6deg) scaleX(0.998); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     ENTRY SCREEN
+============================================================ -->
+<div id="entry">
+  <!-- Floating dust motes (generated by JS) -->
+  <div id="motes"></div>
+
+  <div id="entry-name">Susy Liu</div>
+  <div id="entry-tagline">welcome to my space</div>
+
+  <div class="door-scene">
+    <div class="door-wrap" id="entry-door">
+      <div class="door-glow"></div>
+      <div class="door-frame"></div>
+      <div class="door-leaf">
+        <div class="door-knob"></div>
+        <div class="door-keyhole"></div>
+      </div>
+    </div>
+    <div class="door-step"></div>
+    <div class="door-hint">click to enter</div>
+  </div>
+</div>
+
+<!-- Edit toggle (only visible after entering) -->
+<button id="edit-toggle">✎ position</button>
+
+<!-- Edit toolbar -->
+<div id="edit-toolbar">
+  <span class="et-title">✎ POSITIONING MODE</span>
+  <span class="et-hint">drag rings · double-click to lock ✓</span>
+  <button class="et-btn" id="btn-lock-all">lock all</button>
+  <button class="et-btn" id="btn-unlock-all">unlock all</button>
+  <button class="et-btn danger" id="btn-reset">reset</button>
+  <button class="et-btn" id="btn-done" style="margin-left:auto;border-color:rgba(80,220,120,0.5);color:rgba(120,240,150,0.9);">✓ done</button>
+</div>
+
+<!-- Positions panel -->
+<div id="pos-panel">
+  <button id="pp-collapse-btn">◀ hide panel</button>
+  <div class="pp-header">HOTSPOT POSITIONS</div>
+  <div id="pp-rows"></div>
+  <button class="pp-copy-btn" id="btn-copy-pos">copy all positions</button>
+  <div class="pp-output" id="pp-output"></div>
+  <!-- Add new ring -->
+  <div class="pp-add-section">
+    <div class="pp-add-title">＋ ADD NEW RING</div>
+    <input class="pp-input" id="pp-new-label" placeholder="label (e.g. coffee mug)" />
+    <input class="pp-input" id="pp-new-key"   placeholder="key — leave blank to auto" />
+    <button class="pp-add-btn" id="pp-add-btn">add ring</button>
+  </div>
+</div>
+
+<!-- Room -->
+<div id="room-container">
+  <div id="room-wrapper">
+    <img id="room-image" src="assets/images/room.png" alt="Susy's room" draggable="false">
+
+    <!-- Window ambient animations — positioned over the bay window area -->
+    <div id="window-anim">
+      <div class="cloud cloud-1"></div>
+      <div class="cloud cloud-2"></div>
+      <div class="cloud cloud-3"></div>
+      <div class="cloud cloud-4"></div>
+      <!-- Leaves spawned by JS -->
+    </div>
+    <!-- Window calibration overlay (edit mode only) -->
+    <div id="win-calib-box">
+      <div class="wcb-label">window anim</div>
+      <div class="wcb-handle wcb-n"  data-edge="n"></div>
+      <div class="wcb-handle wcb-s"  data-edge="s"></div>
+      <div class="wcb-handle wcb-e"  data-edge="e"></div>
+      <div class="wcb-handle wcb-w"  data-edge="w"></div>
+      <div class="wcb-handle wcb-se" data-edge="se"></div>
+    </div>
+
+    <!-- Bird shadow on floor -->
+    <div id="bird-shadow"></div>
+
+    <!-- Curtain flutter overlay -->
+    <div id="curtain-flutter"></div>
+
+    <!-- Lamp reveal: masked unfiltered room image — restores natural saturation in lamp zone -->
+    <div id="lamp-reveal"><img src="assets/images/room.png" draggable="false" alt=""></div>
+
+    <div class="overlay" id="ov-ambient"></div>
+    <div class="overlay" id="ov-window"></div>
+    <div class="overlay" id="ov-lamp-cube"></div>
+    <div id="ov-lamp-pool"></div>
+    <div id="ov-lamp-flicker"></div>
+    <div class="overlay" id="ov-lamp-edison"></div>
+    <div class="overlay" id="ov-rain"></div>
+
+    <!-- HOTSPOTS — drag to position in edit mode -->
+    <div class="hotspot" data-key="worldmap"    data-label="significant places"  style="left:4.5%;  top:32%;"><div class="hs-ring"></div><div class="hs-label">significant places</div></div>
+    <div class="hotspot" data-key="piano"       data-label="music"               style="left:9%;    top:58%;"><div class="hs-ring"></div><div class="hs-label">music</div></div>
+    <div class="hotspot" data-key="trophy"      data-label="awards"              style="left:27%;   top:54%;"><div class="hs-ring"></div><div class="hs-label">awards</div></div>
+    <div class="hotspot" data-key="shelf"       data-label="entrepreneurship"    style="left:44%;   top:26%;"><div class="hs-ring"></div><div class="hs-label">entrepreneurship</div></div>
+    <div class="hotspot" data-key="stickynotes" data-label="ideas i'm crunching" style="left:51%;   top:22%;"><div class="hs-ring"></div><div class="hs-label">ideas i'm crunching</div></div>
+    <div class="hotspot" data-key="mit"         data-label="MIT Sloan"           style="left:53%;   top:14%;"><div class="hs-ring"></div><div class="hs-label">MIT Sloan</div></div>
+    <div class="hotspot" data-key="consulting"  data-label="consulting"          style="left:49%;   top:38%;"><div class="hs-ring"></div><div class="hs-label">consulting</div></div>
+    <div class="hotspot" data-key="laptop"      data-label="projects"            style="left:46%;   top:45%;"><div class="hs-ring"></div><div class="hs-label">projects</div></div>
+    <div class="hotspot" data-key="contact"     data-label="leave a note"        style="left:52%;   top:50%;"><div class="hs-ring"></div><div class="hs-label">leave a note</div></div>
+    <div class="hotspot" data-key="polaroids"   data-label="community"           style="left:66%;   top:32%;"><div class="hs-ring"></div><div class="hs-label">community</div></div>
+    <div class="hotspot" data-key="books"       data-label="reading"             style="left:67%;   top:55%;"><div class="hs-ring"></div><div class="hs-label">reading</div></div>
+    <div class="hotspot" data-key="wardrobe"    data-label="fashion tech"        style="left:78%;   top:38%;"><div class="hs-ring"></div><div class="hs-label">fashion tech</div></div>
+    <div class="hotspot" data-key="door"        data-label="what's next"         style="left:80%;   top:20%;"><div class="hs-ring"></div><div class="hs-label">what's next</div></div>
+    <div class="hotspot" data-key="mirror"      data-label="about me"            style="left:90%;   top:28%;"><div class="hs-ring"></div><div class="hs-label">about me</div></div>
+    <!-- Easter eggs -->
+    <div class="hotspot egg" data-key="speaker" data-label="♫ now playing"       style="left:64%;   top:12%;"><div class="hs-ring"></div><div class="hs-label">♫ now playing</div></div>
+    <div class="hotspot egg" data-key="teapot"  data-label="茶 tea time"         style="left:66%;   top:68%;"><div class="hs-ring"></div><div class="hs-label">茶 tea time</div></div>
+    <div class="hotspot" data-key="hobbies"    data-label="hobbies"             style="left:69%;   top:28%;"><div class="hs-ring"></div><div class="hs-label">hobbies</div></div>
+    <div class="hotspot egg" id="hs-lamp-toggle" data-key="lamp-toggle" data-label="💡 lamp" style="left:65%; top:10%;"><div class="hs-ring"></div><div class="hs-label">💡 lamp</div></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="modal-bg">
+  <div id="modal">
+    <button id="modal-close">×</button>
+    <button id="modal-edit-btn">✎ edit</button>
+    <h2 id="modal-title"></h2>
+    <div id="modal-body"></div>
+    <button id="modal-reset-btn">↺ reset to default</button>
+  </div>
+</div>
+
+<!-- Nav -->
+<button id="nav-btn"><span></span><span></span><span></span></button>
+<div id="nav-menu">
+  <button class="nav-item" data-nav="mirror">◎&nbsp; about me</button>
+  <button class="nav-item" data-nav="consulting">📁&nbsp; consulting</button>
+  <button class="nav-item" data-nav="shelf">💡&nbsp; entrepreneurship</button>
+  <button class="nav-item" data-nav="stickynotes">◈&nbsp; ideas</button>
+  <button class="nav-item" data-nav="polaroids">⊕&nbsp; community</button>
+  <button class="nav-item" data-nav="piano">♪&nbsp; music</button>
+  <button class="nav-item" data-nav="hobbies">◍&nbsp; hobbies</button>
+  <button class="nav-item" data-nav="trophy">✦&nbsp; awards</button>
+  <button class="nav-item" data-nav="books">▣&nbsp; reading</button>
+  <button class="nav-item" data-nav="door">→&nbsp; what's next</button>
+  <button class="nav-item" data-nav="contact">✉&nbsp; leave a note</button>
+</div>
+
+<!-- Onboarding -->
+<div id="onboarding">
+  <span class="ob-hint"><span class="ob-icon">↔</span> drag to explore</span>
+  <span class="ob-divider">·</span>
+  <span class="ob-hint"><span class="ob-icon">✦</span> click rings to discover</span>
+  <span class="ob-divider">·</span>
+  <span class="ob-hint"><span class="ob-icon">🥚</span> find easter eggs</span>
+  <button id="ob-got-it">got it</button>
+</div>
+
+<div id="time-badge"></div>
+<!-- Hidden Spotify embed container — keeps the iframe alive between modal opens -->
+<div id="spotify-bg" style="position:fixed;left:-9999px;top:-9999px;width:320px;height:380px;overflow:hidden;pointer-events:none;"></div>
+
+<script>
+/* ============================================================
+   MODAL CONTENT
+============================================================ */
+const CONTENT = {
+  worldmap:    { title:'✦ places that shaped me',    body:`<p><strong>Chicago, South Side</strong> — where I ran a free music program for K–12 students and fell in love with building for community.</p><p><strong>Beijing / Chengdu</strong> — early-stage edtech, my first real taste of 0-to-1 building.</p><p><strong>Boston / MIT</strong> — where I'm based now, building at the intersection of tech and community.</p>` },
+  piano:       { title:'♪ music',                    body:`<p>I co-president a rock band of 25 people that plays to ~900-person audiences — which is basically running a small organization.</p><p>Classically trained pianist (Chopin). Picked up bass this year. I sing and choreograph for friends.</p><p>In college I ran a free music program for K–12 students on the South Side of Chicago.</p><p><a href="#">→ watch a performance</a></p>` },
+  trophy:      { title:'✦ awards',                   body:`<p><strong>Mens et Manus</strong> — MIT's highest student award.</p><p><strong>GenAI Lab — Best Project</strong> — winner in class competition.</p><p><strong>Dean's List</strong> — University of Chicago.</p>` },
+  shelf:       { title:'💡 entrepreneurship journey', body:`<p>I've been deliberately exploring what problems are worth building on.</p><p><strong>EdTech, China</strong> — early-stage startup, 0-to-1 in a different market.</p><p><strong>Series B media tech</strong> — operator role, scaling what's working.</p><p><strong>Fashion tech @ MIT Fuse / Martin Trust Center</strong> — explored a consumer idea.</p><p><strong>Imagination in Action</strong> — pitched to founders and investors.</p>` },
+  stickynotes: { title:"◈ ideas i'm crunching",      body:`<p>🟡 How do we build technology that actually serves the communities it claims to?</p><p>🟢 What does a post-credential world look like for talent?</p><p>🔵 Why is it so hard to coordinate people around shared problems?</p><p>🟠 What would a truly community-owned platform look like?</p>` },
+  mit:         { title:'MIT Sloan',                  body:`<p>Currently at MIT Sloan, at the intersection of business, technology, and community.</p><p>GenAI Lab (award-winning), Fuse entrepreneurship program, Martin Trust Center, volunteered with deltaV.</p>` },
+  consulting:  { title:'📁 consulting',               body:`<p>Two years at BCG working across industries — here's what I can share.</p><p><em>Add your cases here in general terms: sector, problem, approach, outcome. Keep client details anonymous but let the thinking show through.</em></p><p>What I took away: how to structure ambiguous problems fast, how to communicate up, and how to build conviction under uncertainty.</p>` },
+  laptop:      { title:'⌨ projects',                 body:`<p><strong>Social media monitoring tool</strong> — <em>describe what it does.</em></p><p><strong>Course bidding tool</strong> — <em>describe the problem it solved.</em></p>` },
+  polaroids:   { title:'⊕ community',                body:`<p>The people and communities I build with and for.</p><p><em>Add your MIT community work — events, tools built for friends.</em></p>` },
+  books:       { title:'▣ reading',                  body:`<p><em>Add your top reads — one per topic area you care about.</em></p>` },
+  wardrobe:    { title:'wardrobe',                   body:`<p>I explored a fashion tech idea at MIT.</p><p><em>Add your prototype description and pitch deck link.</em></p>` },
+  door:        { title:"→ what's next",              body:`<p>I'm looking for roles where I can be close to the action — building and shipping at scale.</p><p>Chief of Staff to a founder, operator at a Series B, or building within an organization that takes ambition seriously.</p>` },
+  mirror:      { title:'◎ about me',                 body:`<p>I grew up believing that building things for people you love is one of the most meaningful things you can do.</p><p>Creativity, community, structure, and navigating ambiguity. That's the throughline.</p><p><em>Write this in your own voice.</em></p>` },
+  speaker:     { title:'♫ currently listening',      body:`` },
+  teapot:      { title:'茶 tea time',                body:`<p>My dad is from a place with very dense tea culture — gongfu tea is a whole ritual, not just a drink.</p><p>Tea time with friends is a recurring ritual — slow, deliberate, no phones.</p>` },
+  hobbies:     { title:'◍ hobbies',                  body:`<p>Movement is how I connect with people — these are my preferred ways in.</p><p><strong>Dance</strong> — Chinese classical, salsa, bachata, hip hop, contemporary. I choreograph pieces for friends when the moment calls for it.</p><p><strong>Sports</strong> — volleyball, soccer, ping pong, running. I've led two IM teams that became genuinely meaningful communities, not just leagues.</p><p>Activities first, friendship second — that's the formula.</p>` },
+  contact:     { title:'✉ leave a note',             body:`<p>I'd love to hear from you. A few reasons you might be reaching out:</p><p>🔹 <strong>Startup / operator roles</strong> — CoS, growth, strategy, building something together</p><p>🔹 <strong>Interesting problems</strong> — ed tech, community infrastructure, creator tools, fashion tech</p><p>🔹 <strong>Business school</strong> — happy to chat about Sloan, the process, what I'd do differently</p><p>🔹 <strong>Just want to connect</strong> — always down for a walk, tea, or a game of volleyball</p><br><p>📬 <a href="mailto:sliu320@mit.edu">sliu320@mit.edu</a></p><p><em>(Contact form coming soon — for now email works best)</em></p>` },
+};
+
+/* ============================================================
+   RICH MODAL RENDERERS
+   These inject custom HTML into modalBody for specific hotspots.
+   Return true if handled, false to fall through to plain text.
+============================================================ */
+const RICH_MODAL_KEYS = new Set(['piano','polaroids','consulting','stickynotes','books','contact','trophy','laptop','hobbies']);
+
+function renderRichModal(key) {
+  switch(key) {
+    case 'piano':       renderCoverflow(); return true;
+    case 'polaroids':   renderPolaroids(); return true;
+    case 'consulting':  renderManila();    return true;
+    case 'stickynotes': renderStickies();  return true;
+    case 'books':       renderBookshelf(); return true;
+    case 'contact':     renderNotepad();   return true;
+    case 'trophy':      renderTrophyCase();return true;
+    case 'laptop':      renderBrowser();   return true;
+    case 'hobbies':     renderHobbiesBag();return true;
+    default: return false;
+  }
+}
+
+/* ---- iTunes Coverflow (music) ---- */
+function renderCoverflow() {
+  const albums = [
+    { art:'🎹', bg:'linear-gradient(135deg,#1a1a2e,#16213e)', name:'Classical Piano', sub:'Chopin · Rachmaninoff · Debussy' },
+    { art:'🎸', bg:'linear-gradient(135deg,#2d1b1b,#4a1010)', name:'Rock Band', sub:'co-president · ~900 person shows' },
+    { art:'🎸', bg:'linear-gradient(135deg,#0d1f0d,#1a3a1a)', name:'Bass',  sub:'picked up this year' },
+    { art:'🎵', bg:'linear-gradient(135deg,#1a1420,#2d1f3d)', name:'Teaching Music', sub:'free K–12 program · South Side Chicago' },
+    { art:'🎤', bg:'linear-gradient(135deg,#1e1a0e,#3a320a)', name:'Vocals & Choreography', sub:'for friends, when the moment calls for it' },
+  ];
+  let cur = 0;
+
+  function buildCF() {
+    const n = albums.length;
+    let html = `<div class="cf-scene"><div class="cf-stage" id="cf-stage">`;
+    for (let i = 0; i < n; i++) {
+      const a = albums[i];
+      const offset = i - cur;
+      html += `<div class="cf-card" data-ci="${i}" style="z-index:${10-Math.abs(offset)};">
+        <div class="cf-art" style="background:${a.bg};">${a.art}</div>
+      </div>`;
+    }
+    html += `</div>
+    <div class="cf-info"><div class="cf-name">${albums[cur].name}</div><div class="cf-sub">${albums[cur].sub}</div></div>
+    <div class="cf-arrows"><button class="cf-arrow" id="cf-prev">‹</button><button class="cf-arrow" id="cf-next">›</button></div>
+    <div class="cf-dots">${albums.map((_,i)=>`<div class="cf-dot${i===cur?' active':''}"></div>`).join('')}</div>
+    </div>
+    <div class="cf-body-text">
+      <p>I co-president a rock band of 25 people that plays to ~900-person audiences — which is basically running a small organization.</p>
+      <p>Classically trained pianist (Chopin, Rachmaninoff). Picked up bass this year. I sing and choreograph for friends.</p>
+      <p>In college I ran a free music program for K–12 students on the South Side of Chicago.</p>
+      <p><a href="#">→ watch a performance</a></p>
+    </div>`;
+    modalBody.innerHTML = html;
+    positionCards();
+    document.getElementById('cf-prev').onclick = () => { cur = (cur - 1 + n) % n; positionCards(); refreshCFInfo(); };
+    document.getElementById('cf-next').onclick = () => { cur = (cur + 1) % n; positionCards(); refreshCFInfo(); };
+    document.querySelectorAll('.cf-card').forEach(c => {
+      c.onclick = () => { const i = +c.dataset.ci; if(i!==cur){ cur=i; positionCards(); refreshCFInfo(); } };
+    });
+  }
+
+  function positionCards() {
+    const cards = document.querySelectorAll('.cf-card');
+    cards.forEach(c => {
+      const offset = +c.dataset.ci - cur;
+      const n = albums.length, mid = Math.floor(n/2);
+      // Wrap offset
+      let o = offset;
+      if (o > mid) o -= n;
+      if (o < -mid) o += n;
+      const absO = Math.abs(o);
+      const tx = o * 120;
+      const tz = -absO * 80;
+      const ry = -o * 28;
+      const sc = absO === 0 ? 1 : absO === 1 ? 0.82 : 0.65;
+      const op = absO === 0 ? 1 : absO === 1 ? 0.7 : absO > 2 ? 0 : 0.45;
+      c.style.transform = `translateX(${tx}px) translateZ(${tz}px) rotateY(${ry}deg) scale(${sc})`;
+      c.style.opacity   = op;
+      c.style.zIndex    = 10 - absO;
+      c.style.display   = absO > 2 ? 'none' : '';
+    });
+    // Update dots
+    document.querySelectorAll('.cf-dot').forEach((d,i) => d.classList.toggle('active', i===cur));
+  }
+
+  function refreshCFInfo() {
+    positionCards();
+    const info = modalBody.querySelector('.cf-info');
+    if (info) {
+      info.querySelector('.cf-name').textContent = albums[cur].name;
+      info.querySelector('.cf-sub').textContent  = albums[cur].sub;
+    }
+  }
+
+  buildCF();
+}
+
+/* ---- Polaroid Wall (community) ---- */
+function renderPolaroids() {
+  const pols = [
+    { bg:'#c8e6c9', emoji:'🎸', caption:'rock band\nco-president', rot:'-2deg' },
+    { bg:'#bbdefb', emoji:'🏐', caption:'volleyball IM\nteam captain', rot:'1.5deg' },
+    { bg:'#ffe0b2', emoji:'🎓', caption:'MIT Sloan\nclass of \'25', rot:'-1deg' },
+    { bg:'#f8bbd0', emoji:'🎵', caption:'Chicago\nmusic program', rot:'2deg' },
+    { bg:'#e1bee7', emoji:'⚽', caption:'soccer IM\nbuilt a community', rot:'-1.5deg' },
+    { bg:'#fff9c4', emoji:'🫖', caption:'gongfu tea\nslowly', rot:'1deg' },
+    { bg:'#b2ebf2', emoji:'💃', caption:'dance crew\nchoreo & salsa', rot:'-0.5deg' },
+    { bg:'#dcedc8', emoji:'🏓', caption:'ping pong\ntournament regular', rot:'1.8deg' },
+    { bg:'#fce4ec', emoji:'✨', caption:'imagination\nin action', rot:'-2.2deg' },
+  ];
+  let html = `<div class="polaroid-wall">`;
+  pols.forEach(p => {
+    html += `<div class="polaroid" style="transform:rotate(${p.rot})">
+      <div class="pol-photo" style="background:${p.bg};">${p.emoji}</div>
+      <div class="pol-caption">${p.caption.replace(/\n/,'<br>')}</div>
+    </div>`;
+  });
+  html += `</div>
+  <p style="color:#7a6a52;font-size:0.78rem;margin-top:1rem;line-height:1.65;">Activities first, friendship second — that's the formula. Most of the communities I'm in started as a sport or practice and became something much more meaningful.</p>`;
+  modalBody.innerHTML = html;
+}
+
+/* ---- Manila Folder (consulting) ---- */
+function renderManila() {
+  const docs = [
+    { tag:'consumer', title:'Consumer tech platform — 0→1 growth', body:'Reframed the core growth lever from acquisition to <span class="manila-redact">activation</span>. Built the strategic case for a full-funnel rebuild. Outcome: <span class="manila-redact">███████</span> lift in D30 retention.', clip:true },
+    { tag:'industrials', title:'Operations turnaround — manufacturing', body:'Led workstream restructuring a <span class="manila-redact">███████</span> supply chain. Identified <span class="manila-redact">$██M</span> in savings across logistics and procurement.', clip:false },
+    { tag:'media & tech', title:'Content strategy for a streaming platform', body:'Competitive landscape teardown + audience segmentation. Helped shape a <span class="manila-redact">go-to-market</span> for a new vertical. Client: top-3 US streamer.', clip:false },
+    { tag:'key takeaway', title:'What BCG taught me', body:'How to structure ambiguous problems fast, communicate up, and build conviction under uncertainty. The reps compound.', clip:false },
+  ];
+  let html = `<div class="manila-wrap">
+    <div class="manila-tab">📁 CASE FILES</div>
+    <div class="manila-folder">
+      <div class="manila-stamp">CONFIDENTIAL</div>`;
+  docs.forEach(d => {
+    html += `<div class="manila-doc">${d.clip?'<div class="manila-paperclip"></div>':''}
+      <div class="manila-tag">${d.tag}</div>
+      <div class="manila-title">${d.title}</div>
+      <div class="manila-body">${d.body}</div>
+    </div>`;
+  });
+  html += `</div></div>
+  <p style="color:#7a6a52;font-size:0.75rem;margin-top:0.8rem;font-style:italic;line-height:1.6;">Two years at BCG — cases across consumer, industrials, and media. Details anonymized.</p>`;
+  modalBody.innerHTML = html;
+}
+
+/* ---- Sticky Note Board (ideas) ---- */
+function renderStickies() {
+  const notes = [
+    { color:'sticky-y', hdr:'🟡 technology & community', body:'How do we build technology that actually serves the communities it claims to?' },
+    { color:'sticky-b', hdr:'🔵 coordination', body:'Why is it so hard to coordinate people around shared problems? And what does it take to unlock that?' },
+    { color:'sticky-g', hdr:'🟢 talent & credentials', body:'What does a post-credential world look like? Who gets left behind and who gets unlocked?' },
+    { color:'sticky-p', hdr:'🟣 community ownership', body:'What would a truly community-owned platform look like? Is it economically viable?' },
+    { color:'sticky-o', hdr:'🟠 ai × education', body:'Can AI make high-quality mentorship and learning abundant without killing the human parts that matter?' },
+    { color:'sticky-y', hdr:'🟡 adjacent possible', body:'The next wave of interesting ideas is at the intersection of AI tools and physical communities. What does that look like in 5 years?' },
+  ];
+  let html = `<div class="sticky-board">`;
+  notes.forEach(n => {
+    html += `<div class="sticky ${n.color}"><div class="sticky-hdr">${n.hdr}</div>${n.body}</div>`;
+  });
+  html += `</div>
+  <p style="color:#7a6a52;font-size:0.78rem;margin-top:0.8rem;line-height:1.65;font-style:italic;">Living document — these are the questions I keep coming back to.</p>`;
+  modalBody.innerHTML = html;
+}
+
+/* ---- Book Shelf (reading) ---- */
+function renderBookshelf() {
+  const rows = [
+    [
+      { t:'Zero to One', a:'Thiel', h:116, w:22, bg:'#1a3a5c', c:'#a8d4f5' },
+      { t:'High Output Management', a:'Grove', h:108, w:20, bg:'#3a1a1a', c:'#f5a8a8' },
+      { t:'Thinking Fast & Slow', a:'Kahneman', h:120, w:24, bg:'#2a3a1a', c:'#b8e8a0' },
+      { t:'The Innovator\'s Dilemma', a:'Christensen', h:112, w:20, bg:'#3a2a10', c:'#f5d08a' },
+      { t:'Poor Charlie\'s Almanack', a:'Munger', h:118, w:26, bg:'#1a2a3a', c:'#90c8e8' },
+      { t:'Outliers', a:'Gladwell', h:100, w:18, bg:'#2a1a3a', c:'#d0a8e8' },
+      { t:'Hard Thing About Hard Things', a:'Horowitz', h:114, w:22, bg:'#1a1a1a', c:'#e8e8e8' },
+    ],
+    [
+      { t:'Sapiens', a:'Harari', h:110, w:22, bg:'#1a2a1a', c:'#a0d890' },
+      { t:'Shoe Dog', a:'Knight', h:104, w:20, bg:'#3a1e10', c:'#f0b87a' },
+      { t:'Never Split the Difference', a:'Voss', h:106, w:20, bg:'#1a1e38', c:'#90a8e8' },
+      { t:'Atomic Habits', a:'Clear', h:98,  w:18, bg:'#1e1a10', c:'#e8d880' },
+      { t:'The Mom Test', a:'Fitzpatrick', h:88, w:16, bg:'#2e1a10', c:'#f0a868' },
+      { t:'Creativity Inc', a:'Catmull', h:108, w:22, bg:'#2a1818', c:'#f0b0a0' },
+      { t:'Grit', a:'Duckworth', h:96,  w:18, bg:'#1a2818', c:'#98d898' },
+      { t:'Range', a:'Epstein', h:102, w:20, bg:'#281a10', c:'#f0c888' },
+    ],
+  ];
+
+  let html = `<div class="book-shelf-wrap">`;
+  rows.forEach((row, ri) => {
+    html += `<div class="shelf-row">`;
+    row.forEach(b => {
+      html += `<div class="book" style="width:${b.w}px;height:${b.h}px;background:${b.bg};color:${b.c};" title="${b.t} — ${b.a}">
+        <div class="book-title">${b.t}</div>
+        <div class="book-author">${b.a}</div>
+      </div>`;
+    });
+    html += `</div>`;
+    html += `<div class="shelf-caption">${ri===0?'strategy · management · psychology':'biography · habits · entrepreneurship'}</div>`;
+  });
+
+  html += `</div>
+  <div class="shelf-bio">
+    <p>These are the books that genuinely changed how I think — not just what I know. The shelf is a snapshot of the conversations I keep returning to.</p>
+    <p>Currently reading: <em>The Art of Doing Science and Engineering</em> — Hamming.</p>
+  </div>`;
+  modalBody.innerHTML = html;
+}
+
+/* ---- Notepad Contact Form ---- */
+function renderNotepad() {
+  modalBody.innerHTML = `
+  <div class="notepad-wrap">
+    <div class="notepad-top"><span class="notepad-brand">✉ leave a note</span></div>
+    <div class="notepad-lines" style="position:relative;">
+      <div class="notepad-margin"></div>
+      <div style="padding-left:28px;">
+        <div class="notepad-label">name</div>
+        <input class="notepad-field" id="np-name" type="text" placeholder="your name…" autocomplete="off"/>
+        <div class="notepad-label">email</div>
+        <input class="notepad-field" id="np-email" type="email" placeholder="your@email.com" autocomplete="off"/>
+        <div class="notepad-label">what's on your mind?</div>
+        <textarea class="notepad-field" id="np-msg" rows="3" placeholder="a quick hello, a role you're thinking of, or just something interesting…"></textarea>
+      </div>
+    </div>
+    <button class="notepad-send" id="np-send">send →</button>
+    <div class="notepad-footer" id="np-footer">
+      or email directly: <a href="mailto:sliu320@mit.edu">sliu320@mit.edu</a><br>
+      always up for a walk, tea, or a game of volleyball ☕
+    </div>
+  </div>`;
+
+  document.getElementById('np-send').addEventListener('click', () => {
+    const name  = document.getElementById('np-name').value.trim();
+    const email = document.getElementById('np-email').value.trim();
+    const msg   = document.getElementById('np-msg').value.trim();
+    if (!name || !email || !msg) {
+      const missing = [];
+      if (!name)  missing.push('name');
+      if (!email) missing.push('email');
+      if (!msg)   missing.push('message');
+      document.getElementById('np-footer').innerHTML =
+        `<span style="color:#c05a2a;">please fill in: ${missing.join(', ')}</span>`;
+      return;
+    }
+    const subject = encodeURIComponent('👋 note from ' + name);
+    const body    = encodeURIComponent(msg + '\n\n— ' + name + ' (' + email + ')');
+    window.location.href = `mailto:sliu320@mit.edu?subject=${subject}&body=${body}`;
+    document.getElementById('np-footer').innerHTML =
+      `<span style="color:#3a7a3a;">✓ opening your email client — thanks, ${name}!</span>`;
+  });
+}
+
+/* ---- Trophy Case / Framed Certificates ---- */
+function renderTrophyCase() {
+  modalBody.innerHTML = `
+  <div class="trophy-case">
+    <!-- Trophy shelf -->
+    <div class="trophy-shelf">
+      <div class="trophy-glow"></div>
+      <div class="trophy-item">
+        <div class="trophy-icon big">🏆</div>
+        <div class="trophy-name">Mens et Manus</div>
+      </div>
+      <div class="trophy-item">
+        <div class="trophy-icon">🥇</div>
+        <div class="trophy-name">GenAI Lab Best Project</div>
+      </div>
+      <div class="trophy-item">
+        <div class="trophy-icon sml">🎖️</div>
+        <div class="trophy-name">Dean's List</div>
+      </div>
+      <div class="trophy-item">
+        <div class="trophy-icon sml">⭐</div>
+        <div class="trophy-name">Imagination in Action</div>
+      </div>
+    </div>
+    <!-- Framed certificates -->
+    <div class="cert-row">
+      <div class="cert-frame">
+        <div class="cert-seal">🦅</div>
+        <div class="cert-line"></div>
+        <div class="cert-title">Mens et Manus Award</div>
+        <div class="cert-line"></div>
+        <div class="cert-org">MIT · Highest Student Honor</div>
+      </div>
+      <div class="cert-frame">
+        <div class="cert-seal">🤖</div>
+        <div class="cert-line"></div>
+        <div class="cert-title">Best Project — GenAI Lab</div>
+        <div class="cert-line"></div>
+        <div class="cert-org">MIT Sloan · Spring 2025</div>
+      </div>
+      <div class="cert-frame">
+        <div class="cert-seal">🎓</div>
+        <div class="cert-line"></div>
+        <div class="cert-title">Dean's List</div>
+        <div class="cert-line"></div>
+        <div class="cert-org">Univ. of Chicago</div>
+      </div>
+      <div class="cert-frame">
+        <div class="cert-seal">💡</div>
+        <div class="cert-line"></div>
+        <div class="cert-title">Imagination in Action</div>
+        <div class="cert-line"></div>
+        <div class="cert-org">MIT · Pitch Competition</div>
+      </div>
+      <div class="cert-frame">
+        <div class="cert-seal">🚀</div>
+        <div class="cert-line"></div>
+        <div class="cert-title">Fuse Fellow</div>
+        <div class="cert-line"></div>
+        <div class="cert-org">MIT Entrepreneurship</div>
+      </div>
+      <div class="cert-frame">
+        <div class="cert-seal">🌟</div>
+        <div class="cert-line"></div>
+        <div class="cert-title">deltaV Volunteer</div>
+        <div class="cert-line"></div>
+        <div class="cert-org">MIT · Summer Accelerator</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---- Browser / Projects ---- */
+function renderBrowser() {
+  const projects = [
+    {
+      id: 'monitor',
+      tab: '📊 Social Monitor',
+      title: 'Social Media Monitoring Tool',
+      tags: ['Python', 'NLP', 'Dashboard', 'Real-time'],
+      desc: 'A tool that tracks brand sentiment and topic trends across social platforms in real time. Built a custom NLP pipeline for signal extraction, with a dashboard that surfaces emerging narratives before they break.',
+      demo: '📊',
+      demoLabel: 'demo · live dashboard',
+      link: '#',
+    },
+    {
+      id: 'bidding',
+      tab: '📚 Course Bidder',
+      title: 'MIT Course Bidding Optimizer',
+      tags: ['TypeScript', 'Optimization', 'MIT', 'Chrome Extension'],
+      desc: 'Sloan students bid on courses with points — it\'s a complex allocation problem. Built a tool that models bid dynamics and recommends an optimal portfolio of bids to maximize schedule quality.',
+      demo: '📚',
+      demoLabel: 'demo · browser extension',
+      link: '#',
+    },
+    {
+      id: 'genai',
+      tab: '🤖 GenAI Lab',
+      title: 'GenAI Lab — Award-Winning Project',
+      tags: ['LLM', 'Product', 'MIT Sloan', 'Best Project 🏆'],
+      desc: '<em>Details coming soon — keeping some things close to the chest while we figure out next steps.</em> Winner of the class competition. Built with a small team over a semester.',
+      demo: '🤖',
+      demoLabel: 'details · spring 2025',
+      link: '#',
+    },
+  ];
+
+  let tabsHtml = '', panelsHtml = '';
+  projects.forEach((p, i) => {
+    tabsHtml += `<div class="browser-tab${i===0?' active':''}" data-tab="${p.id}">${p.tab}</div>`;
+    panelsHtml += `<div class="project-panel${i===0?' active':''}" id="proj-${p.id}">
+      <div class="project-title">${p.title}</div>
+      <div class="project-tags">${p.tags.map(t=>`<span class="project-tag">${t}</span>`).join('')}</div>
+      <div class="project-desc">${p.desc}</div>
+      <div class="project-demo">${p.demo}<div class="project-demo-label">${p.demoLabel}</div></div>
+      ${p.link !== '#' ? `<a class="project-link" href="${p.link}" target="_blank">→ view project</a>` : ''}
+    </div>`;
+  });
+
+  const activeProj = projects[0];
+  modalBody.innerHTML = `
+  <div class="browser-chrome">
+    <div class="browser-bar">
+      <div class="browser-dots">
+        <div class="browser-dot red"></div>
+        <div class="browser-dot yellow"></div>
+        <div class="browser-dot green"></div>
+      </div>
+      <div class="browser-url" id="browser-url">susyliu.com/projects/${activeProj.id}</div>
+    </div>
+    <div class="browser-tabs" id="browser-tabs">${tabsHtml}</div>
+  </div>
+  <div class="browser-content" id="browser-content">${panelsHtml}</div>
+  <div class="browser-status" id="browser-status">● susyliu.com — secure connection</div>`;
+
+  // Wire tabs
+  document.querySelectorAll('.browser-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const id = tab.dataset.tab;
+      document.querySelectorAll('.browser-tab').forEach(t => t.classList.toggle('active', t.dataset.tab===id));
+      document.querySelectorAll('.project-panel').forEach(p => p.classList.toggle('active', p.id==='proj-'+id));
+      document.getElementById('browser-url').textContent = `susyliu.com/projects/${id}`;
+      const proj = projects.find(p => p.id === id);
+      document.getElementById('browser-status').textContent = `● susyliu.com/projects/${id} — secure connection`;
+    });
+  });
+}
+
+/* ---- Hobbies Sports Bag ---- */
+function renderHobbiesBag() {
+  const items = [
+    { icon:'🏐', name:'volleyball', desc:'IM team · two seasons · built a whole community' },
+    { icon:'⚽', name:'soccer', desc:'midfielder · IM co-captain' },
+    { icon:'🏓', name:'ping pong', desc:'regular at the tables · it gets competitive' },
+    { icon:'👟', name:'dance shoes', desc:'salsa · bachata · hip hop · Chinese classical' },
+    { icon:'🏃', name:'running', desc:'clears my head · usually solo' },
+  ];
+
+  modalBody.innerHTML = `
+  <div class="bag-scene">
+    <div class="sports-bag">
+      <div class="bag-handle"></div>
+      <div class="bag-label">susy's kit bag</div>
+    </div>
+    <div class="bag-items">
+      ${items.map(item => `
+      <div class="bag-item">
+        <div class="bag-item-icon">${item.icon}</div>
+        <div class="bag-item-name">${item.name}</div>
+        <div class="bag-item-desc">${item.desc}</div>
+      </div>`).join('')}
+    </div>
+    <p class="hobbies-note">Movement is how I connect with people.<br>Activities first, friendship second — that's always been the formula.</p>
+  </div>`;
+}
+
+/* ============================================================
+   TIME OF DAY
+============================================================ */
+// imgFilter  → applied to #room-image  (saturation / brightness / warmth)
+// ambient    → full-room color cast overlay
+// window     → glow FROM the window — cool at night (moonlight), warm by day
+// cubeOpacity / cubeBg → lamp light
+const TIME_CONFIGS = [
+  {
+    hours:[0,1,2,3,4], label:'late night',
+    imgFilter:  'saturate(0.45) brightness(0.62)',
+    ambient:    'rgba(12,18,55,0.68)',                  // deep indigo blanket
+    window:     'rgba(170,205,255,0.16)',                // pale blue moonlight spill
+    moonlight:  true,
+    cubeOpacity:0.55, cubeBg:'radial-gradient(circle,rgba(255,195,75,0.42) 0%,transparent 70%)',
+  },
+  {
+    hours:[5,6], label:'pre-dawn',
+    imgFilter:  'saturate(0.60) brightness(0.72)',
+    ambient:    'rgba(55,35,90,0.38)',                   // fading deep violet
+    window:     'rgba(190,210,255,0.18)',                // blue-gray sky starting to wake
+    moonlight:  true,
+    cubeOpacity:0.30, cubeBg:'radial-gradient(circle,rgba(255,195,75,0.28) 0%,transparent 70%)',
+  },
+  {
+    hours:[7,8,9], label:'morning',
+    imgFilter:  'saturate(0.90) brightness(0.96)',
+    ambient:    'rgba(220,185,140,0.07)',                // faint warm cream wash
+    window:     'rgba(255,235,200,0.26)',                // soft warm morning light
+    moonlight:  false,
+    cubeOpacity:0, cubeBg:'',
+  },
+  {
+    hours:[10,11,12,13,14], label:'afternoon',
+    imgFilter:  'saturate(1.0) brightness(1.0)',         // reference — no filter
+    ambient:    'rgba(0,0,0,0)',
+    window:     'rgba(255,255,240,0.08)',                // subtle bright daylight
+    moonlight:  false,
+    cubeOpacity:0, cubeBg:'',
+  },
+  {
+    hours:[15,16], label:'late afternoon',
+    imgFilter:  'saturate(1.05) brightness(1.01)',
+    ambient:    'rgba(230,155,55,0.06)',                 // faint warm amber tint
+    window:     'rgba(255,210,130,0.20)',
+    moonlight:  false,
+    cubeOpacity:0, cubeBg:'',
+  },
+  {
+    hours:[17,18], label:'golden hour',
+    imgFilter:  'saturate(1.18) brightness(1.03)',       // punchy warm saturation
+    ambient:    'rgba(210,100,18,0.18)',                 // amber-orange wash
+    window:     'rgba(255,145,35,0.40)',                 // deep golden beam
+    moonlight:  false,
+    cubeOpacity:0.05, cubeBg:'radial-gradient(circle,rgba(255,190,70,0.10) 0%,transparent 70%)',
+  },
+  {
+    hours:[19,20], label:'dusk',
+    imgFilter:  'saturate(0.82) brightness(0.88)',
+    ambient:    'rgba(75,42,115,0.32)',                  // purple dusk cast
+    window:     'rgba(120,80,180,0.38)',                 // violet twilight window
+    moonlight:  false,
+    cubeOpacity:0.32, cubeBg:'radial-gradient(circle,rgba(255,190,70,0.26) 0%,transparent 70%)',
+  },
+  {
+    hours:[21,22,23], label:'night',
+    imgFilter:  'saturate(0.52) brightness(0.70)',       // desaturated, dim
+    ambient:    'rgba(10,15,48,0.62)',                   // dark indigo night
+    window:     'rgba(155,195,255,0.20)',                // cool blue-white moonlight
+    moonlight:  true,
+    cubeOpacity:0.50, cubeBg:'radial-gradient(circle,rgba(255,200,80,0.40) 0%,transparent 70%)',
+  },
+];
+function getTimeCfg() { const h=new Date().getHours(); return TIME_CONFIGS.find(c=>c.hours.includes(h))||TIME_CONFIGS[3]; }
+function applyLighting() {
+  const cfg = getTimeCfg();
+
+  // Room image filter — controls saturation, brightness, warmth
+  document.getElementById('room-image').style.filter = cfg.imgFilter || '';
+
+  // Full-room ambient color cast
+  document.getElementById('ov-ambient').style.background = cfg.ambient;
+
+  // Window glow — moonlight is a cool lighter spill; daylight is warm beam from top
+  // At night use 'screen'-style mix by centering the glow lower so it spills INTO room
+  const winEl = document.getElementById('ov-window');
+  if (cfg.moonlight) {
+    // Moonlight: soft wide pool from the window area, cooler and lower
+    winEl.style.background = `radial-gradient(ellipse at 48% 20%, ${cfg.window} 0%, rgba(140,175,255,0.06) 55%, transparent 85%)`;
+    winEl.style.mixBlendMode = 'screen';
+  } else {
+    winEl.style.background = `radial-gradient(ellipse at 50% 0%, ${cfg.window} 0%, transparent 80%)`;
+    winEl.style.mixBlendMode = 'normal';
+  }
+
+  // Lamp overlays — only update if lamp toggle is off (don't override manual state)
+  if (!lampOn) { setLampOverlays(false); }
+
+  document.getElementById('time-badge').textContent = cfg.label;
+}
+
+/* ============================================================
+   ENTRY DOOR
+============================================================ */
+
+// Floating dust motes
+(function() {
+  const container=document.getElementById('motes');
+  for(let i=0;i<12;i++) {
+    const m=document.createElement('div');
+    m.className='mote';
+    m.style.cssText=`
+      left:${30+Math.random()*40}%;
+      bottom:${10+Math.random()*30}%;
+      --dx:${(Math.random()-0.5)*30}px;
+      animation-duration:${4+Math.random()*5}s;
+      animation-delay:${Math.random()*6}s;
+      opacity:0;
+    `;
+    container.appendChild(m);
+  }
+})();
+
+document.getElementById('entry-door').addEventListener('click', function() {
+  const door = this;
+  door.classList.add('opening');
+
+  // After door swings open, fade entry screen and show room
+  setTimeout(() => {
+    document.getElementById('entry').classList.add('fade-out');
+    document.body.classList.add('room-entered');
+    applyLighting();
+  }, 900);
+
+  // Remove entry from DOM after fade completes
+  setTimeout(() => {
+    document.getElementById('entry').style.display='none';
+  }, 2400);
+
+  // Pre-load Spotify iFrame API while user is entering (fast by the time speaker is clicked)
+  initSpotifyAPI();
+
+  // Show onboarding after room appears
+  setTimeout(() => {
+    const ob = document.getElementById('onboarding');
+    ob.classList.add('visible');
+    // Auto-dismiss after 9s
+    setTimeout(() => dismissOnboarding(), 9000);
+  }, 2200);
+});
+
+/* ============================================================
+   ONBOARDING
+============================================================ */
+function dismissOnboarding() {
+  const ob = document.getElementById('onboarding');
+  ob.classList.add('fade-ob');
+  setTimeout(() => ob.remove(), 700);
+}
+document.getElementById('ob-got-it').addEventListener('click', dismissOnboarding);
+
+/* ============================================================
+   PANORAMA
+============================================================ */
+const container = document.getElementById('room-container');
+const wrapper   = document.getElementById('room-wrapper');
+const img       = document.getElementById('room-image');
+
+let imgW=0, curX=0, dragging=false, startX=0, lastX=0, lastT=0, vel=0, rafId=null;
+
+function maxScroll() { return -(imgW-window.innerWidth); }
+function clamp(x)    { return Math.max(maxScroll(),Math.min(0,x)); }
+function moveTo(x)   { curX=clamp(x); wrapper.style.transform=`translateX(${curX}px)`; }
+
+function initRoom() {
+  imgW = img.offsetWidth || img.naturalWidth || 3000;
+  wrapper.style.width = imgW+'px';
+  moveTo(maxScroll()*0.32);
+  loadPositions();
+  buildPosPanel();
+}
+img.addEventListener('load', initRoom);
+// Fallback: run initRoom even if image fails/is cached
+window.addEventListener('load', () => { if(imgW===0) initRoom(); });
+if(img.complete) setTimeout(initRoom, 50);
+
+container.addEventListener('mousedown', e => {
+  if(editMode || e.target.closest('.hotspot')) return;
+  dragging=true; startX=e.clientX-curX; lastX=e.clientX; lastT=Date.now(); vel=0;
+  container.classList.add('dragging'); cancelAnimationFrame(rafId);
+});
+window.addEventListener('mousemove', e => {
+  if(dragging) {
+    const now=Date.now(), dt=now-lastT;
+    if(dt>0) vel=((e.clientX-lastX)/dt)*16;
+    lastX=e.clientX; lastT=now; moveTo(e.clientX-startX);
+    dismissOnboarding();
+  }
+  if(draggingHs) {
+    const wRect=wrapper.getBoundingClientRect();
+    const pctX=Math.max(0,Math.min(100,((e.clientX-wRect.left-hsOffX)/imgW)*100));
+    const pctY=Math.max(0,Math.min(100,((e.clientY-wRect.top-hsOffY)/window.innerHeight)*100));
+    draggingHs.style.left=pctX.toFixed(2)+'%';
+    draggingHs.style.top=pctY.toFixed(2)+'%';
+    buildPosPanel();
+  }
+});
+window.addEventListener('mouseup', () => {
+  if(dragging) { dragging=false; container.classList.remove('dragging'); momentum(); }
+  if(draggingHs) { draggingHs.classList.remove('dragging-hs'); draggingHs=null; savePositions(); }
+});
+container.addEventListener('touchstart', e => {
+  if(editMode) return;
+  dragging=true; startX=e.touches[0].clientX-curX; lastX=e.touches[0].clientX; lastT=Date.now(); vel=0;
+  cancelAnimationFrame(rafId);
+},{passive:true});
+container.addEventListener('touchmove', e => {
+  if(!dragging||editMode) return;
+  e.preventDefault();
+  const now=Date.now(),dt=now-lastT;
+  if(dt>0) vel=((e.touches[0].clientX-lastX)/dt)*16;
+  lastX=e.touches[0].clientX; lastT=now; moveTo(e.touches[0].clientX-startX);
+  dismissOnboarding();
+},{passive:false});
+container.addEventListener('touchend', () => { dragging=false; momentum(); });
+
+function momentum() {
+  cancelAnimationFrame(rafId);
+  (function tick() { if(Math.abs(vel)<0.4) return; vel*=0.91; moveTo(curX+vel); rafId=requestAnimationFrame(tick); })();
+}
+window.addEventListener('resize', () => { imgW=img.offsetWidth||imgW; moveTo(curX); });
+
+/* ============================================================
+   EDIT MODE
+============================================================ */
+let editMode=false, draggingHs=null, hsOffX=0, hsOffY=0;
+const lockedSet=new Set();
+
+function enterEditMode() { editMode=true; document.body.classList.add('edit-mode'); container.classList.add('edit-active'); }
+function exitEditMode()  { editMode=false; document.body.classList.remove('edit-mode'); container.classList.remove('edit-active'); savePositions(); }
+
+document.getElementById('edit-toggle').addEventListener('click', () => editMode ? exitEditMode() : enterEditMode());
+document.getElementById('btn-done').addEventListener('click', exitEditMode);
+
+document.querySelectorAll('.hotspot').forEach(hs => {
+  hs.addEventListener('mousedown', e => {
+    if(!editMode||lockedSet.has(hs.dataset.key)) return;
+    e.stopPropagation(); e.preventDefault();
+    draggingHs=hs; hs.classList.add('dragging-hs');
+    const r=hs.getBoundingClientRect();
+    hsOffX=e.clientX-(r.left+r.width/2); hsOffY=e.clientY-(r.top+r.height/2);
+  });
+  hs.addEventListener('dblclick', e => {
+    if(!editMode) return; e.stopPropagation();
+    const key=hs.dataset.key;
+    lockedSet.has(key) ? (lockedSet.delete(key), hs.classList.remove('hs-locked')) : (lockedSet.add(key), hs.classList.add('hs-locked'));
+    savePositions(); buildPosPanel();
+  });
+});
+
+// Panel collapse toggle
+const posPanel = document.getElementById('pos-panel');
+document.getElementById('pp-collapse-btn').addEventListener('click', () => {
+  const collapsed = posPanel.classList.toggle('collapsed');
+  document.getElementById('pp-collapse-btn').textContent = collapsed ? '▶ show panel' : '◀ hide panel';
+});
+
+document.getElementById('btn-lock-all').addEventListener('click', () => { document.querySelectorAll('.hotspot').forEach(hs => { lockedSet.add(hs.dataset.key); hs.classList.add('hs-locked'); }); savePositions(); buildPosPanel(); });
+document.getElementById('btn-unlock-all').addEventListener('click', () => { lockedSet.clear(); document.querySelectorAll('.hotspot').forEach(hs => hs.classList.remove('hs-locked')); savePositions(); buildPosPanel(); });
+
+const DEFAULTS={};
+document.querySelectorAll('.hotspot').forEach(hs => { DEFAULTS[hs.dataset.key]={left:hs.style.left, top:hs.style.top}; });
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if(!confirm('Reset all hotspots?')) return;
+  lockedSet.clear();
+  document.querySelectorAll('.hotspot').forEach(hs => { const d=DEFAULTS[hs.dataset.key]; hs.style.left=d.left; hs.style.top=d.top; hs.classList.remove('hs-locked'); });
+  savePositions(); buildPosPanel();
+});
+
+function wireHotspot(hs) {
+  hs.addEventListener('mousedown', e => {
+    if(!editMode||lockedSet.has(hs.dataset.key)) return;
+    e.stopPropagation(); e.preventDefault();
+    draggingHs=hs; hs.classList.add('dragging-hs');
+    const r=hs.getBoundingClientRect();
+    hsOffX=e.clientX-(r.left+r.width/2); hsOffY=e.clientY-(r.top+r.height/2);
+  });
+  hs.addEventListener('dblclick', e => {
+    if(!editMode) return; e.stopPropagation();
+    const key=hs.dataset.key;
+    lockedSet.has(key)?(lockedSet.delete(key),hs.classList.remove('hs-locked')):(lockedSet.add(key),hs.classList.add('hs-locked'));
+    savePositions(); buildPosPanel();
+  });
+  hs.addEventListener('click', e => {
+    if(editMode) return; e.stopPropagation(); openModal(hs.dataset.key);
+  });
+}
+
+function buildPosPanel() {
+  const rows = document.getElementById('pp-rows');
+  rows.innerHTML = '';
+  document.querySelectorAll('.hotspot').forEach(hs => {
+    const key    = hs.dataset.key;
+    const locked = lockedSet.has(key);
+
+    // Determine current ring color for the swatch
+    const isEgg     = hs.classList.contains('egg');
+    const ringColor = hs.dataset.color || '#ffffff';
+
+    // Main row
+    const row = document.createElement('div');
+    row.className = 'pp-row' + (locked ? ' is-locked' : '');
+    row.innerHTML = `
+      <span class="pp-name" style="${isEgg ? 'color:rgba(255,200,80,0.55);' : ''}">${hs.dataset.label || key}</span>
+      <span class="pp-coords">${parseFloat(hs.style.left).toFixed(1)}% ${parseFloat(hs.style.top).toFixed(1)}%</span>
+      <span class="pp-row-actions">
+        <span class="pp-color-btn" title="ring color" style="background:${ringColor};">
+          <input type="color" value="${ringColor}" data-ckey="${key}" />
+        </span>
+        <button class="pp-vis-btn ${isEgg ? 'is-egg' : ''}" title="${isEgg ? 'visible ring' : 'make invisible'}" data-vkey="${key}">${isEgg ? '👻' : '◯'}</button>
+        <button class="pp-rename-btn" title="rename" data-rkey="${key}">✎</button>
+        <button class="pp-del-btn"    title="delete"  data-dkey="${key}">✕</button>
+        <span class="pp-lock-icon">${locked ? '✓' : ''}</span>
+      </span>`;
+    rows.appendChild(row);
+
+    // Inline rename field (hidden by default)
+    const inlineEdit = document.createElement('div');
+    inlineEdit.className = 'pp-inline-edit';
+    inlineEdit.id = 'pp-inline-' + key;
+    inlineEdit.innerHTML = `<input class="pp-inline-input" placeholder="new label…" value="${hs.dataset.label || key}" data-rkey="${key}"/>`;
+    rows.appendChild(inlineEdit);
+
+    // Wire color picker
+    row.querySelector('input[type="color"]').addEventListener('input', e => {
+      applyHotspotColor(hs, e.target.value);
+      // Update swatch background live
+      e.target.closest('.pp-color-btn').style.background = e.target.value;
+      savePositions();
+    });
+
+    // Wire visibility toggle (egg mode)
+    row.querySelector('.pp-vis-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      const nowEgg = !hs.classList.contains('egg');
+      setHotspotEgg(hs, nowEgg);
+      savePositions(); buildPosPanel();
+    });
+
+    // Wire rename button
+    row.querySelector('.pp-rename-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      const field = document.getElementById('pp-inline-' + key);
+      const open = field.classList.toggle('open');
+      if (open) field.querySelector('input').focus();
+    });
+
+    // Apply rename on Enter or blur
+    inlineEdit.querySelector('input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') { applyRename(hs, e.target.value); e.target.blur(); }
+    });
+    inlineEdit.querySelector('input').addEventListener('blur', e => {
+      applyRename(hs, e.target.value);
+    });
+
+    // Wire delete button
+    row.querySelector('.pp-del-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      if (!confirm('Remove "' + (hs.dataset.label || key) + '" ring?')) return;
+      lockedSet.delete(key);
+      hs.remove();
+      savePositions(); buildPosPanel();
+    });
+  });
+}
+
+function applyRename(hs, newLabel) {
+  const trimmed = newLabel.trim();
+  if (!trimmed || trimmed === (hs.dataset.label || hs.dataset.key)) return;
+  hs.dataset.label = trimmed;
+  const labelEl = hs.querySelector('.hs-label');
+  if (labelEl) labelEl.textContent = trimmed;
+  // Update CONTENT entry title if it exists
+  if (CONTENT[hs.dataset.key]) CONTENT[hs.dataset.key].title = trimmed;
+  savePositions(); buildPosPanel();
+}
+
+/* ============================================================
+   ADD NEW RING
+============================================================ */
+document.getElementById('pp-add-btn').addEventListener('click', () => {
+  const labelInput = document.getElementById('pp-new-label');
+  const keyInput   = document.getElementById('pp-new-key');
+  const label = labelInput.value.trim();
+  if (!label) { labelInput.focus(); labelInput.style.borderColor='rgba(255,80,80,0.7)'; setTimeout(()=>labelInput.style.borderColor='',1200); return; }
+
+  // Auto-generate key from label if blank
+  let key = keyInput.value.trim().replace(/\s+/g,'-').toLowerCase() ||
+            label.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  // Ensure key is unique
+  if (document.querySelector(`.hotspot[data-key="${key}"]`)) {
+    key = key + '-' + Date.now().toString(36).slice(-4);
+  }
+
+  // Create hotspot element
+  const hs = document.createElement('div');
+  hs.className = 'hotspot';
+  hs.dataset.key   = key;
+  hs.dataset.label = label;
+  // Place near center of current viewport
+  const viewCenterX = Math.max(0, Math.min(100, ((-curX + window.innerWidth * 0.5) / imgW) * 100));
+  hs.style.left = viewCenterX.toFixed(1) + '%';
+  hs.style.top  = '50%';
+  hs.innerHTML  = `<div class="hs-ring"></div><div class="hs-label">${label}</div>`;
+
+  // Add placeholder CONTENT entry
+  CONTENT[key] = { title: label, body: `<p><em>Click ✎ edit to add content for "${label}".</em></p>` };
+
+  // Insert into DOM and wire up
+  document.getElementById('room-wrapper').appendChild(hs);
+  wireHotspot(hs);
+  DEFAULTS[key] = { left: hs.style.left, top: hs.style.top };
+
+  // Clear inputs and save
+  labelInput.value = '';
+  keyInput.value   = '';
+  savePositions(); buildPosPanel();
+});
+document.getElementById('btn-copy-pos').addEventListener('click', () => {
+  let out=''; document.querySelectorAll('.hotspot').forEach(hs => { out+=`${hs.dataset.key}: left:${parseFloat(hs.style.left).toFixed(2)}%; top:${parseFloat(hs.style.top).toFixed(2)}%\n`; });
+  const box=document.getElementById('pp-output'); box.textContent=out; box.classList.add('visible');
+  navigator.clipboard.writeText(out).catch(()=>{});
+});
+/* ============================================================
+   HOTSPOT COLOR + VISIBILITY
+============================================================ */
+function applyHotspotColor(hs, hex) {
+  if (!hex || hex === '#ffffff') {
+    hs.style.removeProperty('--hs-r');
+    hs.style.removeProperty('--hs-g');
+    hs.style.removeProperty('--hs-b');
+    delete hs.dataset.color;
+  } else {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    hs.style.setProperty('--hs-r', r);
+    hs.style.setProperty('--hs-g', g);
+    hs.style.setProperty('--hs-b', b);
+    hs.dataset.color = hex;
+  }
+}
+
+function setHotspotEgg(hs, isEgg) {
+  if (isEgg) { hs.classList.add('egg'); hs.dataset.egg = '1'; }
+  else        { hs.classList.remove('egg'); delete hs.dataset.egg; }
+}
+
+function savePositions() {
+  const data={};
+  document.querySelectorAll('.hotspot').forEach(hs => {
+    data[hs.dataset.key] = {
+      left:   hs.style.left,
+      top:    hs.style.top,
+      locked: lockedSet.has(hs.dataset.key),
+      color:  hs.dataset.color || null,
+      egg:    hs.classList.contains('egg') || false,
+    };
+  });
+  try { localStorage.setItem('hs-pos',JSON.stringify(data)); } catch(e) {}
+}
+
+function loadPositions() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('hs-pos')||'null');
+    if (!saved) return;
+    document.querySelectorAll('.hotspot').forEach(hs => {
+      const d = saved[hs.dataset.key];
+      if (!d) return;
+      hs.style.left = d.left;
+      hs.style.top  = d.top;
+      if (d.locked) { lockedSet.add(hs.dataset.key); hs.classList.add('hs-locked'); }
+      if (d.color)  { applyHotspotColor(hs, d.color); }
+      if (d.egg)    { setHotspotEgg(hs, true); }
+    });
+  } catch(e) {}
+}
+
+/* ============================================================
+   WINDOW CALIBRATION TOOL
+============================================================ */
+(function() {
+  const winAnim  = document.getElementById('window-anim');
+  const calibBox = document.getElementById('win-calib-box');
+  const calibLabel = calibBox.querySelector('.wcb-label');
+
+  // Default position matching initial CSS
+  let wp = { left:14, top:0, width:28, height:54 };
+
+  function loadWinPos() {
+    try { const s=JSON.parse(localStorage.getItem('win-anim-pos')); if(s) wp=s; } catch(e) {}
+  }
+  function saveWinPos() {
+    try { localStorage.setItem('win-anim-pos', JSON.stringify(wp)); } catch(e) {}
+  }
+  function applyWinPos() {
+    const w = imgW || 3000;
+    winAnim.style.left   = wp.left   + '%';
+    winAnim.style.top    = wp.top    + '%';
+    winAnim.style.width  = wp.width  + '%';
+    winAnim.style.height = wp.height + '%';
+    calibBox.style.left   = wp.left   + '%';
+    calibBox.style.top    = wp.top    + '%';
+    calibBox.style.width  = wp.width  + '%';
+    calibBox.style.height = wp.height + '%';
+    calibLabel.textContent =
+      `⊹ window · L:${wp.left.toFixed(1)}% T:${wp.top.toFixed(1)}% W:${wp.width.toFixed(1)}% H:${wp.height.toFixed(1)}%`;
+  }
+
+  // Also add a calibration section to the pos-panel edit toolbar
+  function buildCalibRow() {
+    const existing = document.getElementById('calib-toolbar-section');
+    if (existing) existing.remove();
+    const s = document.createElement('span');
+    s.id = 'calib-toolbar-section';
+    s.style.cssText = 'display:flex;align-items:center;gap:0.5rem;margin-left:1rem;';
+    s.innerHTML = `<span style="color:rgba(0,220,220,0.8);font-size:0.72rem;letter-spacing:0.1em;">⊹ WIN ANIM:</span>
+      <span style="color:rgba(0,220,220,0.65);font-size:0.68rem;">L:<b id="ci-l">${wp.left.toFixed(1)}</b>%
+      T:<b id="ci-t">${wp.top.toFixed(1)}</b>%
+      W:<b id="ci-w">${wp.width.toFixed(1)}</b>%
+      H:<b id="ci-h">${wp.height.toFixed(1)}</b>%</span>
+      <span style="color:rgba(0,220,220,0.45);font-size:0.66rem;">← drag teal box</span>`;
+    document.getElementById('edit-toolbar').appendChild(s);
+  }
+
+  function updateToolbarCalib() {
+    const l=document.getElementById('ci-l'), t=document.getElementById('ci-t'),
+          w=document.getElementById('ci-w'), h=document.getElementById('ci-h');
+    if (l) { l.textContent=wp.left.toFixed(1); t.textContent=wp.top.toFixed(1);
+              w.textContent=wp.width.toFixed(1); h.textContent=wp.height.toFixed(1); }
+  }
+
+  // Drag state
+  let cdrag=false, cresize=false, cedge='';
+  let csx=0, csy=0, cswp=null;
+
+  calibBox.addEventListener('mousedown', e => {
+    if (!editMode) return;
+    const t = e.target;
+    if (t.classList.contains('wcb-handle')) {
+      cresize=true; cedge=t.dataset.edge;
+    } else {
+      cdrag=true;
+    }
+    csx=e.clientX; csy=e.clientY;
+    cswp={...wp};
+    e.stopPropagation(); e.preventDefault();
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!cdrag && !cresize) return;
+    const totalW = imgW || 3000;
+    const viewH  = window.innerHeight;
+    const dx = (e.clientX - csx) / totalW * 100;
+    const dy = (e.clientY - csy) / viewH  * 100;
+    if (cdrag) {
+      wp.left = Math.max(0, Math.min(95, cswp.left + dx));
+      wp.top  = Math.max(0, Math.min(95, cswp.top  + dy));
+    } else {
+      if (cedge.includes('e'))  wp.width  = Math.max(3, cswp.width  + dx);
+      if (cedge.includes('s'))  wp.height = Math.max(3, cswp.height + dy);
+      if (cedge.includes('w'))  { wp.left = cswp.left + dx; wp.width = Math.max(3, cswp.width - dx); }
+      if (cedge.includes('n'))  { wp.top  = cswp.top  + dy; wp.height = Math.max(3, cswp.height - dy); }
+    }
+    applyWinPos(); updateToolbarCalib();
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (cdrag || cresize) { saveWinPos(); }
+    cdrag=false; cresize=false;
+  });
+
+  // Init on room load
+  const origInit = window.__roomInitDone;
+  function onRoomReady() {
+    loadWinPos(); applyWinPos();
+  }
+  img.addEventListener('load', onRoomReady);
+  window.addEventListener('load', () => { if (imgW > 0) { loadWinPos(); applyWinPos(); } });
+  if (img.complete) setTimeout(onRoomReady, 80);
+
+  // Build toolbar section when entering edit mode
+  document.getElementById('edit-toggle').addEventListener('click', () => {
+    if (!editMode) return; // just turned on
+    setTimeout(buildCalibRow, 50);
+  });
+  document.getElementById('btn-done').addEventListener('click', () => {
+    const s=document.getElementById('calib-toolbar-section'); if(s) s.remove();
+  });
+})();
+
+/* ============================================================
+   LAMP TOGGLE
+============================================================ */
+let lampOn = false;
+function setLampOverlays(on) {
+  const cube    = document.getElementById('ov-lamp-cube');
+  const pool    = document.getElementById('ov-lamp-pool');
+  const flicker = document.getElementById('ov-lamp-flicker');
+  const reveal  = document.getElementById('lamp-reveal');
+  if (on) {
+    // Full bright: cube halo + desk pool + flicker + reveal (restore saturation)
+    cube.style.background    = 'radial-gradient(circle,rgba(255,210,90,0.50) 0%,rgba(255,170,40,0.18) 55%,transparent 80%)';
+    cube.style.opacity       = '1';
+    pool.style.opacity       = '0.92';
+    pool.style.background    = 'radial-gradient(ellipse at 55% 20%,rgba(255,200,85,0.40) 0%,rgba(255,155,40,0.18) 40%,rgba(220,110,20,0.06) 65%,transparent 85%)';
+    flicker.style.setProperty('--lf-base', '0.72');
+    flicker.style.opacity    = '0.72';
+    reveal.style.opacity     = '0.92';
+  } else {
+    const cfg = getTimeCfg();
+    cube.style.background    = cfg.cubeBg || '';
+    cube.style.opacity       = cfg.cubeOpacity;
+    pool.style.opacity       = (cfg.cubeOpacity * 0.95).toFixed(2);
+    pool.style.background    = '';
+    const flickBase = cfg.cubeOpacity > 0.3 ? cfg.cubeOpacity * 0.7 : 0;
+    flicker.style.setProperty('--lf-base', flickBase.toFixed(2));
+    flicker.style.opacity    = flickBase.toFixed(2);
+    // Reveal: show proportionally to how lamp-like the time config is
+    reveal.style.opacity     = cfg.cubeOpacity > 0.25 ? (cfg.cubeOpacity * 0.82).toFixed(2) : '0';
+  }
+}
+document.getElementById('hs-lamp-toggle').addEventListener('click', e => {
+  if (editMode) return; e.stopPropagation();
+  lampOn = !lampOn;
+  setLampOverlays(lampOn);
+});
+
+/* ============================================================
+   MODAL
+============================================================ */
+const modalBg    = document.getElementById('modal-bg');
+const modalTitle = document.getElementById('modal-title');
+const modalBody  = document.getElementById('modal-body');
+const modalEditBtn  = document.getElementById('modal-edit-btn');
+const modalResetBtn = document.getElementById('modal-reset-btn');
+let currentModalKey = null, isModalEditing = false;
+
+function openModal(key) {
+  if (editMode) return;
+  const data = CONTENT[key]; if (!data) return;
+  currentModalKey = key;
+  isModalEditing  = false;
+
+  modalTitle.textContent = data.title;
+
+  if (key === 'speaker') { openSpotifyModal(); return; }
+
+  // Rich modal UIs for specific keys
+  if (RICH_MODAL_KEYS.has(key)) {
+    modalEditBtn.style.display = 'none';   // no edit mode for rich modals
+    modalResetBtn.classList.remove('visible');
+    modalBody.contentEditable = 'false';
+    renderRichModal(key);
+    modalBg.classList.add('open');
+    return;
+  }
+
+  modalEditBtn.style.display = '';
+  const saved = (() => { try { return localStorage.getItem('modal-'+key); } catch(e) { return null; } })();
+  modalBody.innerHTML = saved || data.body;
+  modalBody.contentEditable = 'false';
+
+  modalEditBtn.textContent = '✎ edit';
+  modalEditBtn.classList.remove('editing');
+  modalResetBtn.classList.toggle('visible', !!saved);
+  modalBg.classList.add('open');
+}
+function closeModal() {
+  if (isModalEditing) { isModalEditing=false; modalBody.contentEditable='false'; }
+  if (currentModalKey === 'speaker') {
+    // Pause, null the controller (so reopen creates a fresh one), park embed element
+    if (_spotifyCtrl) { try { _spotifyCtrl.pause(); } catch(e) {} }
+    _spotifyCtrl = null;   // force fresh createController() on next open
+    if (_spotifyEl && _spotifyEl.parentNode) {
+      document.getElementById('spotify-bg').appendChild(_spotifyEl);
+    }
+  }
+  // Restore edit button visibility (hidden for rich modals + speaker)
+  modalEditBtn.style.display = '';
+  modalEditBtn.textContent = '✎ edit';
+  modalEditBtn.classList.remove('editing');
+  modalBody.innerHTML = '';
+  modalBg.classList.remove('open');
+  currentModalKey = null;
+}
+
+// Edit button toggle
+modalEditBtn.addEventListener('click', () => {
+  isModalEditing = !isModalEditing;
+  modalBody.contentEditable = isModalEditing ? 'true' : 'false';
+  modalEditBtn.textContent = isModalEditing ? '✓ done' : '✎ edit';
+  modalEditBtn.classList.toggle('editing', isModalEditing);
+  if (isModalEditing) { modalBody.focus(); }
+});
+
+// Auto-save on every keystroke
+modalBody.addEventListener('input', () => {
+  if (!currentModalKey || !isModalEditing) return;
+  try { localStorage.setItem('modal-'+currentModalKey, modalBody.innerHTML); } catch(e) {}
+  modalResetBtn.classList.add('visible');
+});
+
+// Reset to default
+modalResetBtn.addEventListener('click', () => {
+  if (!currentModalKey) return;
+  if (!confirm('Reset "' + currentModalKey + '" to default content?')) return;
+  try { localStorage.removeItem('modal-'+currentModalKey); } catch(e) {}
+  modalBody.innerHTML = (CONTENT[currentModalKey] || {}).body || '';
+  modalResetBtn.classList.remove('visible');
+});
+
+document.querySelectorAll('.hotspot:not(#hs-lamp-toggle)').forEach(hs => {
+  hs.addEventListener('click', e => { if(editMode) return; e.stopPropagation(); openModal(hs.dataset.key); });
+});
+document.getElementById('modal-close').addEventListener('click', closeModal);
+modalBg.addEventListener('click', e => { if(e.target===modalBg) closeModal(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape') { closeModal(); if(editMode) exitEditMode(); } });
+
+/* ============================================================
+   NAV MENU
+============================================================ */
+const NAV_TARGETS={piano:{pct:0.09},trophy:{pct:0.27},consulting:{pct:0.49},laptop:{pct:0.46},contact:{pct:0.52},stickynotes:{pct:0.51},polaroids:{pct:0.66},books:{pct:0.67},hobbies:{pct:0.69},shelf:{pct:0.44},mirror:{pct:0.90},door:{pct:0.80}};
+const navBtn=document.getElementById('nav-btn'), navMenu=document.getElementById('nav-menu');
+navBtn.addEventListener('click', e => { e.stopPropagation(); navMenu.classList.toggle('open'); });
+document.addEventListener('click', () => navMenu.classList.remove('open'));
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    navMenu.classList.remove('open');
+    const t=NAV_TARGETS[item.dataset.nav]; if(!t) return;
+    animateTo(clamp(-(imgW*t.pct-window.innerWidth*0.5)), () => openModal(item.dataset.nav));
+  });
+});
+function animateTo(destX,cb) {
+  cancelAnimationFrame(rafId);
+  const from=curX,dist=destX-from,dur=750,t0=performance.now();
+  (function tick(now) {
+    const p=Math.min((now-t0)/dur,1),e=p<0.5?2*p*p:-1+(4-2*p)*p;
+    moveTo(from+dist*e);
+    if(p<1){ rafId=requestAnimationFrame(tick); } else if(cb) cb();
+  })(performance.now());
+}
+
+setInterval(applyLighting, 60000);
+
+/* ============================================================
+   SPOTIFY  —  official iFrame API
+   https://developer.spotify.com/documentation/embeds/references/iframe-api
+   We pre-load the API script on room entry, keep a single embed element
+   alive in #spotify-bg between opens, and call ctrl.play() via the API.
+============================================================ */
+let _spotifyAPI  = null;   // IFrameAPI object once script loads
+let _spotifyCtrl = null;   // EmbedController, created once
+let _spotifyEl   = null;   // the div Spotify renders its iframe into
+
+function initSpotifyAPI() {
+  if (document.getElementById('spotify-api-script')) return;
+  // Set up callback BEFORE adding script so it fires reliably
+  window.onSpotifyIframeApiReady = (IFrameAPI) => { _spotifyAPI = IFrameAPI; };
+  const s = document.createElement('script');
+  s.id  = 'spotify-api-script';
+  s.src = 'https://open.spotify.com/embed/iframe-api/v1';
+  s.async = true;
+  document.head.appendChild(s);
+}
+
+function openSpotifyModal() {
+  currentModalKey  = 'speaker';
+  isModalEditing   = false;
+  modalTitle.textContent = CONTENT['speaker'].title;
+  modalBody.innerHTML    = '';
+  modalEditBtn.style.display = 'none';
+  modalResetBtn.classList.remove('visible');
+
+  // Ensure embed target element exists (created once, reused)
+  if (!_spotifyEl) {
+    _spotifyEl = document.createElement('div');
+    document.getElementById('spotify-bg').appendChild(_spotifyEl);
+  }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'spotify-embed-wrap';
+  wrap.appendChild(_spotifyEl);          // move into modal
+  const caption = document.createElement('p');
+  caption.className = 'spotify-caption';
+  caption.textContent = '♫ lofi hip hop · study beats';
+  wrap.appendChild(caption);
+  modalBody.appendChild(wrap);
+  modalBg.classList.add('open');
+
+  if (_spotifyCtrl) {
+    // Controller already exists — just resume
+    try { _spotifyCtrl.play(); } catch(e) {}
+  } else if (_spotifyAPI) {
+    // API loaded but no controller yet — create one
+    _spotifyAPI.createController(_spotifyEl, {
+      width: '100%', height: '352',
+      uri: 'spotify:playlist:37i9dQZF1FbGvzBhiAw8na',
+    }, (ctrl) => { _spotifyCtrl = ctrl; try { ctrl.play(); } catch(e) {} });
+  } else {
+    // API still loading — override callback so it fires when ready
+    const prev = window.onSpotifyIframeApiReady;
+    window.onSpotifyIframeApiReady = (IFrameAPI) => {
+      _spotifyAPI = IFrameAPI;
+      if (typeof prev === 'function') prev(IFrameAPI);
+      IFrameAPI.createController(_spotifyEl, {
+        width: '100%', height: '352',
+        uri: 'spotify:playlist:37i9dQZF1FbGvzBhiAw8na',
+      }, (ctrl) => { _spotifyCtrl = ctrl; try { ctrl.play(); } catch(e) {} });
+    };
+    initSpotifyAPI(); // ensure the script is loading
+  }
+}
+
+/* ============================================================
+   SCROLL TO PAN
+   Mouse wheel and trackpad two-finger scroll both pan the room.
+   deltaX = horizontal swipe (trackpad), deltaY = wheel or vertical swipe.
+   We use whichever axis has more magnitude.
+============================================================ */
+container.addEventListener('wheel', e => {
+  e.preventDefault();
+  cancelAnimationFrame(rafId);
+  const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  moveTo(curX - delta * 0.85);
+  vel = -delta * 0.22; // hand off to momentum
+  momentum();
+}, { passive: false });
+
+/* ============================================================
+   AMBIENT ANIMATIONS
+============================================================ */
+
+// --- Weather-aware animation state ---
+// Slows/pauses animations based on current conditions.
+// Call updateAmbientWeather('rain'|'clear'|'cloudy'|'night') to change.
+let ambientState = 'clear';
+let leavesEnabled = true;
+function updateAmbientWeather(state) {
+  ambientState = state;
+  const clouds = document.querySelectorAll('.cloud');
+  const rain   = document.getElementById('ov-rain');
+
+  if (state === 'rain') {
+    clouds.forEach(c => { c.style.opacity = '0.75'; c.style.animationPlayState = 'running'; });
+    rain.style.opacity = '0.9';
+    leavesEnabled = false; // no leaves in rain
+  } else if (state === 'night') {
+    clouds.forEach(c => { c.style.opacity = '0.12'; c.style.animationDuration = (parseFloat(getComputedStyle(c).animationDuration)*1.8)+'s'; });
+    leavesEnabled = false;
+  } else if (state === 'cloudy') {
+    clouds.forEach(c => { c.style.opacity = String(Math.min(0.9, parseFloat(c.style.opacity || '0.4') * 1.5)); });
+    leavesEnabled = true;
+  } else {
+    rain.style.opacity = '0';
+    leavesEnabled = true;
+  }
+}
+
+/* ============================================================
+   FALLING LEAVES
+============================================================ */
+const LEAF_COLORS = [
+  'rgba(110,158,55,0.75)', 'rgba(88,142,42,0.70)', 'rgba(138,175,62,0.68)',
+  'rgba(168,158,55,0.65)', 'rgba(98,148,48,0.72)', 'rgba(152,172,68,0.60)',
+];
+function spawnLeaf() {
+  if (!leavesEnabled || ambientState === 'night' || ambientState === 'rain') {
+    scheduleLeaf(); return;
+  }
+  const anim = document.getElementById('window-anim');
+  if (!anim) { scheduleLeaf(); return; }
+
+  const leaf = document.createElement('div');
+  leaf.className = 'leaf';
+  const h    = anim.offsetHeight || 300;
+  const size = 6 + Math.random() * 9;
+  const sway = (Math.random() - 0.45) * 90;
+  const spin = 100 + Math.random() * 280;
+  const dur  = 3200 + Math.random() * 4200;
+  leaf.style.cssText = `
+    left:${4 + Math.random() * 90}%;
+    top:-14px;
+    width:${size}px;
+    height:${size * 1.55}px;
+    background:${LEAF_COLORS[Math.floor(Math.random()*LEAF_COLORS.length)]};
+    --lfy:${h + 20}px;
+    --lfx:${sway}px;
+    --lfr:${spin}deg;
+    animation-duration:${dur}ms;
+  `;
+  anim.appendChild(leaf);
+  setTimeout(() => leaf.remove(), dur + 200);
+  scheduleLeaf();
+}
+function scheduleLeaf() {
+  setTimeout(spawnLeaf, 900 + Math.random() * 2200);
+}
+// Kick off after entering room
+setTimeout(() => {
+  if (document.body.classList.contains('room-entered')) scheduleLeaf();
+  else document.getElementById('entry-door').addEventListener('click', () => setTimeout(scheduleLeaf, 2800), { once:true });
+}, 3000);
+
+// Sync with time-of-day
+function syncAmbientToTime() {
+  const h = new Date().getHours();
+  if      (h >= 21 || h < 5)  updateAmbientWeather('night');
+  else if (h >= 10 && h <= 17) updateAmbientWeather('clear');
+  else                         updateAmbientWeather('cloudy');
+}
+// Call after room is entered
+setTimeout(syncAmbientToTime, 2500);
+
+// --- Birds ---
+let birdsEnabled = true; // disabled when raining or at night
+
+function spawnBird() {
+  if (!birdsEnabled || ambientState === 'rain' || ambientState === 'night') {
+    scheduleBird(); return;
+  }
+  const anim = document.getElementById('window-anim');
+  if (!anim) return;
+
+  const goRight = Math.random() > 0.35;
+  const bird = document.createElement('div');
+  bird.className = 'bird';
+  bird.innerHTML = `<div class="bird-body"><div class="bird-wing-l"></div><div class="bird-wing-r"></div></div>`;
+
+  const topPct = 5 + Math.random() * 38;
+  const scaleX = goRight ? 1 : -1;
+  const winW = anim.offsetWidth + 80;
+
+  bird.style.cssText = `top:${topPct}%; left:${goRight ? '-30px' : 'calc(100% + 10px)'}; transform:scaleX(${scaleX});`;
+  anim.appendChild(bird);
+
+  const dur = 2800 + Math.random() * 2200;
+  bird.animate(
+    [{ transform:`scaleX(${scaleX}) translateX(0)` },
+     { transform:`scaleX(${scaleX}) translateX(${goRight ? winW : -winW}px)` }],
+    { duration: dur, easing: 'linear', fill: 'forwards' }
+  );
+
+  // Shadow sweeps across the room floor
+  const shadow = document.getElementById('bird-shadow');
+  if (shadow) {
+    const fromPct = goRight ? '12%' : '82%';
+    const toPct   = goRight ? '82%' : '12%';
+    shadow.animate(
+      [{ left: fromPct, opacity: 0.7 }, { left: toPct, opacity: 0 }],
+      { duration: dur * 0.65, delay: dur * 0.12, easing: 'ease-in', fill: 'forwards' }
+    );
+  }
+
+  setTimeout(() => bird.remove(), dur + 150);
+  scheduleBird();
+}
+
+function scheduleBird() {
+  const delay = 28000 + Math.random() * 55000; // every 28–83 seconds
+  setTimeout(spawnBird, delay);
+}
+// First bird 10s after entering
+setTimeout(() => { if (document.body.classList.contains('room-entered')) spawnBird(); else setTimeout(spawnBird, 10000); }, 10000);
+
+// --- Dust motes in light beam ---
+// Spawned once; each mote loops indefinitely with random delay
+function spawnDustMotes() {
+  const wrap = document.getElementById('room-wrapper');
+  if (!wrap) return;
+  for (let i = 0; i < 10; i++) {
+    const m = document.createElement('div');
+    m.className = 'room-mote';
+    // Position in the window light spill area
+    const lx = 14 + Math.random() * 24; // % of image width
+    const ty = 36 + Math.random() * 28; // % of viewport
+    m.style.cssText = `
+      left: ${lx}%;
+      top: ${ty}%;
+      --mdx: ${(Math.random() - 0.5) * 38}px;
+      animation-duration: ${5 + Math.random() * 9}s;
+      animation-delay: -${Math.random() * 12}s;
+      opacity: 0;
+    `;
+    wrap.appendChild(m);
+  }
+}
+// Spawn after room image has loaded
+img.addEventListener('load', spawnDustMotes);
+if (img.complete) setTimeout(spawnDustMotes, 100);
+</script>
+</body>
+</html>
