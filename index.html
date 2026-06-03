@@ -13,132 +13,104 @@
     ============================================================ */
     #entry {
       position:fixed; inset:0; z-index:200;
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
-      background:radial-gradient(ellipse at 50% 60%, #1a1208 0%, #0a0806 100%);
+      background:#a8d8e0; /* fallback while images load */
       transition:opacity 1.4s ease;
+      overflow:hidden;
     }
     #entry.fade-out { opacity:0; pointer-events:none; }
 
+    /* Layer 0 — Portal GIF, full screen. Only visible through the open door's
+       transparent cutout since the open door (z-index 2) covers everything else. */
+    #entry-portal {
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit:cover; object-position:center;
+      z-index:0;
+      opacity:0; transition:opacity 0.45s ease;
+      pointer-events:none;
+    }
+    #entry.opening #entry-portal { opacity:1; }
+
+    /* Layer 1 — Closed door. Fades out immediately on click. */
+    #entry-closed-img {
+      position:absolute; inset:0;
+      width:100%; height:100%; object-fit:cover;
+      z-index:1; opacity:1;
+      transition:opacity 0.65s ease;
+      pointer-events:none;
+    }
+    #entry.opening #entry-closed-img { opacity:0; }
+
+    /* Layer 2 — Open door PNG. Fades in fast at the same time — its opaque
+       sky/water immediately blocks the portal everywhere except the cutout. */
+    #entry-open-img {
+      position:absolute; inset:0;
+      width:100%; height:100%; object-fit:cover;
+      z-index:2; opacity:0;
+      transition:opacity 0.3s ease;
+      pointer-events:none;
+    }
+    #entry.opening #entry-open-img { opacity:1; }
+
+    /* Vignette — above images, below text */
+    #entry::before {
+      content:''; position:absolute; inset:0; z-index:3;
+      background:radial-gradient(ellipse at 50% 30%, transparent 40%, rgba(0,30,40,0.22) 100%);
+      pointer-events:none;
+    }
+
+    /* Name + tagline anchored to top of screen, in the sky area */
     #entry-name {
-      font-size:clamp(2rem,5vw,4rem);
-      font-weight:300; color:#f0e2c8;
-      letter-spacing:0.3em;
-      margin-bottom:0.4rem;
+      position:absolute; z-index:5;
+      top:10vh; left:50%; transform:translateX(-50%);
+      font-size:clamp(2rem,4.5vw,3.8rem);
+      font-weight:300; color:rgba(255,255,255,0.95);
+      letter-spacing:0.35em; white-space:nowrap;
+      text-shadow:0 2px 24px rgba(0,80,100,0.35);
     }
     #entry-tagline {
-      color:#7a6a52; font-size:clamp(0.78rem,1.6vw,0.92rem);
-      letter-spacing:0.2em; margin-bottom:3.5rem;
+      position:absolute; z-index:5;
+      top:calc(10vh + clamp(2.6rem,5.8vw,5rem)); left:50%; transform:translateX(-50%);
+      color:rgba(210,240,248,0.72);
+      font-size:clamp(0.72rem,1.4vw,0.88rem);
+      letter-spacing:0.25em; white-space:nowrap;
+      text-shadow:0 1px 12px rgba(0,60,80,0.3);
     }
 
-    /* Door */
-    .door-scene {
-      perspective:1200px;
-      display:flex; flex-direction:column; align-items:center;
-    }
-    .door-wrap {
-      width:160px; height:260px;
-      position:relative;
-      cursor:pointer;
-    }
-    /* Frame */
-    .door-frame {
-      position:absolute; inset:0;
-      border:6px solid #6b4e28;
-      border-radius:3px 3px 0 0;
-      box-shadow:0 0 50px rgba(200,150,80,0.08), inset 0 0 20px rgba(0,0,0,0.3);
-    }
-    /* Warm glow revealed behind door */
-    .door-glow {
-      position:absolute; inset:0;
-      background:radial-gradient(ellipse at 50% 60%, rgba(255,210,120,0.55) 0%, rgba(255,170,60,0.2) 45%, transparent 75%);
-      border-radius:2px 2px 0 0;
-      opacity:0;
-      transition:opacity 0.6s ease 0.4s;
-    }
-    .door-wrap.opening .door-glow { opacity:1; }
+    /* (portal, closed-img, open-img defined above in the entry layer stack) */
 
-    /* Door leaf */
-    .door-leaf {
-      position:absolute; inset:0;
-      background:linear-gradient(160deg, #c8914a 0%, #a06828 35%, #bc8840 60%, #8a5820 100%);
-      border-radius:2px 2px 0 0;
-      transform-origin:left center;
-      transform-style:preserve-3d;
-      transition:transform 1.3s cubic-bezier(0.4,0,0.2,1);
-      box-shadow:2px 0 12px rgba(0,0,0,0.5);
-    }
-    .door-wrap.opening .door-leaf { transform:rotateY(-76deg); }
-
-    /* Door panels (raised effect) */
-    .door-leaf::before, .door-leaf::after {
-      content:'';
-      position:absolute; left:14px; right:14px;
-      border:1.5px solid rgba(80,40,5,0.35);
-      border-radius:2px;
-      box-shadow:inset 0 1px 4px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.08);
-    }
-    .door-leaf::before { top:18px; height:88px; }
-    .door-leaf::after  { top:125px; height:100px; }
-
-    /* Knob */
-    .door-knob {
-      position:absolute; right:18px; top:50%;
-      width:13px; height:13px; border-radius:50%;
-      background:radial-gradient(circle at 35% 30%, #f5d890, #c08a10);
-      box-shadow:0 1px 4px rgba(0,0,0,0.5);
-      transform:translateY(-50%);
-      transition:transform 0.3s;
-    }
-    .door-wrap:hover .door-knob { transform:translateY(-50%) scale(1.15); }
-
-    /* Keyhole */
-    .door-keyhole {
-      position:absolute; right:20px; top:calc(50% + 14px);
-      width:9px; height:9px; border-radius:50%;
-      border:1.5px solid rgba(80,40,5,0.5);
-      transform:translateY(-50%);
-    }
-    .door-keyhole::after {
-      content:''; position:absolute;
-      width:5px; height:7px;
-      background:rgba(80,40,5,0.35);
-      border-radius:0 0 3px 3px;
-      top:6px; left:50%; transform:translateX(-50%);
+    /* Invisible full-screen click target */
+    .door-hint-wrap {
+      position:absolute; inset:0; z-index:6;
+      display:flex; align-items:flex-end; justify-content:center;
+      padding-bottom:8vh; cursor:pointer;
     }
 
-    /* Stoop / threshold line */
-    .door-step {
-      width:200px; height:6px;
-      background:linear-gradient(to bottom, #4a3010, #2a1a08);
-      border-radius:0 0 2px 2px;
-      box-shadow:0 4px 15px rgba(0,0,0,0.6);
-    }
-
-    /* Click hint below door */
+    /* Click hint */
     .door-hint {
-      margin-top:1.8rem;
-      color:rgba(200,170,120,0.4);
+      color:rgba(255,255,255,0.5);
       font-size:0.68rem; letter-spacing:0.22em;
       animation:hint-breathe 2.5s ease-in-out infinite;
+      text-shadow:0 1px 8px rgba(0,60,80,0.3);
+      pointer-events:none;
     }
     @keyframes hint-breathe {
-      0%,100% { opacity:0.4; } 50% { opacity:0.75; }
+      0%,100% { opacity:0.5; } 50% { opacity:0.9; }
     }
 
-    /* Ambient particles (subtle dust motes) */
+    /* Ambient particles — cool blue-white motes for the water scene */
     .mote {
       position:absolute;
       width:2px; height:2px; border-radius:50%;
-      background:rgba(240,200,120,0.4);
+      background:rgba(200,235,245,0.55);
       animation:float-up linear infinite;
       pointer-events:none;
     }
     @keyframes float-up {
       from { transform:translateY(0) translateX(0); opacity:0; }
       20%  { opacity:1; }
-      80%  { opacity:0.6; }
-      to   { transform:translateY(-180px) translateX(var(--dx,15px)); opacity:0; }
+      80%  { opacity:0.5; }
+      to   { transform:translateY(-200px) translateX(var(--dx,15px)); opacity:0; }
     }
 
     /* ============================================================
@@ -196,25 +168,29 @@
       pointer-events:none; -webkit-user-drag:none;
     }
     #sky-img  { z-index:0; transition:opacity 3s ease; }
+    /* Cloud drift — pans the sky image slowly left↔right for overcast/cloudy */
+    #sky-img.sky-drifting {
+      animation: sky-img-pan 90s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+    @keyframes sky-img-pan {
+      from { transform: translateX(0%); }
+      to   { transform: translateX(-6%); }
+    }
     /* sky-anim shares z-index:0 — DOM order puts it above sky-img, below tree-img */
     #sky-anim {
       position:absolute; top:0; left:0; height:100vh; width:100%;
       z-index:0; pointer-events:none; overflow:hidden;
     }
-    #tree-img { z-index:1; transition:filter 5s ease; }
+    #tree-img { z-index:1; transition:filter 5s ease; transform-origin:bottom center; }
+    /* window-weather: same z-index as tree, DOM order puts it above tree, below room */
+    #window-weather {
+      position:absolute; top:0; left:0; width:100%; height:100%;
+      z-index:1; pointer-events:none;
+    }
     #room-image { z-index:2; transition:filter 5s ease; position:relative; }
 
-    /* Drifting sky clouds (clear / sunset = slow, overcast = fast) */
-    .sky-cloud {
-      position:absolute;
-      border-radius:50%;
-      will-change:transform;
-      animation:sky-drift linear infinite;
-    }
-    @keyframes sky-drift {
-      from { transform:translateX(calc(-100px - var(--cw,80px))); }
-      to   { transform:translateX(calc(100% + var(--cw,80px) + 100px)); }
-    }
+    /* Cloud visuals handled by sky images — .sky-cloud CSS removed */
 
     /* Stars */
     .sky-star {
@@ -234,6 +210,34 @@
     #ov-ambient  { inset:0; z-index:2; }
     #ov-ambient2 { inset:0; z-index:2; mix-blend-mode:screen; }
     #ov-window  { left:18%; top:0; width:24%; height:72%; border-radius:0 0 60% 60%; filter:blur(50px); z-index:3; }
+    /* Overcast flattening overlay — softens highlights/shadows when sky is overcast in daytime */
+    #ov-overcast {
+      position:absolute; inset:0; z-index:3; opacity:0; pointer-events:none;
+      background:rgba(185,195,210,0.14);
+      transition:opacity 4s ease;
+    }
+    body.sky-overcast-day #ov-overcast { opacity:1; }
+    body.sky-overcast-day #ov-window   { opacity:0.25 !important; } /* kill direct sun beam */
+
+    /* Cold weather tone — desaturates warm orange and pushes room toward blue/grey */
+    #ov-cold {
+      position:absolute; inset:0; z-index:5; opacity:0; pointer-events:none;
+      background:rgba(80,110,170,0.22);
+      mix-blend-mode:multiply;
+      transition:opacity 3s ease;
+    }
+    body.weather-rain  #ov-cold,
+    body.weather-storm #ov-cold { opacity:1; }
+    body.weather-snow  #ov-cold { opacity:0.75; background:rgba(140,165,210,0.20); }
+    body.weather-fog   #ov-cold { opacity:0.65; background:rgba(100,120,160,0.18); }
+    body.sky-overcast-day #ov-cold { opacity:0.50; background:rgba(100,125,175,0.18); }
+
+    /* Also slightly desaturate + cool the room image itself during precipitation or overcast */
+    body.weather-rain  #room-image,
+    body.weather-storm #room-image { filter:saturate(0.75) hue-rotate(15deg) brightness(0.88) !important; }
+    body.weather-snow  #room-image { filter:saturate(0.80) hue-rotate(10deg) brightness(0.92) !important; }
+    body.weather-fog   #room-image { filter:saturate(0.70) brightness(0.90) !important; }
+    body.sky-overcast-day #room-image { filter:saturate(0.78) brightness(0.93) !important; }
     #ov-lamp-cube {
       /* Upper lamp glow — close halo around the bulb */
       left:60%; top:2%; width:16%; height:38%;
@@ -269,11 +273,9 @@
       background:radial-gradient(circle, rgba(255,200,80,0.22) 0%, transparent 70%);
     }
     #ov-rain {
-      inset:0; z-index:4; opacity:0; transition:opacity 2s ease;
-      background-image:repeating-linear-gradient(to bottom, transparent 0px, transparent 18px, rgba(180,200,255,0.07) 19px, rgba(180,200,255,0.07) 20px);
-      background-size:3px 20px; animation:rain-fall 0.4s linear infinite; pointer-events:none;
+      inset:0; opacity:0; transition:opacity 2s ease; pointer-events:none;
     }
-    @keyframes rain-fall { from { background-position:0 0; } to { background-position:0 20px; } }
+    #ov-rain canvas, #ov-wind canvas { position:absolute; top:0; left:0; width:100%; height:100%; }
 
     /* ============================================================
        HOTSPOTS
@@ -373,6 +375,22 @@
     .pp-output { margin:0 1rem 1rem; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:0.6rem; font-size:0.62rem; color:rgba(240,226,200,0.5); font-family:'Courier New',monospace; white-space:pre-wrap; word-break:break-all; max-height:180px; overflow-y:auto; display:none; }
     .pp-output.visible { display:block; }
 
+    /* Lamp-on glow ring */
+    #hs-lamp-toggle .lamp-glow {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      width:58px; height:58px; border-radius:50%;
+      background:radial-gradient(circle, rgba(255,210,80,0.55) 0%, rgba(255,175,40,0.18) 50%, transparent 75%);
+      pointer-events:none;
+      opacity:0; transition:opacity 1.2s ease;
+      animation:lamp-glow-pulse 2.8s ease-in-out infinite;
+    }
+    body.lamp-on #hs-lamp-toggle .lamp-glow { opacity:1; }
+    @keyframes lamp-glow-pulse {
+      0%,100% { transform:translate(-50%,-50%) scale(1);   opacity:0.70; }
+      50%      { transform:translate(-50%,-50%) scale(1.22); opacity:1.00; }
+    }
+
     #edit-toggle {
       position:fixed; top:1.2rem; left:1.2rem; z-index:400;
       background:rgba(255,180,50,0.12); border:1px solid rgba(255,180,50,0.35);
@@ -383,6 +401,54 @@
     body.room-entered #edit-toggle { display:block; }
     #edit-toggle:hover { background:rgba(255,180,50,0.25); }
     body.edit-mode #edit-toggle { background:rgba(255,180,50,0.28); border-color:rgba(255,200,80,0.7); color:#fff; }
+
+    #test-toggle {
+      position:fixed; top:1.2rem; left:8rem; z-index:400;
+      background:rgba(100,200,255,0.10); border:1px solid rgba(100,200,255,0.30);
+      color:rgba(140,210,255,0.85); padding:0.38rem 0.9rem; border-radius:6px;
+      font-size:0.72rem; letter-spacing:0.12em; cursor:pointer; font-family:inherit;
+      transition:background 0.25s; display:none;
+    }
+    body.room-entered #test-toggle { display:block; }
+    body.edit-mode #test-toggle { display:none; }
+    #test-toggle:hover { background:rgba(100,200,255,0.22); }
+    body.test-mode #test-toggle { background:rgba(100,200,255,0.22); border-color:rgba(140,220,255,0.7); color:#fff; }
+
+    #test-panel {
+      position:fixed; top:3.8rem; left:1.2rem; z-index:400;
+      background:rgba(10,12,28,0.92); backdrop-filter:blur(16px);
+      border:1px solid rgba(100,180,255,0.18); border-radius:12px;
+      padding:0.6rem 0; min-width:210px;
+      display:none; flex-direction:column;
+      box-shadow:0 8px 32px rgba(0,0,0,0.5);
+    }
+    body.test-mode #test-panel { display:flex; }
+    .tp-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0.2rem 0.85rem 0.5rem; border-bottom:1px solid rgba(255,255,255,0.07);
+    }
+    .tp-title { font-size:0.7rem; letter-spacing:0.12em; color:rgba(140,210,255,0.7); }
+    .tp-close {
+      background:none; border:none; color:rgba(255,255,255,0.4);
+      font-size:1.1rem; cursor:pointer; line-height:1; padding:0 0.2rem;
+    }
+    .tp-close:hover { color:rgba(255,255,255,0.85); }
+    .tp-section-label {
+      font-size:0.58rem; letter-spacing:0.14em; text-transform:uppercase;
+      color:rgba(255,255,255,0.22); padding:0.55rem 0.85rem 0.15rem;
+    }
+    .tp-item {
+      background:none; border:none; text-align:left; width:100%;
+      padding:0.38rem 0.85rem; font-size:0.75rem; font-family:inherit;
+      color:rgba(220,230,255,0.75); cursor:pointer; letter-spacing:0.03em;
+      transition:background 0.15s, color 0.15s;
+    }
+    .tp-item:hover { background:rgba(100,180,255,0.12); color:rgba(255,255,255,0.95); }
+    /* Within a tp-group, only one item is active at a time (radio behaviour) */
+    .tp-group .tp-item.active { color:rgba(140,220,255,1); background:rgba(100,180,255,0.18); }
+    /* One-shot items flash briefly but don't stay active */
+    .tp-oneshot.flash { color:rgba(180,255,200,1); background:rgba(80,200,120,0.18); }
+    .tp-reset { color:rgba(255,180,100,0.6) !important; margin-top:0.3rem; border-top:1px solid rgba(255,255,255,0.06); padding-top:0.5rem; }
 
     /* ============================================================
        MODAL
@@ -417,7 +483,13 @@
     .nav-item { display:block; width:100%; padding:0.55rem 1rem; color:rgba(240,226,200,0.75); font-size:0.82rem; letter-spacing:0.07em; background:none; border:none; text-align:left; cursor:pointer; font-family:inherit; border-radius:8px; transition:background 0.2s, color 0.2s; }
     .nav-item:hover { background:rgba(255,255,255,0.08); color:rgba(240,226,200,1); }
 
-    #time-badge { position:fixed; top:1.4rem; left:50%; transform:translateX(-50%); z-index:50; color:rgba(240,226,200,0.35); font-size:0.72rem; letter-spacing:0.1em; display:none; }
+    #time-badge {
+      position:fixed; top:1.4rem; left:50%; transform:translateX(-50%); z-index:50;
+      color:rgba(240,226,200,0.35); font-size:0.72rem; letter-spacing:0.1em;
+      display:none; white-space:nowrap;
+    }
+    #time-badge .tb-sep { opacity:0.5; margin:0 0.35em; }
+    #time-badge .tb-weather { color:rgba(220,235,255,0.38); }
     body.room-entered #time-badge { display:block; }
     body.edit-mode #time-badge { display:none; }
     body.edit-mode #nav-btn { display:none; }
@@ -443,22 +515,7 @@
     }
 
     /* Clouds */
-    .cloud {
-      position: absolute;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.52);
-      filter: blur(10px);
-      will-change: transform;
-      animation: cloud-drift linear infinite;
-    }
-    .cloud-1 { width:90px;  height:32px; top:6%;  opacity:0.55; animation-duration:40s; }
-    .cloud-2 { width:140px; height:44px; top:20%; opacity:0.35; animation-duration:58s; animation-delay:-18s; }
-    .cloud-3 { width:70px;  height:26px; top:10%; opacity:0.45; animation-duration:32s; animation-delay:-8s; }
-    .cloud-4 { width:110px; height:36px; top:32%; opacity:0.28; animation-duration:72s; animation-delay:-30s; }
-    @keyframes cloud-drift {
-      from { transform: translateX(-180px); }
-      to   { transform: translateX(calc(400px + 180px)); }
-    }
+    /* CSS cloud divs removed — sky images handle cloud visuals */
 
     /* Falling leaves (replaces crude tree silhouettes) */
     .leaf {
@@ -877,94 +934,714 @@
     .shelf-bio p+p { margin-top:0.55rem; }
 
     /* ---- Notepad (Contact) ---- */
-    .notepad-wrap {
-      background:#fdf9f0; border-radius:4px 4px 6px 6px;
-      box-shadow:0 4px 20px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1);
-      overflow:hidden; position:relative; margin:-0.3rem 0;
+    /* ---- Note.png stationery modal ---- */
+    .note-modal-wrap {
+      position:relative; margin:-0.5rem -0.5rem 0;
     }
-    .notepad-top {
-      background:linear-gradient(to bottom,#e8d8c4,#ddc9ac);
-      height:28px; display:flex; align-items:center; justify-content:center;
+    .note-bg-img {
+      display:block; width:100%; height:auto; pointer-events:none;
+      border-radius:6px;
+    }
+    /* ============================================================
+       ZOOM BACKDROP — blurs / darkens scene behind zoom cards
+    ============================================================ */
+    #zoom-backdrop {
+      position:fixed; inset:0; z-index:188;
+      opacity:0; pointer-events:none;
+      transition:opacity 0.5s ease;
+      /* background set dynamically to match time-of-day */
+      backdrop-filter:blur(0px);
+      -webkit-backdrop-filter:blur(0px);
+    }
+    #zoom-backdrop.active {
+      opacity:1;
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+    }
+
+    /* Tree hover zone — invisible, positioned over window area */
+    #tree-hover-zone {
+      position:absolute; z-index:3;
+      top:0; left:14%; width:28%; height:60%;
+      pointer-events:all; cursor:default;
+    }
+
+    /* ============================================================
+       SHARED ZOOM OVERLAY — pan+zoom into world objects
+    ============================================================ */
+    .world-zoom-overlay {
+      position:fixed; inset:0; z-index:190;
+      display:flex; align-items:center; justify-content:center;
+      pointer-events:none; opacity:0;
+      transition:opacity 0.45s ease, filter 0.6s ease;
+      padding: 2vh 2vw;
+    }
+    .world-zoom-overlay.visible { opacity:1; pointer-events:all; }
+
+    .zoom-back-btn {
+      position:fixed; top:1.2rem; left:1.2rem; z-index:191;
+      background:rgba(0,0,0,0.35); backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,0.22);
+      color:rgba(255,255,255,0.9); padding:0.4rem 1rem;
+      border-radius:20px; font-family:'Georgia',serif;
+      font-size:0.76rem; letter-spacing:0.1em; cursor:pointer;
+      display:none; transition:background 0.2s;
+    }
+    .zoom-back-btn:hover { background:rgba(0,0,0,0.5); }
+
+    /* ── NOTE card ─────────────────────────────────────────── */
+    /* ── Pure CSS stationery notepad ──────────────────────────── */
+    .notepad-css {
       position:relative;
+      /* Notepad proportions: 8.5×11 ≈ 0.77 aspect ratio (portrait).
+         Height drives the sizing: 80vh tall, width = height × 0.77 */
+      height: min(80vh, 700px);
+      width: min(80vw, calc(min(80vh, 700px) * 0.77));
+      background:#fffdf4;
+      border-radius:10px;
+      /* Stationery double-border */
+      box-shadow:
+        0 0 0 1.5px rgba(170,140,100,0.5),
+        0 0 0 6px rgba(255,250,230,0.9),
+        0 0 0 8px rgba(170,140,100,0.35),
+        0 28px 70px rgba(0,0,0,0.45);
+      display:flex; flex-direction:column;
+      flex-shrink:0;
+      overflow:hidden;
     }
-    /* Spiral holes */
-    .notepad-top::before {
-      content:'';
-      position:absolute; top:50%; transform:translateY(-50%);
-      left:0; right:0; height:12px;
-      background:repeating-linear-gradient(
-        90deg,
-        transparent 0px, transparent 22px,
-        #b5a28a 22px, #b5a28a 23px,
-        transparent 23px, transparent 30px,
-        #1a1208 30px, #1a1208 38px,
-        transparent 38px, transparent 45px
-      );
+    /* Corner ornaments */
+    .np-corner {
+      position:absolute; font-size:0.9rem; color:rgba(160,120,80,0.55);
+      pointer-events:none; line-height:1;
     }
-    .notepad-brand {
-      font-size:0.6rem; letter-spacing:0.18em; color:#8a7a62;
-      font-family:'Courier New',monospace; text-transform:uppercase;
-      position:relative; z-index:1; background:#ddc9ac; padding:0 6px;
+    .np-tl { top:14px;  left:14px; }
+    .np-tr { top:14px;  right:14px; }
+    .np-bl { bottom:14px; left:14px; }
+    .np-br { bottom:14px; right:14px; }
+
+    .np-header {
+      padding:1.2rem 1.6rem 0.8rem;
+      text-align:center;
     }
-    .notepad-lines {
-      padding:0.5rem 1.4rem 1.4rem;
-      background:
-        repeating-linear-gradient(
-          to bottom,
-          transparent 0px, transparent 30px,
-          #d4e4f7 30px, #d4e4f7 31px
-        );
-      background-size:100% 31px;
+    .np-header-deco {
+      font-family:'Georgia',serif; font-size:0.85rem; font-style:italic;
+      color:#8a6840; letter-spacing:0.12em;
     }
-    .notepad-label {
-      font-size:0.62rem; letter-spacing:0.14em; color:#9a8a72;
-      text-transform:uppercase; margin-bottom:2px; margin-top:0.7rem;
+    .np-divider {
+      height:1.5px;
+      background:linear-gradient(to right, transparent, rgba(170,140,100,0.45) 20%, rgba(170,140,100,0.45) 80%, transparent);
+      margin:0 1.2rem;
     }
-    .notepad-label:first-child { margin-top:0; }
-    .notepad-field {
-      width:100%; background:transparent; border:none; outline:none;
-      font-family:'Georgia',serif; font-size:0.88rem; color:#2a1f0e;
-      line-height:31px; padding:0; resize:none;
-      display:block;
-      /* Each line aligns with notepad rule */
+    .np-body {
+      padding:1.2rem 1.6rem;
+      display:flex; flex-direction:column; gap:0.85rem;
+      flex:1;
     }
-    .notepad-field::placeholder { color:rgba(150,130,100,0.4); font-style:italic; }
-    textarea.notepad-field { line-height:1.55; min-height:93px; padding-top:4px; padding-bottom:4px; }
-    .notepad-margin {
-      position:absolute; left:42px; top:0; bottom:0; width:1px;
-      background:rgba(210,100,80,0.28); pointer-events:none;
+    .np-field {
+      display:flex; align-items:center; gap:0.6rem;
     }
-    .notepad-send {
-      display:block; width:calc(100% - 2.8rem); margin:0 1.4rem 1.2rem;
-      background:linear-gradient(135deg,#c8914a,#a06828);
-      border:none; border-radius:4px; padding:0.6rem;
-      font-family:'Georgia',serif; font-size:0.82rem;
-      color:#fdf5e8; letter-spacing:0.1em; cursor:pointer;
-      box-shadow:0 2px 8px rgba(0,0,0,0.18);
+    .np-msg-field { align-items:flex-start; flex:1; }
+    .np-label {
+      font-size:0.55rem; letter-spacing:0.14em; text-transform:uppercase;
+      color:rgba(140,100,60,0.65); font-family:'Georgia',serif;
+      width:50px; flex-shrink:0;
+    }
+    .np-input {
+      flex:1; background:transparent; border:none; border-bottom:1px solid rgba(170,140,100,0.28);
+      outline:none; font-family:'Georgia',serif; font-size:0.82rem; color:#2a1a08;
+      padding:0.2rem 0; width:100%;
+      transition:border-color 0.2s;
+    }
+    .np-input:focus { border-bottom-color:rgba(170,140,100,0.7); }
+    .np-input::placeholder { color:rgba(160,130,90,0.45); font-style:italic; }
+    .np-textarea {
+      resize:none; flex:1; min-height:80px; line-height:1.7;
+      border-bottom:none; border:1px solid rgba(170,140,100,0.2);
+      border-radius:4px; padding:0.5rem 0.6rem;
+      background:rgba(255,252,240,0.6);
+    }
+    .np-textarea:focus { border-color:rgba(170,140,100,0.5); outline:none; }
+    .np-footer {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0.7rem 1.6rem 1.1rem;
+    }
+    .np-status { font-size:0.62rem; font-style:italic; color:#8a6840; flex:1; }
+    .np-send {
+      background:linear-gradient(135deg,#d4a43c,#b8861e);
+      border:none; border-radius:20px; padding:0.42rem 1.2rem;
+      font-family:'Georgia',serif; font-size:0.76rem; color:#fff8e8;
+      letter-spacing:0.08em; cursor:pointer; font-weight:600;
+      box-shadow:0 2px 10px rgba(180,120,20,0.3);
       transition:opacity 0.2s, transform 0.15s;
     }
-    .notepad-send:hover { opacity:0.88; transform:translateY(-1px); }
-    .notepad-send:active { transform:translateY(0); }
-    .notepad-footer {
-      font-size:0.7rem; color:#9a8a72; text-align:center;
-      padding:0.4rem 1rem 0.9rem; font-style:italic; line-height:1.55;
-    }
-    .notepad-footer a { color:#7a5c2e; }
+    .np-send:hover { opacity:0.88; transform:translateY(-1px); }
 
-    /* ---- Trophy Case (Awards) ---- */
+    /* ── MONITOR card ──────────────────────────────────────── */
+    .monitor-zoom-card {
+      position:relative; flex-shrink:0;
+      /* Image is 2752×1536 (ratio 1.792). Fill 90% of viewport height.
+         width = height × 1.792, capped so it never overflows the viewport. */
+      height: min(90vh, 96vw / 1.792);
+      width:  min(96vw, 90vh * 1.792);
+      aspect-ratio: 1.792; /* keeps both axes defined for child absolute % */
+      filter: drop-shadow(0 16px 56px rgba(0,0,0,0.55));
+    }
+    .monitor-zoom-card .monitor-bg-img {
+      width:100%; height:100%; object-fit:contain;
+      display:block; border-radius:4px;
+    }
+    /* Browser injected into the monitor screen area.
+       Percentages measured against the 2752×1536 source image:
+       screen left≈3.5%, right≈3.5%, top≈5%, bottom of screen≈79.5% → bottom inset 20.5% */
+    .monitor-screen-inset {
+      position:absolute;
+      /* 20% narrower (centred): original width was 93%, now 74.4%, each side +9.3% */
+      top: 10%; left: 11%; right: 11%; bottom: 10%;
+      display:flex; flex-direction:column;
+      overflow:hidden; border-radius:2px;
+    }
+    /* Override browser chrome to fit inside the monitor */
+    .monitor-screen-inset .browser-chrome {
+      margin:0; border-radius:0; flex-shrink:0;
+      padding:0.4rem 0.6rem 0;
+    }
+    .monitor-screen-inset .browser-content {
+      flex:1; margin:0; overflow-y:auto;
+      min-height:0; padding:0.9rem 1.1rem 1.1rem;
+      background:#faf5ed;
+    }
+    .monitor-screen-inset .browser-tabs {
+      margin-bottom:0;
+    }
+    .monitor-screen-inset .browser-dot { width:10px; height:10px; }
+    .monitor-screen-inset .browser-url { font-size:0.65rem; }
+    .monitor-screen-inset .browser-tab { font-size:0.68rem; padding:0.28rem 0.8rem; max-width:140px; }
+    .monitor-screen-inset .browser-status {
+      margin:0; font-size:0.58rem; padding:0.18rem 0.6rem; flex-shrink:0;
+    }
+    .monitor-screen-inset .project-title { font-size:1.05rem; }
+    .monitor-screen-inset .project-desc  { font-size:0.82rem; line-height:1.65; }
+    .monitor-screen-inset .project-demo  { height:90px; }
+    .monitor-screen-inset .project-link  { font-size:0.75rem; }
+
+    /* ── TROPHY CASE card ──────────────────────────────────────── */
+    .trophy-zoom-wrap {
+      display:flex; flex-direction:column; align-items:center;
+      gap:0; flex-shrink:0; width:min(92vw, 860px);
+    }
+    .trophy-zoom-card {
+      position:relative; flex-shrink:0;
+      /* trophy-case.png is 2752×1536 (ratio 1.792), same as monitor.
+         Use 46vh height so the blurb always fits below. */
+      /* Width-driven: wider case so the blurb image has comfortable room */
+      width: min(92vw, 860px);
+      aspect-ratio: 1.792;   /* height = width ÷ 1.792, always defined for child % */
+      overflow:hidden; border-radius:6px;
+      filter: drop-shadow(0 14px 50px rgba(0,0,0,0.55));
+    }
+    .trophy-case-bg {
+      width:100%; height:100%;
+      object-fit:cover; object-position:center;
+      display:block;
+    }
+
+    /* Trophy shelf — absolutely positioned inside the glass interior.
+       Measured from trophy-case.png: interior ≈ left 8%, right 8%, top 22%, bottom 18% */
+    .trophy-shelf {
+      position:absolute;
+      top:22%; bottom:18%; left:8%; right:8%;
+      display:flex; align-items:flex-end; justify-content:space-around;
+      gap:2%;
+    }
+    .trophy-btn {
+      background:none; border:none; cursor:pointer;
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:flex-end;
+      padding:0; gap:4px; flex:1; height:100%;
+      transition:transform 0.22s ease;
+    }
+    .trophy-btn:first-child { margin-left:10%; }
+    .trophy-btn:last-child  { margin-right:10%; }
+    .trophy-btn:hover { transform:translateY(-7px) scale(1.05); }
+    .trophy-btn.active { transform:translateY(-9px) scale(1.07); }
+    /* All trophies the same height — normalized */
+    .trophy-btn img {
+      height:78%; width:auto; max-width:85%;
+      object-fit:contain;
+      filter:drop-shadow(0 4px 10px rgba(0,0,0,0.30));
+    }
+    .trophy-label {
+      font-size:0.52rem; letter-spacing:0.09em; text-transform:uppercase;
+      color:rgba(70,45,15,0.80); font-family:'Georgia',serif;
+      white-space:nowrap; background:rgba(255,248,230,0.88);
+      padding:2px 6px; border-radius:8px; flex-shrink:0;
+    }
+
+    /* Award blurb — slides down below the case, matches card width */
+    .award-blurb-panel {
+      width: min(92vw, 860px);   /* same as .trophy-zoom-card width */
+      background:#faf7f2;
+      border-radius:0 0 8px 8px;
+      box-shadow:0 10px 36px rgba(0,0,0,0.28);
+      overflow:hidden;
+      max-height:0; opacity:0;
+      transition:max-height 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease;
+    }
+    .award-blurb-panel.open { max-height:min(38vh, 280px); opacity:1; }
+    .award-blurb-inner {
+      display:flex; height:min(38vh, 280px); overflow:hidden;
+    }
+    /* Text side — matches Content format: award name + labelled fields */
+    .award-blurb-text {
+      flex:1; padding:1.1rem 1.4rem;
+      border-right:1px solid rgba(0,0,0,0.07);
+      overflow-y:auto;
+    }
+    .award-blurb-text h3 {
+      font-size:1.05rem; color:#1a1208; margin-bottom:0.55rem; font-weight:700;
+      font-style:italic;
+    }
+    .award-blurb-text p {
+      font-size:0.72rem; color:#4a3a28; line-height:1.65; margin-bottom:0.3rem;
+    }
+    .award-blurb-text strong { color:#1a1208; font-weight:600; }
+    /* Photo side — bleeds edge-to-edge, cropped top, matches Content format layout */
+    .award-blurb-img {
+      width:240px; flex-shrink:0; overflow:hidden;
+    }
+    .award-blurb-img img {
+      width:100%; height:100%;
+      object-fit:cover; object-position:center top;  /* show faces */
+      display:block;
+    }
+
+    /* ── CONSULTING / CASE FILES card ─────────────────────────── */
+    .casefiles-zoom-card {
+      position:relative; flex-shrink:0;
+      /* 923×646, ratio 1.4288 — fill 90% of viewport height */
+      height: min(90vh, 90vw / 1.4288);
+      width:  min(90vw, 90vh * 1.4288);
+      aspect-ratio: 1.4288;
+      filter: drop-shadow(0 16px 52px rgba(0,0,0,0.5));
+    }
+    .casefiles-bg { width:100%; height:100%; object-fit:contain; display:block; border-radius:4px; }
+
+    /* Pages on right panel — BCG sticky/left flap remains visible */
+    /* Full-width page container */
+    .casefiles-pages {
+      position:absolute;
+      top:8%; bottom:9%; left:6%; right:4%;
+      /* perspective lives in the transform itself for each turner */
+    }
+
+    /* Pages stop 0.5% short of center each side → 1% gap where folder shows through.
+       Turner geometry stays at exactly 50% so ±180° still lands perfectly. */
+    .cf-left-page {
+      position:absolute;
+      top:0; bottom:0; left:0; right:50.5%;
+      background:#fdfcf6; border:1px solid #111;
+      padding:0.9rem 0.9rem 0.6rem; overflow:hidden;
+    }
+    .cf-right-page {
+      position:absolute;
+      top:0; bottom:0; left:50.5%; right:0;
+      background:#fdfcf6; border:1px solid #111;
+      padding:0.9rem 0.9rem 0.6rem; overflow:hidden;
+    }
+
+    /* Forward turner — RIGHT panel, rotates LEFT around its left edge */
+    .cf-turner {
+      position:absolute;
+      top:0; bottom:0; left:50%; right:0;
+      transform-style:preserve-3d;
+      transform-origin:0% 50%;
+      z-index:10;
+    }
+    /* Back turner — LEFT panel, rotates RIGHT around its right edge */
+    .cf-turner-left {
+      position:absolute;
+      top:0; bottom:0; left:0; right:50%;
+      transform-style:preserve-3d;
+      transform-origin:100% 50%;
+      z-index:10;
+    }
+    .cf-turner-face, .cf-turner-back {
+      position:absolute; inset:0;
+      backface-visibility:hidden;
+      border:1px solid #111;
+      padding:0.9rem 0.9rem 0.6rem;
+      overflow:hidden;
+    }
+    .cf-turner-face { background:#fdfcf6; }
+    .cf-turner-back { background:#fdfcf6; transform:rotateY(180deg); }
+
+    /* Smooth parabolic page turn — perspective() inside transform so each turner
+       has its own centred perspective (no container distortion).
+       5 keyframes trace a bell-curve arc: lift peaks at 50%, fades out at end
+       so the snap from turner → static pages is invisible. */
+    /* Arc completes at 88% — page is flat and stationary.
+       Final 12% is a pure fade-out with no position change → no snap. */
+    /* Rotation goes full 0→180° over 100% of the animation.
+       With exact 50/50 geometry, the turner at ±180° sits precisely
+       over the static page — content swap at animation end is invisible. */
+    @keyframes cf-flip-fwd {
+      0%   { transform:perspective(900px) rotateY(0deg)    translateZ(0px);   }
+      22%  { transform:perspective(900px) rotateY(-40deg)  translateZ(60px);  }
+      50%  { transform:perspective(900px) rotateY(-90deg)  translateZ(120px); }
+      78%  { transform:perspective(900px) rotateY(-140deg) translateZ(60px);  }
+      100% { transform:perspective(900px) rotateY(-180deg) translateZ(0px);   }
+    }
+    @keyframes cf-flip-bck {
+      0%   { transform:perspective(900px) rotateY(0deg)   translateZ(0px);   }
+      22%  { transform:perspective(900px) rotateY(40deg)  translateZ(60px);  }
+      50%  { transform:perspective(900px) rotateY(90deg)  translateZ(120px); }
+      78%  { transform:perspective(900px) rotateY(140deg) translateZ(60px);  }
+      100% { transform:perspective(900px) rotateY(180deg) translateZ(0px);   }
+    }
+    .cf-turner.flip-fwd      { animation:cf-flip-fwd 0.5s ease-in-out forwards; }
+    .cf-turner-left.flip-bck { animation:cf-flip-bck 0.5s ease-in-out forwards; }
+
+    /* Hide left page when empty (nothing flipped yet) */
+    .cf-left-page:empty { border-color:transparent; background:transparent; }
+
+    /* Page content typography */
+    .cf-tag {
+      display:inline-block; font-size:0.5rem; letter-spacing:0.14em;
+      text-transform:uppercase; padding:2px 7px; border-radius:10px;
+      background:rgba(0,100,60,0.12); color:rgba(0,80,45,0.85);
+      margin-bottom:0.4rem; font-family:'Georgia',serif;
+    }
+    .cf-title { font-size:0.82rem; font-weight:700; color:#1a1a1a; margin-bottom:0.18rem; line-height:1.3; }
+    .cf-sub   { font-size:0.56rem; color:#888; letter-spacing:0.06em; margin-bottom:0.5rem; font-family:'Courier New',monospace; }
+    .cf-section { font-size:0.58rem; font-weight:700; letter-spacing:0.1em; color:#006633; text-transform:uppercase; margin:0.45rem 0 0.1rem; }
+    .cf-body    { font-size:0.64rem; color:#333; line-height:1.6; }
+
+    /* Shared flip arrow style */
+    .cf-flip-arrow {
+      position:absolute; top:50%; transform:translateY(-50%);
+      background:rgba(255,255,255,0.88); border:1.5px solid rgba(0,0,0,0.18);
+      border-radius:6px; padding:0.5rem 0.45rem;
+      cursor:pointer; display:flex; flex-direction:column; align-items:center;
+      gap:3px; box-shadow:0 2px 8px rgba(0,0,0,0.12);
+      transition:background 0.15s, transform 0.15s;
+      z-index:5;
+    }
+    .cf-flip-arrow:hover { background:#fff; transform:translateY(-50%) scale(1.06); }
+    .cf-flip-arrow:disabled { opacity:0.28; cursor:default; transform:translateY(-50%); }
+    .cf-arrow-label { font-size:0.46rem; letter-spacing:0.1em; text-transform:uppercase; color:#555; font-family:'Georgia',serif; }
+    .cf-arrow-icon  { font-size:1rem; color:#333; line-height:1; }
+    #cf-prev-arrow { left:1.5%; }
+    #cf-next-arrow { right:1.5%; }
+
+    /* Page counter bottom-right of page area */
+    .cf-nav {
+      position:absolute; bottom:1%; left:50%; right:4%;
+      display:flex; justify-content:center; align-items:center;
+      padding:0.2rem;
+    }
+    .cf-page-num { font-size:0.55rem; color:#666; font-family:'Courier New',monospace; }
+
+    /* ── IPOD + SPOTIFY panel ──────────────────────────────────── */
+    .speaker-zoom-wrap {
+      display:flex; flex-direction:column; align-items:center; gap:1rem;
+      flex-shrink:0; width: min(88vw, 320px);
+    }
+    /* iPod Nano body — white */
+    .ipod-body {
+      width:100%;
+      background:linear-gradient(170deg,#f8f8f6 0%,#e8e8e4 100%);
+      border-radius:26px;
+      padding:12px 12px 16px;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.12),
+        0 20px 56px rgba(0,0,0,0.45),
+        inset 0 1px 0 rgba(255,255,255,0.9);
+    }
+    /* Screen — grows to contain Spotify embed */
+    .ipod-screen {
+      background:#000;
+      border-radius:10px;
+      overflow:hidden;
+      margin-bottom:10px;
+      border:1px solid rgba(0,0,0,0.15);
+      display:flex; flex-direction:column;
+    }
+    /* Compact now-playing strip */
+    .ipod-now-strip {
+      display:flex; flex-direction:column;
+      padding:6px 9px 5px;
+      background:#111;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      flex-shrink:0;
+    }
+    .ipod-now-strip-label {
+      font-size:0.4rem; letter-spacing:0.18em; text-transform:uppercase;
+      color:rgba(255,255,255,0.3); font-family:'Courier New',monospace;
+      margin-bottom:2px;
+    }
+    .ipod-now-strip-track {
+      font-size:0.7rem; font-weight:700; color:#fff; line-height:1.2;
+    }
+    .ipod-now-strip-artist {
+      font-size:0.56rem; color:rgba(255,255,255,0.5);
+    }
+    /* Spotify fills the rest */
+    .ipod-spotify-inset {
+      flex:1; overflow:hidden; display:flex; flex-direction:column;
+    }
+    .ipod-spotify-inset iframe {
+      width:100% !important; border:none; display:block;
+    }
+    /* Hint below wheel */
+    .ipod-lofi-hint {
+      text-align:center; font-size:0.5rem; letter-spacing:0.1em;
+      color:rgba(0,0,0,0.3); font-family:'Courier New',monospace;
+      margin-top:6px;
+    }
+    /* Click wheel */
+    .ipod-wheel-wrap {
+      display:flex; justify-content:center; margin-top:2px;
+    }
+    .ipod-wheel {
+      width:106px; height:106px; border-radius:50%;
+      background:radial-gradient(circle at 40% 35%, #d8d8d4, #b8b8b2);
+      position:relative;
+      box-shadow:0 2px 10px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+    .ipod-wheel-center {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      width:38px; height:38px; border-radius:50%;
+      background:radial-gradient(circle at 40% 35%, #e8e8e4, #d0d0cc);
+      box-shadow:0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+    .ipod-wheel-label {
+      position:absolute; font-size:0.44rem;
+      color:rgba(0,0,0,0.38); font-family:'Helvetica Neue',sans-serif;
+      font-weight:600; letter-spacing:0.04em; text-transform:uppercase;
+    }
+    .ipod-wheel-label.top    { top:8px;  left:50%; transform:translateX(-50%); }
+    .ipod-wheel-label.bottom { bottom:8px; left:50%; transform:translateX(-50%); }
+    .ipod-wheel-label.left   { left:8px;  top:50%; transform:translateY(-50%); }
+    .ipod-wheel-label.right  { right:8px; top:50%; transform:translateY(-50%); }
+
+    /* (spotify panel removed — embed is now inside iPod screen) */
+
+    /* ── MUSIC / RECORD COVERFLOW ─────────────────────────────── */
+    .music-zoom-wrap {
+      display:flex; flex-direction:column; align-items:center;
+      gap:1rem; flex-shrink:0; width:100vw; max-width:100vw;
+    }
+    .music-stage {
+      width:100%; height:min(80vh, 720px);
+      position:relative; overflow:hidden;
+      display:flex; align-items:center; justify-content:center;
+    }
+    /* Center record: ~82% of viewport height, square */
+    .record-slot {
+      position:absolute;
+      width:min(76vh, 650px); aspect-ratio:1;
+      transition:transform 0.52s cubic-bezier(0.4,0,0.2,1),
+                 opacity   0.52s ease,
+                 filter    0.52s ease;
+      cursor:pointer;
+      perspective:1200px;
+    }
+    /* Circular coverflow — pos computed via modular arithmetic */
+    .record-slot[data-pos="-1"] {
+      transform:translateX(-64%) rotateY(38deg) scale(0.68);
+      opacity:0.42; filter:brightness(0.52);
+      z-index:1;
+    }
+    .record-slot[data-pos="0"] {
+      transform:translateX(0) rotateY(0deg) scale(1);
+      opacity:1; filter:brightness(1);
+      z-index:3; cursor:default;
+    }
+    .record-slot[data-pos="1"] {
+      transform:translateX(64%) rotateY(-38deg) scale(0.68);
+      opacity:0.42; filter:brightness(0.52);
+      z-index:1;
+    }
+    .record-card {
+      width:100%; height:100%;
+      position:relative;
+      transform-style:preserve-3d;
+      transition:transform 0.62s cubic-bezier(0.4,0,0.15,1);
+      border-radius:10px;
+      box-shadow:0 28px 80px rgba(0,0,0,0.75);
+    }
+    .record-card.flipped { transform:rotateY(-180deg); }
+    .record-face, .record-back {
+      position:absolute; inset:0; border-radius:10px;
+      overflow:hidden; backface-visibility:hidden;
+    }
+    .record-back { transform:rotateY(180deg); }
+    .record-face img, .record-back img {
+      width:100%; height:100%; object-fit:cover; display:block;
+    }
+    /* Nav */
+    .music-nav {
+      display:flex; gap:1.4rem; align-items:center; padding-bottom:0.5rem;
+    }
+    .music-nav-btn {
+      background:rgba(255,255,255,0.18); border:1.5px solid rgba(255,255,255,0.3);
+      border-radius:50%; width:40px; height:40px;
+      color:rgba(255,255,255,0.9); font-size:1.3rem;
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      transition:background 0.18s, transform 0.15s;
+      flex-shrink:0;
+    }
+    .music-nav-btn:hover { background:rgba(255,255,255,0.32); transform:scale(1.08); }
+    .music-record-title {
+      font-size:0.88rem; color:rgba(240,226,200,0.78);
+      font-family:'Georgia',serif; font-style:italic;
+      min-width:200px; text-align:center; letter-spacing:0.03em;
+    }
+    .music-hint {
+      font-size:0.52rem; letter-spacing:0.14em; text-transform:uppercase;
+      color:rgba(240,226,200,0.25); font-family:'Courier New',monospace;
+    }
+
+    /* ── ABOUT card ────────────────────────────────────────────── */
+    .about-zoom-card {
+      width: min(88vw, 520px);
+      flex-shrink:0;
+      border-radius:14px;
+      overflow:hidden;
+      filter:drop-shadow(0 22px 60px rgba(0,0,0,0.55));
+      display:flex; flex-direction:column;
+      font-family:'Georgia',serif;
+    }
+    /* Top cream section */
+    .about-top {
+      background:#f5f0e8;
+      display:flex; flex-direction:column; align-items:center;
+      padding:1.4rem 1.6rem 1rem;
+    }
+
+    /* ── Mirror hanging from nail ──────────────────────────────── */
+    .about-hanger-wrap {
+      width: min(52%, 200px);
+      display:flex; flex-direction:column; align-items:center;
+      margin-bottom:1rem;
+    }
+    .about-hanger-svg { display:block; width:100%; }
+
+    /* Mirror pulled up by 6.7% so wire endpoints (at y=27 in SVG) land
+       exactly on the 10-o'clock / 2-o'clock positions of the circle arc */
+    .about-photo-wrap {
+      width:100%; aspect-ratio:1;
+      border-radius:50%;
+      border:9px solid #111;
+      overflow:hidden;
+      margin-top:-6.7%;
+      box-shadow:
+        0 0 0 2px #2a2a2a,
+        0 12px 36px rgba(0,0,0,0.5);
+    }
+    .about-photo-wrap img {
+      width:100%; height:100%; object-fit:cover; object-position:center 12%;
+      display:block;
+    }
+
+    /* ABOUT / Me title */
+    .about-title-block { text-align:center; }
+    .about-title-about {
+      font-size:2.2rem; font-weight:900; letter-spacing:0.2em;
+      color:#2d5a45; display:block; line-height:1;
+    }
+    .about-title-me {
+      font-size:1.5rem; font-style:italic; font-weight:400;
+      color:#2d5a45; display:block; margin-top:-0.1rem;
+    }
+    /* Bottom sage body */
+    .about-body {
+      background:#8aad96;
+      padding:1.2rem 2rem 1.2rem;
+      flex:1;
+    }
+    .about-body p {
+      font-size:1rem; /* = 16px, well above 14px minimum */
+      color:#faf8f3; line-height:1.75;
+      text-align:center; margin-bottom:1rem;
+    }
+    .about-body p:last-of-type { margin-bottom:1.1rem; }
+    .about-links {
+      text-align:center; font-size:0.92rem;
+      border-top:1px solid rgba(255,255,255,0.3);
+      padding-top:0.8rem; margin-top:0.3rem;
+    }
+    .about-links a {
+      color:#faf8f3; text-decoration:underline; letter-spacing:0.06em;
+      margin:0 0.5rem;
+    }
+    .about-links a:hover { opacity:0.75; }
+
+    /* ── BOOKSHELF card ────────────────────────────────────────── */
+    .bookshelf-zoom-card {
+      position:relative;
+      height: min(88vh, 680px); width:auto; flex-shrink:0;
+      filter: drop-shadow(0 16px 48px rgba(0,0,0,0.5));
+    }
+    .bookshelf-zoom-card img { height:100%; width:auto; display:block; border-radius:6px; }
+    .note-row {
+      display:flex; flex:none;
+      align-items:baseline;
+      margin-bottom:2px;
+    }
+    .note-lbl {
+      font-size:0.55rem; letter-spacing:0.1em; color:rgba(120,85,45,0.7);
+      text-transform:uppercase; white-space:nowrap;
+      width:52px; flex-shrink:0; padding-top:3px;
+      font-family:'Georgia',serif; font-weight:bold;
+    }
+    .note-input {
+      flex:1; background:transparent; border:none; outline:none;
+      font-family:'Georgia',serif; font-size:0.8rem; color:#1a0f05;
+      padding:3px 2px 2px; line-height:1.3;
+      border-bottom:1px solid rgba(180,150,110,0.4);
+    }
+    .note-input::placeholder { color:rgba(160,130,90,0.5); font-style:italic; }
+    .note-textarea {
+      flex:1; background:transparent; border:none; outline:none;
+      font-family:'Georgia',serif; font-size:0.78rem; color:#1a0f05;
+      padding:3px 2px; resize:none; line-height:1.5;
+      border-bottom:1px solid rgba(180,150,110,0.3);
+      min-height:58px;
+    }
+    .note-textarea::placeholder { color:rgba(160,130,90,0.5); font-style:italic; }
+    .note-spacer { flex:1; }
+    .note-send {
+      flex:none; align-self:flex-end;
+      background:linear-gradient(135deg,#c8914a,#a06828);
+      border:none; border-radius:20px; padding:0.35rem 1rem;
+      font-family:'Georgia',serif; font-size:0.72rem;
+      color:#fdf5e8; letter-spacing:0.08em; cursor:pointer;
+      box-shadow:0 2px 8px rgba(0,0,0,0.18);
+      transition:opacity 0.2s, transform 0.15s;
+      margin-top:4px;
+    }
+    .note-send:hover { opacity:0.88; transform:translateY(-1px); }
+    .note-status {
+      font-size:0.63rem; text-align:center; padding:0.2rem 0;
+      font-style:italic; color:#7a5c2e; font-family:'Georgia',serif;
+    }
+
+    /* ---- Trophy Case legacy modal (scoped so it doesn't override the zoom card) ---- */
     .trophy-case {
       background:linear-gradient(160deg,#1a1208 0%,#0e0904 100%);
       border-radius:8px; padding:1.2rem 1rem 1.2rem;
       margin:-0.3rem -0.5rem 0;
     }
-    .trophy-shelf {
+    .trophy-case .trophy-shelf {
       display:flex; align-items:flex-end; justify-content:center;
       gap:1.4rem; padding:0.5rem 0.5rem 0.5rem;
       border-bottom:6px solid #3e2a0a;
       margin-bottom:0.6rem;
       position:relative;
     }
-    .trophy-shelf::after {
+    .trophy-case .trophy-shelf::after {
       content:''; position:absolute; bottom:-4px; left:0; right:0;
       height:3px; background:rgba(255,255,255,0.03);
     }
@@ -1136,7 +1813,7 @@
     ============================================================ */
     /* Fog / Haze */
     #ov-fog {
-      position: absolute; inset: 0; z-index: 6; opacity: 0;
+      position: absolute; inset: 0; opacity: 0;
       pointer-events: none;
       transition: opacity 5s ease;
       background: radial-gradient(ellipse at 30% 40%, rgba(195,208,228,0.52) 0%, rgba(170,188,215,0.22) 55%, transparent 100%);
@@ -1149,46 +1826,95 @@
       50%       { transform: translateX(2.5%) scaleX(1.02); }
     }
 
-    /* Wind streaks */
+    /* Wind — canvas-driven curly-q lines */
     #ov-wind {
-      position: absolute; inset: 0; z-index: 5; opacity: 0;
+      position: absolute; inset: 0; opacity: 0;
       pointer-events: none;
       transition: opacity 2s ease;
-      background-image: repeating-linear-gradient(
-        98deg,
-        transparent 0px, transparent 12px,
-        rgba(210,225,255,0.045) 13px, rgba(210,225,255,0.045) 14px
-      );
-      background-size: 50px 100%;
-      animation: wind-streak 0.65s linear infinite;
     }
+    #ov-wind canvas { position:absolute; top:0; left:0; width:100%; height:100%; }
     body.weather-wind #ov-wind,
     body.weather-storm #ov-wind { opacity: 1; }
-    @keyframes wind-streak {
-      from { background-position: 0 0; }
-      to   { background-position: -100px 0; }
-    }
 
     /* Snow */
     #ov-snow {
-      position: absolute; inset: 0; z-index: 7; opacity: 0;
+      position: absolute; inset: 0; opacity: 0;
       pointer-events: none;
       transition: opacity 3s ease;
     }
     body.weather-snow #ov-snow { opacity: 1; }
-    .snow-flake {
-      position: absolute;
-      top: -8px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.88);
-      pointer-events: none;
-      animation: snow-fall linear infinite;
+    /* snow is now canvas-based — no .snow-flake CSS needed */
+
+    /* ============================================================
+       CLOCK WIDGET — animated hands overlaid on room illustration
+    ============================================================ */
+    #hs-clock {
+      width: 72px; height: 72px;
+      cursor: default;
     }
-    @keyframes snow-fall {
-      0%   { transform: translateY(0) translateX(0)           rotate(0deg);   opacity: 0; }
-      8%   { opacity: 0.85; }
-      90%  { opacity: 0.6; }
-      100% { transform: translateY(102vh) translateX(var(--sx,15px)) rotate(var(--sr,90deg)); opacity: 0; }
+    /* In edit mode, show dashed ring so user knows it's draggable */
+    body.edit-mode #hs-clock .hs-ring {
+      display: block !important; opacity: 1 !important;
+      width: 72px !important; height: 72px !important;
+      border-radius: 50% !important;
+    }
+    #clock-svg {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%; height: 100%;
+      overflow: visible; pointer-events: none;
+    }
+    .ck-hour   { stroke: rgba(50,32,14,0.90); stroke-width: 4; stroke-linecap: round; }
+    .ck-minute { stroke: rgba(50,32,14,0.78); stroke-width: 2.5; stroke-linecap: round; }
+    .ck-center { fill: rgba(50,32,14,0.92); }
+
+    /* ============================================================
+       MUSIC NOTES — float up from JBL speaker when music plays
+    ============================================================ */
+    #hs-music-notes { width:24px; height:24px; cursor:default; overflow:visible; }
+    .music-note {
+      position:absolute;
+      bottom:50%; left:50%;
+      pointer-events:none;
+      font-size:1rem;
+      color:rgba(255,215,80,0.95);
+      text-shadow:0 0 8px rgba(255,190,0,0.5);
+      animation:note-float linear forwards;
+      will-change:transform,opacity;
+    }
+    /* Exponential curve right. Opacity eases in slowly over the first 40%
+       so notes appear to drift in rather than flash on. */
+    @keyframes note-float {
+      0%   { transform:translate(0px, 0px)                  rotate(0deg)  scale(0.5); opacity:0;    }
+      30%  { transform:translate(var(--x25), var(--y25))   rotate(6deg)  scale(0.8); opacity:0.28; }
+      55%  { transform:translate(var(--x50), var(--y50))   rotate(14deg) scale(1.0); opacity:0.55; }
+      78%  { transform:translate(var(--x75), var(--y75))   rotate(22deg) scale(1.05);opacity:0.28; }
+      100% { transform:translate(var(--x100), var(--y100)) rotate(30deg) scale(1.1); opacity:0;    }
+    }
+
+    /* ============================================================
+       MONITOR POWER LED
+    ============================================================ */
+    /* Monitor LED cluster — 3 equal dots, evenly spaced, rightmost blinks on schedule */
+    #hs-monitor-led { width:12px; height:6px; cursor:default; }
+    .monitor-dot-row {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      display:flex; align-items:center; gap:5px;
+      pointer-events:none;
+    }
+    .monitor-dot {
+      width:2.4px; height:2.4px; border-radius:50%;
+      background:#7dffb8;
+      box-shadow:0 0 3px rgba(120,255,180,0.75);
+      flex-shrink:0;
+    }
+    .monitor-dot.blinking {
+      animation:led-blink 1.5s ease-in-out infinite;
+    }
+    @keyframes led-blink {
+      0%,100% { opacity:1;    box-shadow:0 0 3px rgba(120,255,180,0.75); }
+      50%      { opacity:0.06; box-shadow:none; }
     }
 
     /* Subtle curtain flutter (overlay, not the actual curtain pixels) */
@@ -1219,25 +1945,26 @@
   <!-- Floating dust motes (generated by JS) -->
   <div id="motes"></div>
 
+  <!-- Portal GIF — base layer revealed when door opens -->
+  <!-- Layer 0: Portal GIF (full screen, behind everything) -->
+  <img id="entry-portal" src="assets/images/portal.gif" alt="" draggable="false">
+  <!-- Layer 1: Closed door (fades out on click) -->
+  <img id="entry-closed-img" src="assets/images/landing.png" alt="" draggable="false">
+  <!-- Layer 2: Open door PNG — transparent cutout lets portal show through -->
+  <img id="entry-open-img" src="assets/images/landing-open.png" alt="" draggable="false">
+
   <div id="entry-name">Susy Liu</div>
   <div id="entry-tagline">welcome to my space</div>
 
-  <div class="door-scene">
-    <div class="door-wrap" id="entry-door">
-      <div class="door-glow"></div>
-      <div class="door-frame"></div>
-      <div class="door-leaf">
-        <div class="door-knob"></div>
-        <div class="door-keyhole"></div>
-      </div>
-    </div>
-    <div class="door-step"></div>
+  <!-- Invisible click target — whole entry is clickable -->
+  <div id="entry-door" class="door-hint-wrap">
     <div class="door-hint">click to enter</div>
   </div>
 </div>
 
 <!-- Edit toggle (only visible after entering) -->
 <button id="edit-toggle">✎ position</button>
+<button id="test-toggle">▶ test</button>
 
 <!-- Edit toolbar -->
 <div id="edit-toolbar">
@@ -1274,15 +2001,15 @@
     <div id="sky-anim"></div>
     <!-- Layer 2: Trees — always visible, tinted by lighting -->
     <img id="tree-img"  class="room-layer" src="assets/images/sky/trees.png"   alt="" draggable="false">
-    <!-- Layer 3: Room — transparent window so sky + trees show through -->
+    <!-- Invisible hover zone for tree rustle — positioned over window/tree area -->
+    <div id="tree-hover-zone"></div>
+    <!-- Layer 2b: Weather — clouds, rain, fog, snow sit in front of trees but behind room -->
+    <div id="window-weather"></div>
+    <!-- Layer 3: Room — transparent window so all layers below show through -->
     <img id="room-image" class="room-layer" src="assets/images/room.png" alt="Susy's room" draggable="false">
 
     <!-- Window ambient animations — positioned over the bay window area -->
     <div id="window-anim">
-      <div class="cloud cloud-1"></div>
-      <div class="cloud cloud-2"></div>
-      <div class="cloud cloud-3"></div>
-      <div class="cloud cloud-4"></div>
       <!-- Leaves spawned by JS -->
     </div>
     <!-- Window calibration overlay (edit mode only) -->
@@ -1306,15 +2033,14 @@
 
     <div class="overlay" id="ov-ambient"></div>
     <div class="overlay" id="ov-ambient2"></div>
+    <div id="ov-overcast"></div>
+    <div id="ov-cold"></div>
     <div class="overlay" id="ov-window"></div>
     <div class="overlay" id="ov-lamp-cube"></div>
     <div id="ov-lamp-pool"></div>
     <div id="ov-lamp-flicker"></div>
     <div class="overlay" id="ov-lamp-edison"></div>
-    <div class="overlay" id="ov-rain"></div>
-    <div id="ov-fog"></div>
-    <div id="ov-wind"></div>
-    <div id="ov-snow"></div>
+    <!-- ov-rain/fog/wind/snow are now children of #window-weather (injected by JS) -->
 
     <!-- HOTSPOTS — drag to position in edit mode -->
     <div class="hotspot" data-key="worldmap"    data-label="significant places"  style="left:4.5%;  top:32%;"><div class="hs-ring"></div><div class="hs-label">significant places</div></div>
@@ -1335,7 +2061,297 @@
     <div class="hotspot egg" data-key="speaker" data-label="♫ now playing"       style="left:64%;   top:12%;"><div class="hs-ring"></div><div class="hs-label">♫ now playing</div></div>
     <div class="hotspot egg" data-key="teapot"  data-label="茶 tea time"         style="left:66%;   top:68%;"><div class="hs-ring"></div><div class="hs-label">茶 tea time</div></div>
     <div class="hotspot" data-key="hobbies"    data-label="hobbies"             style="left:69%;   top:28%;"><div class="hs-ring"></div><div class="hs-label">hobbies</div></div>
-    <div class="hotspot egg" id="hs-lamp-toggle" data-key="lamp-toggle" data-label="💡 lamp" style="left:65%; top:10%;"><div class="hs-ring"></div><div class="hs-label">💡 lamp</div></div>
+    <div class="hotspot egg" id="hs-lamp-toggle" data-key="lamp-toggle" data-label="💡 lamp" style="left:65%; top:10%;"><div class="lamp-glow"></div><div class="hs-ring"></div><div class="hs-label">💡 lamp</div></div>
+    <!-- Monitor power LED — neon green blinking indicator -->
+    <div class="hotspot egg hs-locked" id="hs-monitor-led" data-key="monitor-led" data-label="💻 monitor LED" style="left:62%; top:52%;">
+      <div class="monitor-dot-row">
+        <div class="monitor-dot"></div>
+        <div class="monitor-dot" id="monitor-dot-blink"></div>
+      </div>
+      <div class="hs-ring"></div>
+      <div class="hs-label">💻 monitor LED</div>
+    </div>
+    <!-- Clock widget — draggable in edit mode, animated hands -->
+    <!-- Music notes emitter — positionable, notes float upward when music plays -->
+    <div class="hotspot egg hs-locked" id="hs-music-notes" data-key="music-notes" data-label="♫ notes" style="left:62%; top:8%;"><div class="hs-ring"></div><div class="hs-label">♫ notes</div></div>
+    <div class="hotspot egg hs-locked" id="hs-clock" data-key="clock" data-label="🕐 clock" style="left:28%; top:38%;">
+      <svg id="clock-svg" viewBox="-36 -36 72 72" xmlns="http://www.w3.org/2000/svg">
+        <line id="ck-hour"   x1="0" y1="2" x2="0" y2="-18" class="ck-hour"/>
+        <line id="ck-minute" x1="0" y1="3" x2="0" y2="-26" class="ck-minute"/>
+        <circle cx="0" cy="0" r="2.8" class="ck-center"/>
+      </svg>
+      <div class="hs-ring"></div>
+      <div class="hs-label">🕐 clock</div>
+    </div>
+  </div>
+</div>
+
+<!-- Test Panel -->
+<div id="test-panel">
+  <div class="tp-header">
+    <span class="tp-title">▶ animation test</span>
+    <button class="tp-close" id="test-close">×</button>
+  </div>
+
+  <div class="tp-section-label">time of day</div>
+  <div class="tp-group" data-group="time">
+    <button class="tp-item" data-test="time-morning"  data-hours="8">🌅 morning</button>
+    <button class="tp-item" data-test="time-afternoon" data-hours="12">☀️ afternoon</button>
+    <button class="tp-item" data-test="time-golden"   data-hours="17">🌇 golden hour</button>
+    <button class="tp-item" data-test="time-dusk"     data-hours="19">🌆 dusk</button>
+    <button class="tp-item" data-test="time-night"    data-hours="22">🌙 night</button>
+  </div>
+
+  <div class="tp-section-label">sky state</div>
+  <div class="tp-group" data-group="sky">
+    <button class="tp-item" data-test="sky-clear"    data-sky="clear">☀️ clear</button>
+    <button class="tp-item" data-test="sky-cloudy"   data-sky="cloudy">🌤 cloudy</button>
+    <button class="tp-item" data-test="sky-overcast" data-sky="overcast">🌥 overcast</button>
+    <button class="tp-item" data-test="sky-sunset"   data-sky="sunset">🌅 sunset</button>
+    <button class="tp-item" data-test="sky-night"    data-sky="night">🌙 night</button>
+  </div>
+
+  <div class="tp-section-label">precipitation</div>
+  <div class="tp-group" data-group="precip">
+    <button class="tp-item" data-test="wx-none"  data-wx="clear">○ none</button>
+    <button class="tp-item" data-test="wx-rain"  data-wx="rain">🌧 rain</button>
+    <button class="tp-item" data-test="wx-snow"  data-wx="snow">❄️ snow</button>
+    <button class="tp-item" data-test="wx-fog"   data-wx="fog">🌫 fog</button>
+    <button class="tp-item" data-test="wx-wind"  data-wx="wind">💨 wind</button>
+  </div>
+
+  <div class="tp-section-label">animations (one-shot)</div>
+  <button class="tp-item tp-oneshot" data-test="tree-rustle">🌿 tree rustle</button>
+  <button class="tp-item tp-oneshot" data-test="lamp-flicker">💡 lamp flicker</button>
+
+  <button class="tp-item tp-reset" data-test="reset">↺ reset all</button>
+</div>
+
+<!-- Note zoom overlay — pure CSS stationery card -->
+<button id="note-zoom-back" class="zoom-back-btn">← back</button>
+<div id="note-zoom-overlay" class="world-zoom-overlay">
+  <form id="note-form" class="notepad-css" novalidate>
+    <!-- Corner ornaments -->
+    <span class="np-corner np-tl">✦</span>
+    <span class="np-corner np-tr">✦</span>
+    <span class="np-corner np-bl">✦</span>
+    <span class="np-corner np-br">✦</span>
+
+    <!-- Header -->
+    <div class="np-header">
+      <div class="np-header-deco">· · ·  leave a note  · · ·</div>
+    </div>
+
+    <!-- Divider -->
+    <div class="np-divider"></div>
+
+    <!-- Form fields — clean, no lines -->
+    <div class="np-body">
+      <div class="np-field">
+        <label class="np-label">name</label>
+        <input id="nf-name" type="text" class="np-input" placeholder="your name" autocomplete="off" required>
+      </div>
+      <div class="np-field">
+        <label class="np-label">subject</label>
+        <input id="nf-subject" type="text" class="np-input" placeholder="reason for reaching out" autocomplete="off">
+      </div>
+      <div class="np-field">
+        <label class="np-label">email</label>
+        <input id="nf-email" type="email" class="np-input" placeholder="your@email.com" autocomplete="off" required>
+      </div>
+      <div class="np-field">
+        <label class="np-label">linkedin</label>
+        <input id="nf-linkedin" type="text" class="np-input" placeholder="linkedin.com/in/…" autocomplete="off">
+      </div>
+      <div class="np-field np-msg-field">
+        <label class="np-label" style="align-self:flex-start;padding-top:0.3rem;">message</label>
+        <textarea id="nf-msg" class="np-input np-textarea" placeholder="a quick hello, a role you're thinking of, or just something interesting…" required></textarea>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="np-divider"></div>
+
+    <!-- Footer -->
+    <div class="np-footer">
+      <div id="nf-status" class="np-status"></div>
+      <button type="submit" class="np-send">send ✉</button>
+    </div>
+  </form>
+</div>
+
+<!-- Zoom backdrop — blurs scene behind all zoom cards -->
+<div id="zoom-backdrop"></div>
+
+<!-- Trophy zoom overlay -->
+<button id="trophy-zoom-back" class="zoom-back-btn">← back</button>
+<div id="trophy-zoom-overlay" class="world-zoom-overlay">
+  <div class="trophy-zoom-wrap">
+    <div class="trophy-zoom-card">
+      <img class="trophy-case-bg" src="assets/images/trophy-case.png" alt="trophy case">
+      <div class="trophy-shelf">
+        <button class="trophy-btn" data-trophy="mens">
+          <img src="assets/images/trophies/mens-et-manus.png" alt="Mens et Manus">
+          <span class="trophy-label">Mens et Manus</span>
+        </button>
+        <button class="trophy-btn" data-trophy="genai">
+          <img src="assets/images/trophies/genai-lab.png" alt="GenAI Lab">
+          <span class="trophy-label">GenAI Lab</span>
+        </button>
+        <button class="trophy-btn" data-trophy="deans">
+          <img src="assets/images/trophies/deans-list.png" alt="Dean's List">
+          <span class="trophy-label">Dean's List</span>
+        </button>
+      </div>
+    </div>
+    <div class="award-blurb-panel" id="award-blurb-panel">
+      <div class="award-blurb-inner" id="award-blurb-inner"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Consulting / case files zoom overlay -->
+<button id="consulting-zoom-back" class="zoom-back-btn">← back</button>
+<div id="consulting-zoom-overlay" class="world-zoom-overlay">
+  <div class="casefiles-zoom-card">
+    <img class="casefiles-bg" src="assets/images/case-files.png" alt="case files">
+    <div class="casefiles-pages" id="cf-pages"></div>
+    <!-- Prev arrow on left side of folder -->
+    <button class="cf-flip-arrow" id="cf-prev-arrow" title="previous page">
+      <span class="cf-arrow-icon">‹</span>
+      <span class="cf-arrow-label">back</span>
+    </button>
+    <!-- Next arrow on right side of folder -->
+    <button class="cf-flip-arrow" id="cf-next-arrow" title="next page">
+      <span class="cf-arrow-icon">›</span>
+      <span class="cf-arrow-label">next</span>
+    </button>
+    <!-- Page counter -->
+    <div class="cf-nav"><span class="cf-page-num" id="cf-pagenum">1 / 5</span></div>
+  </div>
+</div>
+
+<!-- Speaker / iPod zoom overlay -->
+<button id="speaker-zoom-back" class="zoom-back-btn">← back</button>
+<div id="speaker-zoom-overlay" class="world-zoom-overlay">
+  <div class="speaker-zoom-wrap">
+    <!-- iPod Nano — Spotify embedded in screen -->
+    <div class="ipod-body">
+      <div class="ipod-screen">
+        <!-- Compact lofi banner at top of screen -->
+        <div class="ipod-now-strip">
+          <span class="ipod-now-strip-label">lofi · now playing</span>
+          <span class="ipod-now-strip-track" id="ipod-track-name">—</span>
+          <span class="ipod-now-strip-artist" id="ipod-track-artist">—</span>
+        </div>
+        <!-- Spotify fills the rest of the screen -->
+        <div id="ipod-spotify-slot" class="ipod-spotify-inset"></div>
+      </div>
+      <div class="ipod-wheel-wrap">
+        <div class="ipod-wheel">
+          <span class="ipod-wheel-label top">menu</span>
+          <span class="ipod-wheel-label bottom">▶︎</span>
+          <span class="ipod-wheel-label left">◀◀</span>
+          <span class="ipod-wheel-label right">▶▶</span>
+          <div class="ipod-wheel-center" id="ipod-center-btn" title="return to lofi"></div>
+        </div>
+      </div>
+      <div class="ipod-lofi-hint">press ● to return to lofi</div>
+    </div>
+  </div>
+</div>
+
+<!-- Music / record coverflow zoom overlay -->
+<button id="music-zoom-back" class="zoom-back-btn">← back</button>
+<div id="music-zoom-overlay" class="world-zoom-overlay">
+  <div class="music-zoom-wrap">
+    <!-- Coverflow stage -->
+    <div class="music-stage" id="music-stage">
+      <div class="record-slot" data-idx="0" data-pos="-1">
+        <div class="record-card" id="record-0">
+          <div class="record-face"><img src="assets/images/albums/page-1.jpg" alt="Rolling Sloans"></div>
+          <div class="record-back"><img src="assets/images/albums/page-2.jpg" alt=""></div>
+        </div>
+      </div>
+      <div class="record-slot" data-idx="1" data-pos="0">
+        <div class="record-card" id="record-1">
+          <div class="record-face"><img src="assets/images/albums/page-3.jpg" alt="South Side FMP"></div>
+          <div class="record-back"><img src="assets/images/albums/page-4.jpg" alt=""></div>
+        </div>
+      </div>
+      <div class="record-slot" data-idx="2" data-pos="1">
+        <div class="record-card" id="record-2">
+          <div class="record-face"><img src="assets/images/albums/page-5.jpg" alt="Classical Origins"></div>
+          <div class="record-back"><img src="assets/images/albums/page-6.jpg" alt=""></div>
+        </div>
+      </div>
+    </div>
+    <!-- Navigation -->
+    <div class="music-nav">
+      <button class="music-nav-btn" id="music-prev">‹</button>
+      <div class="music-record-title" id="music-record-title">South Side Free Music Program</div>
+      <button class="music-nav-btn" id="music-next">›</button>
+    </div>
+    <div class="music-hint">click center record to flip · arrows to browse</div>
+  </div>
+</div>
+
+<!-- About / mirror zoom overlay -->
+<button id="about-zoom-back" class="zoom-back-btn">← back</button>
+<div id="about-zoom-overlay" class="world-zoom-overlay">
+  <div class="about-zoom-card">
+    <div class="about-top">
+      <!-- Mirror hung from nail: SVG wire triangle → circular photo frame below -->
+      <div class="about-hanger-wrap">
+        <!-- Nail at top center, two wires angling down to left/right of mirror rim -->
+        <svg class="about-hanger-svg"
+             viewBox="0 0 100 27"
+             xmlns="http://www.w3.org/2000/svg"
+             preserveAspectRatio="xMidYMid meet">
+          <!-- Nail head -->
+          <circle cx="50" cy="3.5" r="2.8" fill="#555"/>
+          <!-- Wires end at 10-o'clock (x=25) and 2-o'clock (x=75) on the circle arc -->
+          <line x1="50" y1="3.5" x2="25" y2="27" stroke="#888" stroke-width="0.9" stroke-linecap="round"/>
+          <line x1="50" y1="3.5" x2="75" y2="27" stroke="#888" stroke-width="0.9" stroke-linecap="round"/>
+        </svg>
+        <!-- Circular mirror frame -->
+        <div class="about-photo-wrap">
+          <img src="assets/images/about.jpg" alt="Susy Liu">
+        </div>
+      </div>
+      <div class="about-title-block">
+        <span class="about-title-about">ABOUT</span>
+        <span class="about-title-me">Me</span>
+      </div>
+    </div>
+    <div class="about-body">
+      <p>I believe that people, ideas, and communities can become greater than the sum of their parts, and I strive to create the conditions that make this possible.</p>
+      <p>I develop deep understanding, bring clarity to ambiguity, and mobilize people and systems towards a shared vision. Guided by curiosity and creativity, I'm energized by pushing the boundaries of what people can achieve together.</p>
+      <div class="about-links">
+        <a href="https://linkedin.com/in/susyliu" target="_blank">LinkedIn</a>
+        |
+        <a href="https://github.com/sliu320" target="_blank">Github</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bookshelf zoom overlay -->
+<button id="bookshelf-zoom-back" class="zoom-back-btn">← back</button>
+<div id="bookshelf-zoom-overlay" class="world-zoom-overlay">
+  <div class="bookshelf-zoom-card">
+    <img src="assets/images/bookshelf.png" alt="bookshelf">
+  </div>
+</div>
+
+<!-- Monitor zoom overlay — pan+zoom into monitor, browser inside screen -->
+<button id="monitor-zoom-back" class="zoom-back-btn">← back</button>
+<div id="monitor-zoom-overlay" class="world-zoom-overlay">
+  <div class="monitor-zoom-card">
+    <img class="monitor-bg-img" src="assets/images/monitor.png" alt="monitor">
+    <div class="monitor-screen-inset" id="monitor-screen-content">
+      <!-- Browser UI injected by renderBrowser() -->
+    </div>
   </div>
 </div>
 
@@ -1409,7 +2425,7 @@ const CONTENT = {
    These inject custom HTML into modalBody for specific hotspots.
    Return true if handled, false to fall through to plain text.
 ============================================================ */
-const RICH_MODAL_KEYS = new Set(['piano','polaroids','consulting','stickynotes','books','contact','trophy','laptop','hobbies']);
+const RICH_MODAL_KEYS = new Set(['polaroids','stickynotes','hobbies']);
 
 function renderRichModal(key) {
   switch(key) {
@@ -1618,45 +2634,137 @@ function renderBookshelf() {
 
 /* ---- Notepad Contact Form ---- */
 function renderNotepad() {
+  const FORMSPREE_ID = 'YOUR_FORM_ID'; // replace with your Formspree form ID
+
+  // Override modal to remove default padding — the notepad IS the modal
+  document.getElementById('modal').style.padding = '0';
+  document.getElementById('modal').style.background = 'none';
+  document.getElementById('modal').style.boxShadow = 'none';
+  document.getElementById('modal').style.overflow = 'visible';
+
   modalBody.innerHTML = `
-  <div class="notepad-wrap">
-    <div class="notepad-top"><span class="notepad-brand">✉ leave a note</span></div>
-    <div class="notepad-lines" style="position:relative;">
-      <div class="notepad-margin"></div>
-      <div style="padding-left:28px;">
-        <div class="notepad-label">name</div>
-        <input class="notepad-field" id="np-name" type="text" placeholder="your name…" autocomplete="off"/>
-        <div class="notepad-label">email</div>
-        <input class="notepad-field" id="np-email" type="email" placeholder="your@email.com" autocomplete="off"/>
-        <div class="notepad-label">what's on your mind?</div>
-        <textarea class="notepad-field" id="np-msg" rows="3" placeholder="a quick hello, a role you're thinking of, or just something interesting…"></textarea>
+  <form id="note-form" novalidate style="
+    display:flex; flex-direction:column;
+    width:clamp(280px,36vw,400px);
+    border-radius:6px 6px 4px 4px;
+    overflow:hidden;
+    box-shadow:0 8px 32px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.12);
+    font-family:'Georgia',serif;
+  ">
+
+    <!-- Spiral top bar -->
+    <div style="
+      background:linear-gradient(to bottom,#f9d84a,#f5c832);
+      padding:0.6rem 1rem 0;
+      position:relative;
+    ">
+      <!-- Spiral holes -->
+      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:6px;">
+        ${Array(9).fill('<div style="width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px #d4a800,inset 0 1px 2px rgba(0,0,0,0.2);"></div>').join('')}
+      </div>
+      <div style="text-align:center;font-size:1.05rem;font-weight:700;color:#5a3c00;letter-spacing:0.04em;padding-bottom:0.5rem;font-style:italic;">
+        ✉ leave a note
       </div>
     </div>
-    <button class="notepad-send" id="np-send">send →</button>
-    <div class="notepad-footer" id="np-footer">
-      or email directly: <a href="mailto:sliu320@mit.edu">sliu320@mit.edu</a><br>
-      always up for a walk, tea, or a game of volleyball ☕
-    </div>
-  </div>`;
 
-  document.getElementById('np-send').addEventListener('click', () => {
-    const name  = document.getElementById('np-name').value.trim();
-    const email = document.getElementById('np-email').value.trim();
-    const msg   = document.getElementById('np-msg').value.trim();
+    <!-- Lined paper body -->
+    <div style="
+      background:#fefdf8;
+      background-image:
+        linear-gradient(rgba(180,210,240,0.55) 1px, transparent 1px);
+      background-size:100% 32px;
+      padding:0.5rem 1rem 1rem 3.2rem;
+      position:relative;
+      flex:1;
+    ">
+      <!-- Red margin line -->
+      <div style="position:absolute;left:2.4rem;top:0;bottom:0;width:1.5px;background:rgba(220,80,70,0.35);"></div>
+
+      ${[
+        ['name','text','your name'],
+        ['subject','text','reason for reaching out'],
+        ['email','email','your@email.com'],
+        ['linkedin','text','linkedin.com/in/…'],
+      ].map(([id,type,ph]) => `
+        <div style="display:flex;align-items:baseline;border-bottom:1px solid rgba(180,210,240,0.55);min-height:32px;">
+          <span style="font-size:0.52rem;letter-spacing:0.12em;text-transform:uppercase;color:#b0895a;width:52px;flex-shrink:0;line-height:32px;">${id}</span>
+          <input id="nf-${id}" type="${type}" placeholder="${ph}" autocomplete="off"
+            style="flex:1;background:transparent;border:none;outline:none;font-family:'Georgia',serif;font-size:0.82rem;color:#2a1a08;line-height:32px;padding:0;width:100%;"
+            oninput="this.style.borderBottom='none'">
+        </div>`).join('')}
+
+      <div style="display:flex;align-items:flex-start;min-height:80px;padding-top:4px;">
+        <span style="font-size:0.52rem;letter-spacing:0.12em;text-transform:uppercase;color:#b0895a;width:52px;flex-shrink:0;line-height:32px;">msg</span>
+        <textarea id="nf-msg" placeholder="a quick hello, a role you're thinking of, or just something interesting…"
+          style="flex:1;background:transparent;border:none;outline:none;font-family:'Georgia',serif;font-size:0.82rem;color:#2a1a08;line-height:32px;padding:0;resize:none;min-height:80px;width:100%;"></textarea>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="background:#fefdf8;padding:0.5rem 1rem 0.75rem;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(180,210,240,0.4);">
+      <div id="nf-status" style="font-size:0.65rem;font-style:italic;color:#8a6a3a;"></div>
+      <button type="submit" style="
+        background:linear-gradient(135deg,#f5c832,#e0a800);
+        border:none;border-radius:20px;padding:0.38rem 1.1rem;
+        font-family:'Georgia',serif;font-size:0.76rem;font-weight:600;
+        color:#3a2800;letter-spacing:0.06em;cursor:pointer;
+        box-shadow:0 2px 8px rgba(0,0,0,0.15);
+        transition:opacity 0.2s,transform 0.15s;
+      " onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">send →</button>
+    </div>
+  </form>`;
+
+  document.getElementById('note-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name     = document.getElementById('nf-name').value.trim();
+    const subject  = document.getElementById('nf-subject').value.trim();
+    const email    = document.getElementById('nf-email').value.trim();
+    const linkedin = document.getElementById('nf-linkedin').value.trim();
+    const msg      = document.getElementById('nf-msg').value.trim();
+    const status   = document.getElementById('nf-status');
+
     if (!name || !email || !msg) {
-      const missing = [];
-      if (!name)  missing.push('name');
-      if (!email) missing.push('email');
-      if (!msg)   missing.push('message');
-      document.getElementById('np-footer').innerHTML =
-        `<span style="color:#c05a2a;">please fill in: ${missing.join(', ')}</span>`;
+      const missing = [!name&&'name', !email&&'email', !msg&&'message'].filter(Boolean);
+      status.style.color = '#c05a2a';
+      status.textContent = `please fill in: ${missing.join(', ')}`;
       return;
     }
-    const subject = encodeURIComponent('👋 note from ' + name);
-    const body    = encodeURIComponent(msg + '\n\n— ' + name + ' (' + email + ')');
-    window.location.href = `mailto:sliu320@mit.edu?subject=${subject}&body=${body}`;
-    document.getElementById('np-footer').innerHTML =
-      `<span style="color:#3a7a3a;">✓ opening your email client — thanks, ${name}!</span>`;
+
+    const btn = document.querySelector('.np-send');
+    btn.disabled = true; btn.textContent = 'sending…';
+
+    if (FORMSPREE_ID === 'YOUR_FORM_ID') {
+      // Fallback: open email client
+      const sub  = encodeURIComponent((subject || 'note') + ' — from ' + name);
+      const body = encodeURIComponent(
+        `${msg}\n\n— ${name}\n${email}${linkedin ? '\n' + linkedin : ''}`
+      );
+      window.open(`mailto:susy.liu320@gmail.com?subject=${sub}&body=${body}`);
+      status.style.color = '#7a5c2e';
+      status.textContent = '✓ opening your email client — thanks, ' + name + '!';
+      btn.textContent = 'sent ✓';
+      return;
+    }
+
+    try {
+      const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ name, subject, email, linkedin, message: msg }),
+      });
+      if (res.ok) {
+        status.style.color = '#3a7a3a';
+        status.textContent = '✓ sent! thanks for reaching out, ' + name + ' 🌿';
+        btn.textContent = 'sent ✓';
+        document.getElementById('note-form').reset();
+      } else {
+        throw new Error('server error');
+      }
+    } catch {
+      status.style.color = '#c05a2a';
+      status.textContent = 'something went wrong — try emailing susy.liu320@gmail.com directly';
+      btn.disabled = false; btn.textContent = 'send ✉';
+    }
   });
 }
 
@@ -1733,43 +2841,36 @@ function renderTrophyCase() {
 }
 
 /* ---- Browser / Projects ---- */
-function renderBrowser() {
-  const projects = [
+function _browserProjectsData() {
+  return [
     {
-      id: 'monitor',
-      tab: '📊 Social Monitor',
+      id: 'monitor', tab: '📊 Social Monitor',
       title: 'Social Media Monitoring Tool',
       tags: ['Python', 'NLP', 'Dashboard', 'Real-time'],
       desc: 'A tool that tracks brand sentiment and topic trends across social platforms in real time. Built a custom NLP pipeline for signal extraction, with a dashboard that surfaces emerging narratives before they break.',
-      demo: '📊',
-      demoLabel: 'demo · live dashboard',
-      link: '#',
+      demo: '📊', demoLabel: 'demo · live dashboard', link: '#',
     },
     {
-      id: 'bidding',
-      tab: '📚 Course Bidder',
+      id: 'bidding', tab: '📚 Course Bidder',
       title: 'MIT Course Bidding Optimizer',
       tags: ['TypeScript', 'Optimization', 'MIT', 'Chrome Extension'],
-      desc: 'Sloan students bid on courses with points — it\'s a complex allocation problem. Built a tool that models bid dynamics and recommends an optimal portfolio of bids to maximize schedule quality.',
-      demo: '📚',
-      demoLabel: 'demo · browser extension',
-      link: '#',
+      desc: 'Sloan students bid on courses with points — a complex allocation problem. Built a tool that models bid dynamics and recommends an optimal portfolio of bids to maximize schedule quality.',
+      demo: '📚', demoLabel: 'demo · browser extension', link: '#',
     },
     {
-      id: 'genai',
-      tab: '🤖 GenAI Lab',
+      id: 'genai', tab: '🤖 GenAI Lab',
       title: 'GenAI Lab — Award-Winning Project',
       tags: ['LLM', 'Product', 'MIT Sloan', 'Best Project 🏆'],
-      desc: '<em>Details coming soon — keeping some things close to the chest while we figure out next steps.</em> Winner of the class competition. Built with a small team over a semester.',
-      demo: '🤖',
-      demoLabel: 'details · spring 2025',
-      link: '#',
+      desc: '<em>Details coming soon.</em> Winner of the class competition. Built with a small team over a semester.',
+      demo: '🤖', demoLabel: 'details · spring 2025', link: '#',
     },
   ];
+}
 
+function _buildBrowserHTML(projects) {
   let tabsHtml = '', panelsHtml = '';
   projects.forEach((p, i) => {
-    tabsHtml += `<div class="browser-tab${i===0?' active':''}" data-tab="${p.id}">${p.tab}</div>`;
+    tabsHtml   += `<div class="browser-tab${i===0?' active':''}" data-tab="${p.id}">${p.tab}</div>`;
     panelsHtml += `<div class="project-panel${i===0?' active':''}" id="proj-${p.id}">
       <div class="project-title">${p.title}</div>
       <div class="project-tags">${p.tags.map(t=>`<span class="project-tag">${t}</span>`).join('')}</div>
@@ -1778,34 +2879,61 @@ function renderBrowser() {
       ${p.link !== '#' ? `<a class="project-link" href="${p.link}" target="_blank">→ view project</a>` : ''}
     </div>`;
   });
+  return { tabsHtml, panelsHtml, firstId: projects[0].id };
+}
 
-  const activeProj = projects[0];
+function _wireBrowserTabs(root, projects) {
+  root.querySelectorAll('.browser-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const id = tab.dataset.tab;
+      root.querySelectorAll('.browser-tab').forEach(t => t.classList.toggle('active', t.dataset.tab===id));
+      root.querySelectorAll('.project-panel').forEach(p => p.classList.toggle('active', p.id==='proj-'+id));
+      const urlEl = root.querySelector('#browser-url');
+      if (urlEl) urlEl.textContent = `susyliu.com/projects/${id}`;
+      const stEl = root.querySelector('#browser-status');
+      if (stEl) stEl.textContent = `● susyliu.com/projects/${id} — secure connection`;
+    });
+  });
+}
+
+function renderBrowserInMonitor() {
+  const projects = _browserProjectsData();
+  const { tabsHtml, panelsHtml, firstId } = _buildBrowserHTML(projects);
+  const screen = document.getElementById('monitor-screen-content');
+  screen.innerHTML = `
+    <div class="browser-chrome">
+      <div class="browser-bar">
+        <div class="browser-dots">
+          <div class="browser-dot red"></div>
+          <div class="browser-dot yellow"></div>
+          <div class="browser-dot green"></div>
+        </div>
+        <div class="browser-url" id="browser-url">susyliu.com/projects/${firstId}</div>
+      </div>
+      <div class="browser-tabs">${tabsHtml}</div>
+    </div>
+    <div class="browser-content" id="browser-content">${panelsHtml}</div>
+    <div class="browser-status" id="browser-status">● susyliu.com — secure connection</div>`;
+  _wireBrowserTabs(screen, projects);
+}
+
+function renderBrowser() {
+  // Falls back to modal if someone calls it directly
+  const projects = _browserProjectsData();
+  const { tabsHtml, panelsHtml, firstId } = _buildBrowserHTML(projects);
   modalBody.innerHTML = `
   <div class="browser-chrome">
     <div class="browser-bar">
       <div class="browser-dots">
-        <div class="browser-dot red"></div>
-        <div class="browser-dot yellow"></div>
-        <div class="browser-dot green"></div>
+        <div class="browser-dot red"></div><div class="browser-dot yellow"></div><div class="browser-dot green"></div>
       </div>
-      <div class="browser-url" id="browser-url">susyliu.com/projects/${activeProj.id}</div>
+      <div class="browser-url" id="browser-url">susyliu.com/projects/${firstId}</div>
     </div>
-    <div class="browser-tabs" id="browser-tabs">${tabsHtml}</div>
+    <div class="browser-tabs">${tabsHtml}</div>
   </div>
   <div class="browser-content" id="browser-content">${panelsHtml}</div>
   <div class="browser-status" id="browser-status">● susyliu.com — secure connection</div>`;
-
-  // Wire tabs
-  document.querySelectorAll('.browser-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const id = tab.dataset.tab;
-      document.querySelectorAll('.browser-tab').forEach(t => t.classList.toggle('active', t.dataset.tab===id));
-      document.querySelectorAll('.project-panel').forEach(p => p.classList.toggle('active', p.id==='proj-'+id));
-      document.getElementById('browser-url').textContent = `susyliu.com/projects/${id}`;
-      const proj = projects.find(p => p.id === id);
-      document.getElementById('browser-status').textContent = `● susyliu.com/projects/${id} — secure connection`;
-    });
-  });
+  _wireBrowserTabs(modalBody, projects);
 }
 
 /* ---- Hobbies Sports Bag ---- */
@@ -1925,7 +3053,14 @@ const TIME_CONFIGS = [
     cubeOpacity:0.55, cubeBg:'radial-gradient(circle,rgba(255,200,80,0.45) 0%,transparent 70%)',
   },
 ];
-function getTimeCfg() { const h=new Date().getHours(); return TIME_CONFIGS.find(c=>c.hours.includes(h))||TIME_CONFIGS[3]; }
+// Test overrides — var so they hoist and are visible inside getTimeCfg/applyLighting
+var _testOverrideHours = null; // set by test panel; null = real clock
+var _testSkyOverride   = null; // set by test panel; null = auto from time config
+var _syncedSky         = null; // set by real-weather sync; lower priority than test panel
+function getTimeCfg() {
+  const h = (_testOverrideHours !== null) ? _testOverrideHours : new Date().getHours();
+  return TIME_CONFIGS.find(c=>c.hours.includes(h)) || TIME_CONFIGS[3];
+}
 function applyLighting() {
   const cfg = getTimeCfg();
 
@@ -1950,21 +3085,11 @@ function applyLighting() {
     winEl.style.mixBlendMode = 'normal';
   }
 
-  // Sky image swap — cross-fade to new sky
-  const skyImg = document.getElementById('sky-img');
-  if (skyImg && cfg.sky) {
-    const nextSrc = `assets/images/sky/${cfg.sky}.png`;
-    const curSrc  = skyImg.getAttribute('src') || '';
-    if (!curSrc.endsWith(`${cfg.sky}.png`)) {
-      skyImg.style.opacity = '0';
-      setTimeout(() => {
-        skyImg.src = nextSrc;
-        skyImg.onload = () => { skyImg.style.opacity = '1'; };
-        skyImg.onerror = () => { skyImg.style.opacity = '0'; }; // graceful if file missing
-      }, curSrc ? 400 : 0); // no delay on first load
-    } else if (parseFloat(skyImg.style.opacity) < 1) {
-      skyImg.style.opacity = '1'; // ensure visible if already correct src
-    }
+  // Sky: test panel > real-weather sync > time-of-day default
+  if (_testSkyOverride === null && _testOverrideHours === null) {
+    const skyToUse = _syncedSky || cfg.sky;
+    applySky(skyToUse);
+    updateSkyAnims(skyToUse);
   }
 
   // Tree image tint reacts to time-of-day lighting
@@ -1986,10 +3111,46 @@ function applyLighting() {
   // Lamp overlays — only update if lamp toggle is off (don't override manual state)
   if (!lampOn) { setLampOverlays(false); }
 
-  document.getElementById('time-badge').textContent = cfg.label;
+  _updateTimeBadge(cfg.label);
 
-  // Sky animations react to sky type (clouds for clear/sunset/overcast, stars for night)
-  updateSkyAnims(cfg.sky);
+}
+
+// Extract sky image swap into its own function so test panel can call it independently
+function applySky(skyName) {
+  const skyImg = document.getElementById('sky-img');
+  if (!skyImg || !skyName) return;
+
+  const cfg = getTimeCfg();
+  const isDaytime = !cfg.moonlight && cfg.label !== 'dusk';
+  const isOvercast = (skyName === 'overcast' || skyName === 'cloudy');
+
+  // Brighten the dark overcast/cloudy image so it reads as daytime
+  if (isOvercast && isDaytime) {
+    skyImg.style.filter = skyName === 'overcast'
+      ? 'brightness(2.4) saturate(0.55)'
+      : 'brightness(1.5) saturate(0.75)';
+  } else {
+    skyImg.style.filter = '';
+  }
+
+  // Toggle body class so room overlays flatten highlights/shadows
+  document.body.classList.toggle('sky-overcast-day', isOvercast && isDaytime);
+
+  // Pan the sky image for cloudy/overcast so clouds visibly drift
+  skyImg.classList.toggle('sky-drifting', isOvercast);
+
+  const nextSrc = `assets/images/sky/${skyName}.png`;
+  const curSrc  = skyImg.getAttribute('src') || '';
+  if (!curSrc.endsWith(`${skyName}.png`)) {
+    skyImg.style.opacity = '0';
+    setTimeout(() => {
+      skyImg.src = nextSrc;
+      skyImg.onload  = () => { skyImg.style.opacity = '1'; };
+      skyImg.onerror = () => { skyImg.style.opacity = '0'; };
+    }, curSrc ? 350 : 0);
+  } else if (parseFloat(skyImg.style.opacity) < 1) {
+    skyImg.style.opacity = '1';
+  }
 }
 
 /* ============================================================
@@ -1998,50 +3159,34 @@ function applyLighting() {
 let _currentSkyAnim = null;
 
 function updateSkyAnims(skyName) {
-  // Stars only show with no precipitation
   const hasPrecip = (currentWeather === 'rain' || currentWeather === 'snow' || currentWeather === 'storm');
   const effectiveSky = (skyName === 'night' && hasPrecip) ? 'overcast' : skyName;
 
   if (_currentSkyAnim === effectiveSky) return;
   _currentSkyAnim = effectiveSky;
 
-  const el = document.getElementById('sky-anim');
-  if (!el) return;
-  el.innerHTML = '';
-
-  if (effectiveSky === 'clear' || effectiveSky === 'sunset') {
-    _spawnSkyCloud(el, false);
-  } else if (effectiveSky === 'overcast' || effectiveSky === 'cloudy') {
-    _spawnSkyCloud(el, true);
-  } else if (effectiveSky === 'night') {
-    _spawnStars(el);
-  }
+  // Stars go in #sky-anim (behind trees, z-index 0) — only animation layer we still need
+  const skyEl = document.getElementById('sky-anim');
+  if (skyEl) skyEl.innerHTML = '';
+  if (effectiveSky === 'night') _spawnStars(skyEl);
+  // Cloud visuals are handled entirely by the sky image + sky-img drift animation
 }
 
-function _spawnSkyCloud(container, fast) {
-  // fast = overcast (darker, quicker roll); slow = clear/sunset (white, gentle drift)
-  const count = fast ? 8 : 5;
-  for (let i = 0; i < count; i++) {
-    const c = document.createElement('div');
-    c.className = 'sky-cloud';
-    const w   = 55 + Math.random() * 130;
-    const h   = (fast ? 0.52 : 0.38) * w;
-    const dur = fast ? (5 + Math.random() * 7) : (28 + Math.random() * 28);
-    const alpha = 0.35 + Math.random() * 0.3;
-    const blur  = fast ? 15 : 10;
-    const color = fast
-      ? `rgba(${115+Math.random()*35},${125+Math.random()*35},${145+Math.random()*30},${alpha})`
-      : `rgba(255,255,255,${alpha})`;
-    c.style.cssText = `
-      width:${w}px; height:${h}px; --cw:${w}px;
-      top:${2 + Math.random() * 68}%;
-      background:${color};
-      filter:blur(${blur}px);
-      animation-duration:${dur}s;
-      animation-delay:-${(Math.random() * dur).toFixed(1)}s;
-    `;
-    container.appendChild(c);
+// Lazily builds or returns the #window-weather element,
+// ensuring ov-rain/fog/wind/snow exist inside it.
+function _getWeatherLayer() {
+  let wx = document.getElementById('window-weather');
+  if (!wx) return document.createElement('div'); // fallback
+  // Inject weather overlay divs on first use
+  if (!document.getElementById('ov-rain')) {
+    const rain = document.createElement('div');
+    rain.id = 'ov-rain'; rain.className = 'overlay';
+    wx.appendChild(rain);
+    const fog  = document.createElement('div'); fog.id  = 'ov-fog';  wx.appendChild(fog);
+    const wind = document.createElement('div'); wind.id = 'ov-wind'; wx.appendChild(wind);
+    const snow = document.createElement('div'); snow.id = 'ov-snow'; wx.appendChild(snow);
   }
+  return wx;
 }
 
 function _spawnStars(container) {
@@ -2075,50 +3220,20 @@ function _scheduleRustle() {
 }
 
 function _doRustle() {
-  // 1. Wobble tree-img using Web Animations API
+  // Gentle branch sway — pure rotation from base, no translateX, no opacity change
   const treeImg = document.getElementById('tree-img');
   if (treeImg) {
     treeImg.animate([
-      { transform:'rotate(0deg)'    },
-      { transform:'rotate(0.6deg)'  },
-      { transform:'rotate(-0.9deg)' },
-      { transform:'rotate(1.0deg)'  },
-      { transform:'rotate(-0.7deg)' },
-      { transform:'rotate(0.4deg)'  },
-      { transform:'rotate(0deg)'    },
-    ], { duration:1200, easing:'ease-in-out' });
+      { transform:'rotate(0deg)'     },
+      { transform:'rotate(0.22deg)'  },
+      { transform:'rotate(-0.28deg)' },
+      { transform:'rotate(0.18deg)'  },
+      { transform:'rotate(-0.14deg)' },
+      { transform:'rotate(0.08deg)'  },
+      { transform:'rotate(0deg)'     },
+    ], { duration:2800, easing:'ease-in-out', fill:'none' });
   }
-
-  // 2. Burst of 4–6 leaves via existing window-anim system
-  if (typeof LEAF_COLORS !== 'undefined') {
-    const anim = document.getElementById('window-anim');
-    if (anim) {
-      const count = 4 + Math.floor(Math.random() * 3);
-      for (let i = 0; i < count; i++) {
-        setTimeout(() => {
-          const leaf = document.createElement('div');
-          leaf.className = 'leaf';
-          const h    = anim.offsetHeight || 300;
-          const size = 6 + Math.random() * 8;
-          const sway = (Math.random() - 0.4) * 85;
-          const spin = 110 + Math.random() * 270;
-          const dur  = 2600 + Math.random() * 3800;
-          leaf.style.cssText = `
-            left:${8 + Math.random() * 78}%;
-            top:-14px;
-            width:${size}px; height:${size * 1.55}px;
-            background:${LEAF_COLORS[Math.floor(Math.random() * LEAF_COLORS.length)]};
-            --lfy:${h + 20}px; --lfx:${sway}px; --lfr:${spin}deg;
-            animation-duration:${dur}ms;
-          `;
-          anim.appendChild(leaf);
-          setTimeout(() => leaf.remove(), dur + 200);
-        }, i * 170);
-      }
-    }
-  }
-
-  _scheduleRustle(); // self-reschedule
+  _scheduleRustle();
 }
 
 /* ============================================================
@@ -2126,53 +3241,259 @@ function _doRustle() {
 ============================================================ */
 const WEATHERS = ['clear','rain','fog','wind','snow','storm'];
 let currentWeather = 'clear';
+// Bootstrap: inject overlay divs into #window-weather immediately
+window.addEventListener('DOMContentLoaded', () => _getWeatherLayer(), { once: true });
 
 function setWeather(name) {
   currentWeather = name;
-  // Remove all weather classes
   WEATHERS.forEach(w => document.body.classList.remove('weather-' + w));
   if (name !== 'clear') document.body.classList.add('weather-' + name);
 
-  // Re-evaluate sky animations (precipitation hides stars)
+  // Ensure weather overlay divs exist inside #window-weather
+  _getWeatherLayer();
+
+  // Re-evaluate sky animations (precipitation may hide stars)
   _currentSkyAnim = null;
-  updateSkyAnims(getTimeCfg().sky);
+  updateSkyAnims(_testSkyOverride || getTimeCfg().sky);
 
-  // Rain overlay (existing)
+  // Rain — canvas drops
   const rainEl = document.getElementById('ov-rain');
-  if (rainEl) rainEl.style.opacity = (name === 'rain' || name === 'storm') ? '1' : '0';
+  if (rainEl) {
+    const isRain = (name === 'rain' || name === 'storm');
+    rainEl.style.opacity = isRain ? '1' : '0';
+    if (isRain && !_rainRaf) startRainCanvas(rainEl);
+    else if (!isRain) stopRainCanvas();
+  }
 
-  // Snow particles
+  // Fog
+  const fogEl = document.getElementById('ov-fog');
+  if (fogEl) fogEl.style.opacity = name === 'fog' ? '1' : '0';
+
+  // Wind — canvas curly-q lines
+  const windEl = document.getElementById('ov-wind');
+  if (windEl) {
+    const isWind = (name === 'wind' || name === 'storm');
+    windEl.style.opacity = isWind ? '1' : '0';
+    if (isWind && !_windRaf) startWindCanvas(windEl);
+    else if (!isWind) stopWindCanvas();
+  }
+
+  // Snow — canvas flakes
   const snowEl = document.getElementById('ov-snow');
   if (snowEl) {
-    if ((name === 'snow') && snowEl.childElementCount === 0) spawnSnow(snowEl);
-    snowEl.style.opacity = name === 'snow' ? '1' : '0';
+    const isSnow = (name === 'snow');
+    snowEl.style.opacity = isSnow ? '1' : '0';
+    if (isSnow && !snowEl.querySelector('canvas')) spawnSnow(snowEl);
+    else if (!isSnow && snowEl._stopSnow) { snowEl._stopSnow(); snowEl._stopSnow = null; }
   }
 
-  // Curtain flutter speed reacts to wind
+  // Curtain flutter reacts to wind
   const curtain = document.getElementById('curtain-flutter');
-  if (curtain) {
-    curtain.style.animationDuration = (name === 'wind' || name === 'storm') ? '2.5s' : '7s';
-  }
+  if (curtain) curtain.style.animationDuration = (name === 'wind' || name === 'storm') ? '2.5s' : '7s';
 }
 
+/* ============================================================
+   SNOW CANVAS — dense small flakes
+============================================================ */
 function spawnSnow(container) {
-  for (let i = 0; i < 55; i++) {
-    const f = document.createElement('div');
-    f.className = 'snow-flake';
-    const size = 2 + Math.random() * 4;
-    const drift = (Math.random() - 0.5) * 80;
-    const rot   = Math.random() * 360;
-    f.style.cssText = `
-      left: ${Math.random() * 100}%;
-      width: ${size}px; height: ${size}px;
-      opacity: ${0.5 + Math.random() * 0.4};
-      --sx: ${drift}px; --sr: ${rot}deg;
-      animation-duration: ${5 + Math.random() * 8}s;
-      animation-delay: ${Math.random() * 8}s;
-    `;
-    container.appendChild(f);
+  // canvas-based snow for density + no DOM bloat
+  let cv = container.querySelector('canvas');
+  if (!cv) { cv = document.createElement('canvas'); container.appendChild(cv); }
+  cv.width = window.innerWidth; cv.height = window.innerHeight;
+  window.addEventListener('resize', () => { cv.width = window.innerWidth; cv.height = window.innerHeight; });
+  const ctx = cv.getContext('2d');
+
+  const flakes = Array.from({length: 130}, () => mkFlake(cv, true));
+  function mkFlake(cv, rand) {
+    return {
+      x:    Math.random() * cv.width,
+      y:    rand ? Math.random() * cv.height : -8,
+      r:    1.5 + Math.random() * 4,        // 1.5–5.5px — visible but not huge
+      vy:   1.2 + Math.random() * 2.2,
+      vx:   (Math.random() - 0.5) * 0.6,
+      alpha:0.55 + Math.random() * 0.45,
+      wobble: Math.random() * Math.PI * 2,
+      wobbleSpeed: 0.02 + Math.random() * 0.03,
+    };
   }
+
+  let snowRaf;
+  function draw() {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    flakes.forEach(f => {
+      f.wobble += f.wobbleSpeed;
+      f.x += f.vx + Math.sin(f.wobble) * 0.4;
+      f.y += f.vy;
+      if (f.y > cv.height + 8) Object.assign(f, mkFlake(cv, false));
+
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(230,242,255,${f.alpha})`;
+      ctx.fill();
+    });
+    snowRaf = requestAnimationFrame(draw);
+  }
+  draw();
+  container._stopSnow = () => { cancelAnimationFrame(snowRaf); cv.remove(); };
 }
+
+/* ============================================================
+   RAIN CANVAS — randomised drizzle/shower drops
+============================================================ */
+let _rainRaf = null;
+function startRainCanvas(container) {
+  let cv = container.querySelector('canvas');
+  if (!cv) { cv = document.createElement('canvas'); container.appendChild(cv); }
+  cv.width = window.innerWidth; cv.height = window.innerHeight;
+  window.addEventListener('resize', () => { cv.width = window.innerWidth; cv.height = window.innerHeight; });
+  const ctx = cv.getContext('2d');
+
+  const drops = Array.from({length: 200}, () => mkDrop(cv, true));
+  function mkDrop(cv, rand) {
+    const speed = 7 + Math.random() * 9;
+    return {
+      x:     Math.random() * cv.width,
+      y:     rand ? Math.random() * cv.height : -35,
+      len:   14 + Math.random() * 22,    // heavier drops
+      vy:    speed,
+      vx:    speed * (0.09 + Math.random() * 0.13),
+      alpha: 0.45 + Math.random() * 0.45,
+      width: 1.2 + Math.random() * 1.6,  // thicker strokes
+    };
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    drops.forEach(d => {
+      ctx.beginPath();
+      ctx.moveTo(d.x, d.y);
+      ctx.lineTo(d.x + d.vx * (d.len / d.vy), d.y + d.len);
+      ctx.strokeStyle = `rgba(190,220,255,${d.alpha})`;
+      ctx.lineWidth = d.width;
+      ctx.lineCap  = 'round';
+      ctx.stroke();
+      d.x += d.vx; d.y += d.vy;
+      if (d.y > cv.height + d.len) Object.assign(d, mkDrop(cv, false));
+    });
+    _rainRaf = requestAnimationFrame(draw);
+  }
+  draw();
+}
+function stopRainCanvas() { cancelAnimationFrame(_rainRaf); _rainRaf = null; }
+
+/* ============================================================
+   WIND CANVAS — calligraphic S-curve gusts drawn left→right
+============================================================ */
+let _windRaf = null;
+function startWindCanvas(container) {
+  let cv = container.querySelector('canvas');
+  if (!cv) { cv = document.createElement('canvas'); container.appendChild(cv); }
+  cv.width = window.innerWidth; cv.height = window.innerHeight;
+  window.addEventListener('resize', () => { cv.width = window.innerWidth; cv.height = window.innerHeight; });
+  const ctx = cv.getContext('2d');
+
+  // Pre-sample a cubic bezier into N points
+  function sampleBezier(p0, p1, p2, p3, n) {
+    const pts = [];
+    for (let i = 0; i <= n; i++) {
+      const t = i / n, mt = 1 - t;
+      pts.push({
+        x: mt*mt*mt*p0.x + 3*mt*mt*t*p1.x + 3*mt*t*t*p2.x + t*t*t*p3.x,
+        y: mt*mt*mt*p0.y + 3*mt*mt*t*p1.y + 3*mt*t*t*p2.y + t*t*t*p3.y,
+      });
+    }
+    return pts;
+  }
+
+  function mkGust(cv) {
+    const y0   = cv.height * (0.1 + Math.random() * 0.8);
+    const span = cv.width  * (0.35 + Math.random() * 0.55); // how wide the gust is
+    const amp  = 30 + Math.random() * 80;   // S-curve amplitude
+    const flip = Math.random() < 0.5 ? 1 : -1; // mirror S
+
+    // S-curve: starts left, dips, rises, ends with curl upward
+    const p0 = { x: -span * 0.08,  y: y0 };
+    const p1 = { x: span * 0.30,   y: y0 + flip * amp };
+    const p2 = { x: span * 0.68,   y: y0 - flip * amp * 0.65 };
+    const p3 = { x: span,           y: y0 - flip * amp * 0.35 };
+
+    const SEGS = 60;
+    const pts = sampleBezier(p0, p1, p2, p3, SEGS);
+
+    // Compute cumulative arc length
+    const lens = [0];
+    for (let i = 1; i <= SEGS; i++) {
+      const dx = pts[i].x - pts[i-1].x, dy = pts[i].y - pts[i-1].y;
+      lens.push(lens[i-1] + Math.sqrt(dx*dx + dy*dy));
+    }
+    const total = lens[SEGS];
+
+    return {
+      pts, lens, total, SEGS,
+      ox: -(span * 0.08 + 20),   // starting x offset on screen
+      drawProgress: 0,            // 0→1: how much of the stroke is drawn
+      screenX: -(span * 0.2 + Math.random() * cv.width * 0.3), // starts off-left
+      y0,
+      speed:      1.8 + Math.random() * 2.8,    // how fast the whole gust moves right
+      drawSpeed:  0.022 + Math.random() * 0.025, // how fast the stroke is revealed
+      maxWidth:   1.8 + Math.random() * 2.8,
+      alpha:      0.22 + Math.random() * 0.28,
+      span,
+    };
+  }
+
+  const gusts = Array.from({length: 6}, () => {
+    const g = mkGust(cv);
+    g.screenX = Math.random() * cv.width; // scatter initial positions
+    g.drawProgress = Math.random();
+    return g;
+  });
+
+  function drawGust(g) {
+    const drawLen = g.total * g.drawProgress; // arc length to reveal
+    // Find how many segments to draw
+    let endSeg = 0;
+    while (endSeg < g.SEGS && g.lens[endSeg + 1] <= drawLen) endSeg++;
+    if (endSeg < 1) return;
+
+    // Draw segment by segment with variable width (taper at ends)
+    for (let i = 0; i < endSeg; i++) {
+      const tNorm = i / g.SEGS; // 0→1 along curve
+      // Bell-curve width: thin at start and end, thick ~30–60%
+      const bell = Math.sin(tNorm * Math.PI) * Math.sin(tNorm * Math.PI);
+      const lw = 0.4 + bell * g.maxWidth;
+      const alpha = g.alpha * (0.3 + bell * 0.7);
+
+      ctx.beginPath();
+      ctx.moveTo(g.screenX + g.pts[i].x,   g.y0 + (g.pts[i].y - g.y0));
+      ctx.lineTo(g.screenX + g.pts[i+1].x, g.y0 + (g.pts[i+1].y - g.y0));
+      ctx.strokeStyle = `rgba(200,220,255,${alpha})`;
+      ctx.lineWidth   = lw;
+      ctx.lineCap     = 'round';
+      ctx.lineJoin    = 'round';
+      ctx.stroke();
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    gusts.forEach((g, idx) => {
+      // Advance drawing progress and screen position together
+      g.drawProgress = Math.min(1, g.drawProgress + g.drawSpeed);
+      g.screenX += g.speed;
+
+      drawGust(g);
+
+      // Reset when fully off-screen to the right
+      if (g.screenX > cv.width + g.span * 0.2) {
+        gusts[idx] = mkGust(cv);
+      }
+    });
+    _windRaf = requestAnimationFrame(draw);
+  }
+  draw();
+}
+function stopWindCanvas() { cancelAnimationFrame(_windRaf); _windRaf = null; }
 
 /* ============================================================
    ENTRY DOOR
@@ -2197,31 +3518,39 @@ function spawnSnow(container) {
 })();
 
 document.getElementById('entry-door').addEventListener('click', function() {
-  const door = this;
-  door.classList.add('opening');
+  const entry = document.getElementById('entry');
+  if (entry.classList.contains('opening')) return; // prevent double-click
 
-  // After door swings open, fade entry screen and show room
+  // Step 1: crossfade to open-door image + show warm interior glow
+  entry.classList.add('opening');
+
+  // Step 2: after glow reads, fade entry out and reveal room
   setTimeout(() => {
-    document.getElementById('entry').classList.add('fade-out');
+    entry.classList.add('fade-out');
     document.body.classList.add('room-entered');
     applyLighting();
-  }, 900);
+    if (getTimeCfg().moonlight && !lampOn) {
+      lampOn = true;
+      setLampOverlays(true);
+    }
+  }, 1100);
 
-  // Remove entry from DOM after fade completes
-  setTimeout(() => {
-    document.getElementById('entry').style.display='none';
-  }, 2400);
+  // Step 3: remove entry from DOM
+  setTimeout(() => { entry.style.display = 'none'; }, 2600);
 
-  // Pre-load Spotify iFrame API while user is entering (fast by the time speaker is clicked)
+  // Pre-load Spotify while user is entering
   initSpotifyAPI();
 
-  // Show onboarding after room appears
+  // Start lofi music (door click = user interaction, satisfies autoplay policy)
+  startLofi();
+  startMusicNotes();
+
+  // Show onboarding after room settles
   setTimeout(() => {
     const ob = document.getElementById('onboarding');
     ob.classList.add('visible');
-    // Auto-dismiss after 9s
     setTimeout(() => dismissOnboarding(), 9000);
-  }, 2200);
+  }, 2500);
 });
 
 /* ============================================================
@@ -2685,24 +4014,28 @@ function setLampOverlays(on) {
   const pool    = document.getElementById('ov-lamp-pool');
   const flicker = document.getElementById('ov-lamp-flicker');
   const reveal  = document.getElementById('lamp-reveal');
+
+  document.body.classList.toggle('lamp-on', on);
+
   if (on) {
     cube.style.background = 'radial-gradient(circle,rgba(255,215,95,0.60) 0%,rgba(255,175,45,0.22) 52%,transparent 80%)';
     cube.style.opacity    = '1';
     pool.style.opacity    = '1';
-    pool.style.background = ''; // use CSS default (expanded pool)
+    pool.style.background = '';
     flicker.style.opacity = '0.80';
     reveal.style.opacity  = '1';
     _scheduleLampFlicker();
   } else {
     clearTimeout(_lampFlickerTimer);
     const cfg = getTimeCfg();
+    const isNight = cfg.moonlight; // night / late-night / pre-dawn
+    // When lamp is off at night: no warm reveal — let the blue/purple ambient own the scene
     cube.style.background = cfg.cubeBg || '';
-    cube.style.opacity    = cfg.cubeOpacity;
-    pool.style.opacity    = (cfg.cubeOpacity * 0.90).toFixed(2);
+    cube.style.opacity    = isNight ? '0' : String(cfg.cubeOpacity);
+    pool.style.opacity    = isNight ? '0' : String((cfg.cubeOpacity * 0.90).toFixed(2));
     pool.style.background = '';
-    const flickBase = cfg.cubeOpacity > 0.3 ? cfg.cubeOpacity * 0.65 : 0;
-    flicker.style.opacity = flickBase.toFixed(2);
-    reveal.style.opacity  = cfg.cubeOpacity > 0.25 ? Math.min(0.95, cfg.cubeOpacity * 0.90).toFixed(2) : '0';
+    flicker.style.opacity = '0';
+    reveal.style.opacity  = isNight ? '0' : (cfg.cubeOpacity > 0.25 ? Math.min(0.95, cfg.cubeOpacity * 0.90).toFixed(2) : '0');
   }
 }
 
@@ -2717,27 +4050,84 @@ function _doLampFlicker() {
   if (!lampOn) return;
   const flicker = document.getElementById('ov-lamp-flicker');
   const cube    = document.getElementById('ov-lamp-cube');
+  const pool    = document.getElementById('ov-lamp-pool');
   const reveal  = document.getElementById('lamp-reveal');
-  // A quick 4-step dip-and-recover (total ~320ms, barely perceptible but real)
+
+  // Kill slow CSS transitions on all elements for duration of flicker
+  [flicker, cube, pool, reveal].forEach(el => { if(el) el.style.transition = 'none'; });
+
   const steps = [
-    { t:0,   fo:0.25, co:0.55, ro:0.65 },
-    { t:90,  fo:0.72, co:0.90, ro:0.88 },
-    { t:180, fo:0.40, co:0.70, ro:0.75 },
-    { t:260, fo:0.80, co:1.00, ro:1.00 },
+    { t:0,   fo:0.18, co:0.40, po:0.45, ro:0.50 },
+    { t:80,  fo:0.60, co:0.80, po:0.82, ro:0.80 },
+    { t:160, fo:0.28, co:0.55, po:0.58, ro:0.62 },
+    { t:240, fo:0.80, co:1.00, po:1.00, ro:1.00 },
   ];
   steps.forEach(s => setTimeout(() => {
     if (!lampOn) return;
-    flicker.style.opacity = s.fo.toFixed(2);
-    cube.style.opacity    = s.co.toFixed(2);
-    reveal.style.opacity  = s.ro.toFixed(2);
+    if(flicker) flicker.style.opacity = s.fo.toFixed(2);
+    if(cube)    cube.style.opacity    = s.co.toFixed(2);
+    if(pool)    pool.style.opacity    = s.po.toFixed(2);
+    if(reveal)  reveal.style.opacity  = s.ro.toFixed(2);
   }, s.t));
-  _scheduleLampFlicker(); // queue next
+
+  // Restore transitions after all steps complete
+  setTimeout(() => {
+    [flicker, cube, pool, reveal].forEach(el => { if(el) el.style.transition = ''; });
+  }, 350);
+
+  _scheduleLampFlicker();
 }
 document.getElementById('hs-lamp-toggle').addEventListener('click', e => {
   if (editMode) return; e.stopPropagation();
   lampOn = !lampOn;
   setLampOverlays(lampOn);
 });
+
+/* ============================================================
+   CLOCK HANDS — animated with real time
+============================================================ */
+(function() {
+  const hourHand   = document.getElementById('ck-hour');
+  const minuteHand = document.getElementById('ck-minute');
+  if (!hourHand || !minuteHand) return;
+
+  function tickClock() {
+    const now = new Date();
+    const h   = now.getHours() % 12;
+    const m   = now.getMinutes();
+    const s   = now.getSeconds();
+    const hourDeg   = h * 30 + m * 0.5 + s * (0.5 / 60);
+    const minuteDeg = m * 6  + s * 0.1;
+    hourHand.setAttribute('transform',   `rotate(${hourDeg.toFixed(2)})`);
+    minuteHand.setAttribute('transform', `rotate(${minuteDeg.toFixed(2)})`);
+  }
+  tickClock();
+  setInterval(tickClock, 1000);
+
+  // Suppress modal on display-only widgets
+  document.getElementById('hs-clock').addEventListener('click', e => e.stopPropagation());
+  document.getElementById('hs-monitor-led').addEventListener('click', e => e.stopPropagation());
+  document.getElementById('hs-music-notes').addEventListener('click', e => e.stopPropagation());
+
+  // iPod center button — switch back to lofi from Spotify
+  document.getElementById('ipod-center-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    _resumeLofi();
+    // Update now-playing strip to show lofi info
+    _updateIpodScreen();
+  });
+
+  // Monitor LED blink cycle — starts on room entry, 20s blink / 40s solid per minute
+  document.getElementById('entry-door').addEventListener('click', function startLedCycle() {
+    const dot = document.getElementById('monitor-dot-blink');
+    if (!dot) return;
+    function cycle() {
+      dot.classList.add('blinking');
+      setTimeout(() => dot.classList.remove('blinking'), 20000);
+    }
+    setTimeout(() => { cycle(); setInterval(cycle, 60000); }, 1500);
+  }, { once: true });
+})();
 
 /* ============================================================
    MODAL
@@ -2751,13 +4141,20 @@ let currentModalKey = null, isModalEditing = false;
 
 function openModal(key) {
   if (editMode) return;
+  if (key === 'contact')    { openNoteZoom();       return; }
+  if (key === 'laptop')     { openMonitorZoom();    return; }
+  if (key === 'trophy')     { openTrophyZoom();     return; }
+  if (key === 'books')      { openBookshelfZoom();  return; }
+  if (key === 'consulting') { openConsultingZoom(); return; }
+  if (key === 'mirror')     { openAboutZoom();      return; }
+  if (key === 'piano')      { openMusicZoom();      return; }
   const data = CONTENT[key]; if (!data) return;
   currentModalKey = key;
   isModalEditing  = false;
 
   modalTitle.textContent = data.title;
 
-  if (key === 'speaker') { openSpotifyModal(); return; }
+  if (key === 'speaker') { openSpeakerZoom(); return; }
 
   // Rich modal UIs for specific keys
   if (RICH_MODAL_KEYS.has(key)) {
@@ -2782,9 +4179,7 @@ function openModal(key) {
 function closeModal() {
   if (isModalEditing) { isModalEditing=false; modalBody.contentEditable='false'; }
   if (currentModalKey === 'speaker') {
-    // Pause, null the controller (so reopen creates a fresh one), park embed element
-    if (_spotifyCtrl) { try { _spotifyCtrl.pause(); } catch(e) {} }
-    _spotifyCtrl = null;   // force fresh createController() on next open
+    // Park embed back to hidden bg — keep playing, no pause
     if (_spotifyEl && _spotifyEl.parentNode) {
       document.getElementById('spotify-bg').appendChild(_spotifyEl);
     }
@@ -2844,6 +4239,841 @@ document.querySelectorAll('.nav-item').forEach(item => {
     animateTo(clamp(-(imgW*t.pct-window.innerWidth*0.5)), () => openModal(item.dataset.nav));
   });
 });
+/* ============================================================
+   NOTE ZOOM — pan + scale into the notepad, no modal
+============================================================ */
+let _noteZoomed = false;
+
+/* Shared helper: pan to hotspot then zoom centred on it */
+function _zoomToHotspot(key, scale, onOpen) {
+  const hs  = document.querySelector(`[data-key="${key}"]`);
+  const pct = hs ? parseFloat(hs.style.left) / 100 : 0.5;
+  const top = hs ? hs.style.top  : '50%';
+  animateTo(clamp(-(imgW * pct - window.innerWidth * 0.5)), () => {
+    container.style.transition    = 'transform 0.75s cubic-bezier(0.35,0,0.1,1)';
+    container.style.transformOrigin = `50% ${top}`;
+    container.style.transform     = `scale(${scale || 2.2})`;
+    container.style.cursor        = 'default';
+    setTimeout(onOpen, 650);
+  });
+}
+
+function openNoteZoom() {
+  if (_noteZoomed) return;
+  _noteZoomed = true;
+  navMenu.classList.remove('open');
+  _zoomToHotspot('contact', 2.2, () => _openZoomUI('note-zoom-overlay', 'note-zoom-back'));
+}
+
+function closeNoteZoom() {
+  if (!_noteZoomed) return;
+  _noteZoomed = false;
+  _closeZoomUI('note-zoom-overlay', 'note-zoom-back');
+}
+document.getElementById('note-zoom-back').addEventListener('click', closeNoteZoom);
+
+/* ============================================================
+   ZOOM SHARED HELPERS
+============================================================ */
+function _zoomOut() {
+  setTimeout(() => {
+    container.style.transition = 'transform 0.65s cubic-bezier(0.4,0,0.2,1)';
+    container.style.transform = '';
+    setTimeout(() => { container.style.transition = ''; container.style.cursor = ''; }, 650);
+  }, 150);
+}
+
+/* Build a CSS filter + backdrop color that matches current time/weather */
+function _getZoomMood() {
+  const cfg = getTimeCfg();
+  const isWet  = ['rain','storm','fog','snow'].includes(currentWeather);
+  const isOver = document.body.classList.contains('sky-overcast-day');
+
+  let filter = '', bg = 'rgba(0,0,0,0.48)';
+
+  if (cfg.moonlight) {
+    filter = 'brightness(0.68) saturate(0.80) hue-rotate(12deg)';
+    bg     = 'rgba(8,4,35,0.72)';
+  } else if (cfg.label === 'dusk') {
+    filter = 'brightness(0.84) saturate(0.92) hue-rotate(6deg)';
+    bg     = 'rgba(25,10,45,0.60)';
+  } else if (cfg.label === 'golden hour') {
+    filter = 'brightness(0.96) saturate(1.04)';
+    bg     = 'rgba(30,10,0,0.42)';
+  } else if (isWet || isOver) {
+    filter = 'brightness(0.88) saturate(0.76)';
+    bg     = 'rgba(10,18,30,0.55)';
+  }
+  return { filter, bg };
+}
+
+function _openZoomUI(overlayId, backBtnId) {
+  const { filter, bg } = _getZoomMood();
+  const bd = document.getElementById('zoom-backdrop');
+  bd.style.background = bg;
+  bd.classList.add('active');
+  const ov = document.getElementById(overlayId);
+  ov.style.filter = filter;
+  ov.classList.add('visible');
+  document.getElementById(backBtnId).style.display = 'block';
+}
+
+function _closeZoomUI(overlayId, backBtnId) {
+  document.getElementById(overlayId).classList.remove('visible');
+  document.getElementById(backBtnId).style.display = 'none';
+  // Hide backdrop only if no other zoom is open
+  const ids = ['note-zoom-overlay','monitor-zoom-overlay','trophy-zoom-overlay','bookshelf-zoom-overlay'];
+  const anyOpen = ids.some(id => document.getElementById(id).classList.contains('visible'));
+  if (!anyOpen) document.getElementById('zoom-backdrop').classList.remove('active');
+  _zoomOut();
+}
+
+/* Close whichever zoom is currently open */
+function closeActiveZoom() {
+  if (_noteZoomed)        closeNoteZoom();
+  else if (_monitorZoomed)    closeMonitorZoom();
+  else if (_trophyZoomed)     closeTrophyZoom();
+  else if (_bookshelfZoomed)  closeBookshelfZoom();
+  else if (_cfZoomed)         closeConsultingZoom();
+  else if (_aboutZoomed)      closeAboutZoom();
+  else if (_speakerZoomed)    closeSpeakerZoom();
+  else if (_musicZoomed)      closeMusicZoom();
+}
+
+/* Click on backdrop (outside card) → close */
+document.querySelectorAll('.world-zoom-overlay').forEach(ov => {
+  ov.addEventListener('click', e => {
+    if (e.target === ov) closeActiveZoom();
+  });
+});
+
+/* Pinch-to-zoom-out gesture → close */
+(function() {
+  let _pinchDist = null;
+  document.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      _pinchDist = Math.sqrt(dx*dx + dy*dy);
+    }
+  }, { passive:true });
+  document.addEventListener('touchmove', e => {
+    if (e.touches.length !== 2 || _pinchDist === null) return;
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    if (Math.sqrt(dx*dx + dy*dy) < _pinchDist * 0.72) {
+      _pinchDist = null;
+      closeActiveZoom();
+    }
+  }, { passive:true });
+  document.addEventListener('touchend', () => { _pinchDist = null; }, { passive:true });
+})();
+
+/* ============================================================
+   TIME BADGE — shows time-of-day + live weather label
+============================================================ */
+let _syncedWeatherLabel = null; // e.g. "clear · 22°C" — set after sync
+
+function _updateTimeBadge(timeLabel) {
+  const badge = document.getElementById('time-badge');
+  if (!badge) return;
+  if (_syncedWeatherLabel) {
+    badge.innerHTML =
+      timeLabel +
+      `<span class="tb-sep">·</span>` +
+      `<span class="tb-weather">${_syncedWeatherLabel}</span>`;
+  } else {
+    badge.textContent = timeLabel;
+  }
+}
+
+/* ============================================================
+   REAL-WEATHER SYNC — Open-Meteo (free, no API key)
+   Priority: test panel > weather sync > time-of-day default
+============================================================ */
+
+function _wmoToScene(code, windKph, hour) {
+  // Sky image — night always wins, then weather condition
+  let sky;
+  if (hour >= 21 || hour < 5)       sky = 'night';
+  else if (hour >= 19 && code <= 1) sky = 'sunset';  // clear dusk
+  else if (code === 0 || code === 1) sky = 'clear';
+  else if (code === 2)               sky = 'cloudy';
+  else                               sky = 'overcast'; // 3, fog, rain, snow, storm
+
+  // Weather overlay
+  let weather;
+  if      (code >= 95)                          weather = 'storm';
+  else if ((code >= 71 && code <= 77) || code === 85 || code === 86) weather = 'snow';
+  else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) weather = 'rain';
+  else if (code === 45 || code === 48)          weather = 'fog';
+  else if (windKph > 28)                        weather = 'wind';
+  else                                          weather = 'clear';
+
+  return { sky, weather };
+}
+
+async function syncRealWeather() {
+  if (!navigator.geolocation) return;
+  try {
+    const pos = await new Promise((res, rej) =>
+      navigator.geolocation.getCurrentPosition(res, rej, { timeout:8000, maximumAge:300000 })
+    );
+    const { latitude: lat, longitude: lon } = pos.coords;
+
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=temperature_2m,weather_code,wind_speed_10m,precipitation&timezone=auto&forecast_days=1`;
+    const data = await fetch(url).then(r => r.json());
+    const c = data.current;
+
+    const hour = new Date().getHours();
+    const { sky, weather } = _wmoToScene(c.weather_code, c.wind_speed_10m, hour);
+
+    // Build human-readable weather label for the time badge
+    const conditionMap = {
+      0:'clear', 1:'mainly clear', 2:'partly cloudy', 3:'overcast',
+      45:'fog', 48:'fog', 51:'drizzle', 53:'drizzle', 55:'drizzle',
+      61:'light rain', 63:'rain', 65:'heavy rain',
+      71:'light snow', 73:'snow', 75:'heavy snow', 77:'snow',
+      80:'showers', 81:'showers', 82:'heavy showers',
+      85:'snow showers', 86:'snow showers',
+      95:'thunderstorm', 96:'thunderstorm', 99:'thunderstorm',
+    };
+    const condLabel = conditionMap[c.weather_code] || 'clear';
+    const tempC     = Math.round(c.temperature_2m);
+    const tempF     = Math.round(tempC * 9/5 + 32);
+    _syncedWeatherLabel = `${condLabel} · ${tempC}°C / ${tempF}°F`;
+
+    // Apply — updates persist across applyLighting calls via _syncedSky
+    _syncedSky = sky;
+    _currentSkyAnim = null;
+    applySky(sky);
+    updateSkyAnims(sky);
+    setWeather(weather);
+    _updateTimeBadge(getTimeCfg().label); // refresh badge immediately
+
+    console.log(`🌤 Weather synced: code=${c.weather_code}, wind=${c.wind_speed_10m}kph, ${c.temperature_2m}°C → sky:${sky}, weather:${weather}`);
+  } catch (e) {
+    console.log('Weather sync skipped:', e.message);
+  }
+}
+
+// Sync on room entry, then refresh every 30 minutes
+document.getElementById('entry-door').addEventListener('click', () => {
+  setTimeout(syncRealWeather, 2800);
+  setInterval(syncRealWeather, 30 * 60 * 1000);
+}, { once: true });
+
+/* ============================================================
+   MUSIC NOTE PARTICLES — float up from JBL speaker while music plays
+============================================================ */
+const _noteChars = ['♪','♫','♩','♬'];
+let _noteTimer = null;
+
+function startMusicNotes() {
+  if (_noteTimer) return;
+  _scheduleNote();
+}
+
+function stopMusicNotes() {
+  clearTimeout(_noteTimer);
+  _noteTimer = null;
+}
+
+function _scheduleNote() {
+  // Higher density: one note every 350–650ms
+  _noteTimer = setTimeout(() => {
+    _spawnNote();
+    _scheduleNote();
+  }, 350 + Math.random() * 300);
+}
+
+function _spawnNote() {
+  const origin = document.getElementById('hs-music-notes');
+  if (!origin || !document.body.classList.contains('room-entered')) return;
+
+  const note = document.createElement('span');
+  note.className = 'music-note';
+  note.textContent = _noteChars[Math.floor(Math.random() * _noteChars.length)];
+
+  const dur = 1.8 + Math.random() * 0.8;
+  const sz  = 0.75 + Math.random() * 0.45;
+
+  // Exponential rightward curve: x = k * t^2, y = -h * t (upward)
+  // At t = 0.25, 0.5, 0.75, 1.0 fractions
+  const k  = 18 + Math.random() * 22;  // horizontal acceleration factor
+  const h  = 55 + Math.random() * 25;  // total height
+  const sign = Math.random() < 0.2 ? -1 : 1; // mostly right, occasionally left
+
+  const x = (t) => `${(sign * k * t * t).toFixed(1)}px`;
+  const y = (t) => `${(-h * t).toFixed(1)}px`;
+
+  note.style.cssText = `
+    --x25:${x(0.25)}; --y25:${y(0.25)};
+    --x50:${x(0.50)}; --y50:${y(0.50)};
+    --x75:${x(0.75)}; --y75:${y(0.75)};
+    --x100:${x(1.0)}; --y100:${y(1.0)};
+    font-size:${sz}rem;
+    opacity:0;
+    animation-duration:${dur}s;
+    animation-delay:${(Math.random() * 0.15).toFixed(2)}s;
+  `;
+  origin.appendChild(note);
+  setTimeout(() => note.remove(), (dur + 0.35) * 1000);
+}
+
+/* ── Lamp hover flicker ───────────────────────────────────── */
+document.getElementById('hs-lamp-toggle').addEventListener('mouseenter', () => {
+  if (lampOn) _doLampFlicker();
+});
+
+/* ── Tree hover rustle ────────────────────────────────────── */
+document.getElementById('tree-hover-zone').addEventListener('mouseenter', _doRustle);
+
+/* ── Trophy zoom ─────────────────────────────────────────── */
+const TROPHY_DATA = {
+  mens: {
+    name: 'Mens et Manus',
+    issuedBy: 'MIT Student Organizations, Leadership & Engagement Office',
+    scope: 'MIT-wide, graduate + undergraduate',
+    desc: 'Recognizes undergraduate and graduate students who embody mens et manus by pairing thoughtful leadership with meaningful action to create positive change within their organization, living group, dorm, or team community. Specifically honored for transforming ideas around community and belonging into impactful programming and empowering others to participate and lead within the MIT community.',
+    criteria: 'Three rounds of review post nomination, with final endorsement by Dean of Student Life and Chief of Staff.',
+    img: 'assets/images/trophies/mens-et-manus-detail.jpg',
+  },
+  genai: {
+    name: 'GenAI Lab — Best Project',
+    issuedBy: 'MIT Initiative for the Digital Economy',
+    scope: '~80 students across 27 teams, representation across MIT and Sloan grad programs',
+    desc: 'Won Best Project in MIT\'s flagship GenAI Action Learning class, where students work with live companies to build GenAI use cases. Built a Development Application response tool for an Australian water utility company. Selected for highly intentional use of GenAI vs. human-in-the-loop given the use case, and intuitive user experience.',
+    criteria: 'Demo Day: 5-minute pitch and demo in front of judges including seasoned entrepreneurs (incl. YC-backed), VC, and AI researchers (incl. Google DeepMind).',
+    img: 'assets/images/trophies/genai-lab-detail.jpg',
+  },
+  deans: {
+    name: 'Graduated with Distinction',
+    issuedBy: 'University of Chicago',
+    scope: 'Undergraduate degree-seeking students',
+    desc: 'Recognized for academic excellence across three distinctions: <strong>Dean\'s List</strong> — GPA in top 20% of degree-seeking students for the academic year. <strong>Cum Laude</strong> — GPA in top 25% of Economics majors based on five-year rolling average. <strong>Sociology Thesis Honors</strong> — By advisor recommendation; thesis focused on Covid masking and distancing compliance.',
+    criteria: 'GPA-based ranking within degree program and department cohort.',
+    img: 'assets/images/trophies/deans-list-detail.jpg',
+  },
+};
+
+let _trophyZoomed = false, _activeTrophy = null;
+
+function openTrophyZoom() {
+  if (_trophyZoomed) return;
+  _trophyZoomed = true;
+  navMenu.classList.remove('open');
+  _zoomToHotspot('trophy', 2.2, () => _openZoomUI('trophy-zoom-overlay', 'trophy-zoom-back'));
+  // keep original animateTo result for the reset block below via a dummy:
+  void(() => {
+  });
+}
+
+function closeTrophyZoom() {
+  if (!_trophyZoomed) return;
+  _trophyZoomed = false;
+  document.getElementById('award-blurb-panel').classList.remove('open');
+  document.querySelectorAll('.trophy-btn').forEach(b => b.classList.remove('active'));
+  _activeTrophy = null;
+  _closeZoomUI('trophy-zoom-overlay', 'trophy-zoom-back');
+}
+document.getElementById('trophy-zoom-back').addEventListener('click', closeTrophyZoom);
+
+// Trophy click → blurb
+document.querySelectorAll('.trophy-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const key = btn.dataset.trophy;
+    const data = TROPHY_DATA[key];
+    if (!data) return;
+    const panel = document.getElementById('award-blurb-panel');
+    const inner = document.getElementById('award-blurb-inner');
+
+    if (_activeTrophy === key) {
+      // Toggle off
+      panel.classList.remove('open');
+      btn.classList.remove('active');
+      _activeTrophy = null;
+      return;
+    }
+    _activeTrophy = key;
+    document.querySelectorAll('.trophy-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    inner.innerHTML = `
+      <div class="award-blurb-text">
+        <h3>${data.name}</h3>
+        <p><strong>Issued by:</strong> ${data.issuedBy}</p>
+        <p><strong>Scope:</strong> ${data.scope}</p>
+        <p><strong>Description:</strong> ${data.desc}</p>
+        <p><strong>Selection criteria:</strong> ${data.criteria}</p>
+      </div>
+      <div class="award-blurb-img"><img src="${data.img}" alt="${data.name}"></div>`;
+    panel.classList.add('open');
+  });
+});
+
+/* ── Consulting / Case Files zoom ────────────────────────── */
+const CF_CASES = [
+  {
+    tag: 'Consumer Goods · Growth Strategy',
+    title: 'Market Entry & Expansion Roadmap',
+    client: 'Fortune 500 CPG · 2022',
+    sections: [
+      { h:'Challenge', b:'Client was losing share in a high-growth adjacent category and needed a path to entry within 18 months.' },
+      { h:'Approach', b:'Sized the opportunity across 12 markets, ran consumer segmentation, and built a phased launch model with M&A and organic scenarios.' },
+      { h:'Outcome', b:'Board approved the recommended market entry strategy. Projected $400M revenue opportunity over 5 years.' },
+    ],
+  },
+  {
+    tag: 'Financial Services · Operations',
+    title: 'Operating Model Redesign',
+    client: 'Regional Bank · 2022',
+    sections: [
+      { h:'Challenge', b:'Post-merger integration had left overlapping functions, unclear ownership, and rising cost-to-serve ratios.' },
+      { h:'Approach', b:'Mapped end-to-end processes, benchmarked against peers, and designed a zero-based org structure with clear RACI.' },
+      { h:'Outcome', b:'Identified 18% cost reduction opportunity. Implementation roadmap adopted by leadership within 6 weeks.' },
+    ],
+  },
+  {
+    tag: 'Technology · Digital',
+    title: 'Digital Transformation Strategy',
+    client: 'B2B Software Co. · 2023',
+    sections: [
+      { h:'Challenge', b:'Legacy infrastructure and fragmented data architecture were blocking product velocity and customer insights.' },
+      { h:'Approach', b:'Ran a tech audit, prioritized modernization initiatives by impact/effort, and built the case for a cloud-first migration.' },
+      { h:'Outcome', b:'CTO secured board approval for a $60M multi-year transformation program based on the business case.' },
+    ],
+  },
+  {
+    tag: 'Healthcare · Strategy',
+    title: 'Portfolio Prioritization',
+    client: 'Global Pharma · 2023',
+    sections: [
+      { h:'Challenge', b:'R&D pipeline had grown too broad, diluting investment across too many therapeutic areas with unclear return profiles.' },
+      { h:'Approach', b:'Built a scoring framework across scientific differentiation, market size, competitive dynamics, and strategic fit to rank 40+ assets.' },
+      { h:'Outcome', b:'Leadership aligned on a focused portfolio of 12 priority assets. Resource reallocation freed up $200M+ in capital.' },
+    ],
+  },
+  {
+    tag: 'Retail · Commercial',
+    title: 'Pricing & Revenue Growth',
+    client: 'Specialty Retailer · 2023',
+    sections: [
+      { h:'Challenge', b:'Margin erosion from inconsistent pricing across regions and channels, with no systematic approach to promotional ROI.' },
+      { h:'Approach', b:'Conducted price elasticity analysis by SKU cluster, redesigned promo mechanics, and built a governance model for ongoing pricing decisions.' },
+      { h:'Outcome', b:'300bps gross margin improvement identified. Pricing playbook rolled out to 8 regional teams within one quarter.' },
+    ],
+  },
+];
+
+// Physical page index — each physical page has a front (even CF_CASES index) and back (odd)
+// physPage 0 → front=CF_CASES[0], back=CF_CASES[1]
+// physPage 1 → front=CF_CASES[2], back=CF_CASES[3]  etc.
+let _cfZoomed = false, _cfPhysPage = 0, _cfFlipping = false;
+const _cfNumPhysPages = Math.ceil(CF_CASES.length / 2);
+
+function _cfFrontIdx(p) { return p * 2; }
+function _cfBackIdx(p)  { return p * 2 + 1; }
+
+function openConsultingZoom() {
+  if (_cfZoomed) return;
+  _cfZoomed = true;
+  navMenu.classList.remove('open');
+  _cfPhysPage = 0;
+  _cfBuildScene();
+  _zoomToHotspot('consulting', 2.2, () => _openZoomUI('consulting-zoom-overlay', 'consulting-zoom-back'));
+  void(() => {
+  });
+}
+
+function closeConsultingZoom() {
+  if (!_cfZoomed) return;
+  _cfZoomed = false;
+  _closeZoomUI('consulting-zoom-overlay', 'consulting-zoom-back');
+}
+document.getElementById('consulting-zoom-back').addEventListener('click', closeConsultingZoom);
+
+/* Render one CF_CASES entry as HTML (safe fallback for out-of-range index) */
+function _cfPageHTML(idx) {
+  if (idx === undefined || idx >= CF_CASES.length) return '';
+  const c = CF_CASES[idx];
+  return `<div class="cf-tag">${c.tag}</div>
+    <div class="cf-title">${c.title}</div>
+    <div class="cf-sub">${c.client}</div>
+    ${c.sections.map(s=>`<div class="cf-section">${s.h}</div><div class="cf-body">${s.b}</div>`).join('')}`;
+}
+
+/* Build scene: left page (blank on page 0, content after flips) + spine + right page */
+function _cfBuildScene() {
+  const wrap = document.getElementById('cf-pages');
+  wrap.innerHTML = '';
+
+  // (no spine element — gap is created by the 0.5% CSS offset on each page)
+
+  // Left page — initially blank (no pages flipped yet)
+  const lp = document.createElement('div');
+  lp.id = 'cf-left-page';
+  lp.className = 'cf-left-page';
+  // blank on first open
+  wrap.appendChild(lp);
+
+  // Right page — front of physical page 0
+  const rp = document.createElement('div');
+  rp.id = 'cf-right-page';
+  rp.className = 'cf-right-page';
+  rp.innerHTML = _cfPageHTML(_cfFrontIdx(0));
+  wrap.appendChild(rp);
+
+  _updateCfNav();
+}
+
+function _updateCfNav() {
+  document.getElementById('cf-pagenum').textContent = `${_cfPhysPage + 1} / ${_cfNumPhysPages}`;
+  document.getElementById('cf-prev-arrow').disabled = _cfPhysPage === 0;
+  document.getElementById('cf-next-arrow').disabled = _cfPhysPage === _cfNumPhysPages - 1;
+}
+
+function _cfFlip(dir) {
+  if (_cfFlipping) return;
+  const targetPhys = _cfPhysPage + dir;
+  if (targetPhys < 0 || targetPhys >= _cfNumPhysPages) return;
+  _cfFlipping = true;
+
+  const wrap = document.getElementById('cf-pages');
+  const lp   = document.getElementById('cf-left-page');
+  const rp   = document.getElementById('cf-right-page');
+
+  if (dir > 0) {
+    // ── Forward flip ─────────────────────────────────────────
+    // Load the NEXT page into rp immediately and keep it visible.
+    // The turner (with current content) sweeps left over it, revealing
+    // the next page underneath as it lifts — like a real book.
+    const nextFront = _cfPageHTML(_cfFrontIdx(targetPhys));
+    rp.innerHTML = nextFront;
+    // rp stays visible — no hide
+
+    const turner = document.createElement('div');
+    turner.className = 'cf-turner';
+    turner.innerHTML = `
+      <div class="cf-turner-face">${_cfPageHTML(_cfFrontIdx(_cfPhysPage))}</div>
+      <div class="cf-turner-back">${_cfPageHTML(_cfBackIdx(_cfPhysPage))}</div>`;
+    wrap.appendChild(turner);
+
+    requestAnimationFrame(() => requestAnimationFrame(() => turner.classList.add('flip-fwd')));
+
+    setTimeout(() => {
+      _cfPhysPage = targetPhys;
+      lp.innerHTML = _cfPageHTML(_cfBackIdx(_cfPhysPage - 1));
+      _updateCfNav();
+      turner.remove();
+      _cfFlipping = false;
+    }, 510);
+
+  } else {
+    // ── Back flip ────────────────────────────────────────────
+    // Load the previous LHS content immediately and keep it visible —
+    // the turner sweeps right and reveals the left page underneath, just
+    // like the forward flip reveals the right page.
+    lp.innerHTML = targetPhys > 0 ? _cfPageHTML(_cfBackIdx(targetPhys - 1)) : '';
+    // lp stays visible
+
+    const turner = document.createElement('div');
+    turner.className = 'cf-turner-left';
+    turner.innerHTML = `
+      <div class="cf-turner-face">${_cfPageHTML(_cfBackIdx(targetPhys))}</div>
+      <div class="cf-turner-back">${_cfPageHTML(_cfFrontIdx(targetPhys))}</div>`;
+    wrap.appendChild(turner);
+    rp.style.visibility = 'hidden';
+
+    requestAnimationFrame(() => requestAnimationFrame(() => turner.classList.add('flip-bck')));
+
+    setTimeout(() => {
+      _cfPhysPage = targetPhys;
+      rp.innerHTML = _cfPageHTML(_cfFrontIdx(_cfPhysPage));
+      rp.style.visibility = 'visible';
+      _updateCfNav();
+      turner.remove();
+      _cfFlipping = false;
+    }, 510);
+  }
+}
+
+document.getElementById('cf-prev-arrow').addEventListener('click', () => _cfFlip(-1));
+document.getElementById('cf-next-arrow').addEventListener('click', () => _cfFlip(1));
+
+/* ── Speaker / iPod zoom ─────────────────────────────────── */
+const LOFI_CREDITS = {
+  morning:   { name:'Morning Routine', artist:'Ghostrifter Official', license:'CC BY-SA 3.0 · chosic.com' },
+  afternoon: { name:'Butterfly',       artist:'Purrple Cat',          license:'CC BY-SA 3.0 · chosic.com' },
+  golden:    { name:'Golden Hour',     artist:'Purrple Cat',          license:'CC BY-SA 3.0 · chosic.com' },
+  night:     { name:'Purple Dream',    artist:'Ghostrifter Official', license:'CC BY-ND 3.0 · chosic.com' },
+  late:      { name:'Sonder',          artist:'Purrple Cat',          license:'CC BY-SA 3.0 · chosic.com' },
+  weather:   { name:'Green Tea',       artist:'Purrple Cat',          license:'CC BY-SA 3.0 · chosic.com' },
+};
+
+function _updateIpodScreen() {
+  const key = _lofiKey || 'afternoon';
+  const info = LOFI_CREDITS[key] || {};
+  const nameEl    = document.getElementById('ipod-track-name');
+  const artistEl  = document.getElementById('ipod-track-artist');
+  const licenseEl = document.getElementById('ipod-track-license');
+  if (nameEl)    nameEl.textContent    = info.name    || '—';
+  if (artistEl)  artistEl.textContent  = info.artist  || '—';
+  if (licenseEl) licenseEl.textContent = info.license || '';
+}
+
+let _speakerZoomed = false;
+
+/* Wire Spotify playback events → only pause lofi when Spotify plays.
+   Lofi resumes explicitly via the iPod center button — not automatically
+   (Spotify keeps running in bg after modal close, so auto-resume would fight it). */
+function _wireSpotifyLofi(ctrl) {
+  let _resumeTimer = null;
+  ctrl.addListener('playback_update', (e) => {
+    clearTimeout(_resumeTimer);
+    if (!e.data.isPaused) {
+      // Spotify starts playing → cut lofi instantly (zero overlap)
+      if (_lofiAudio && !_lofiAudio.paused) {
+        _lofiAudio.volume = 0;
+        _lofiAudio.pause();
+      }
+    } else {
+      // Spotify paused → resume lofi after 400ms (audio hw fully stops first)
+      _resumeTimer = setTimeout(() => {
+        if (_lofiAudio && _lofiAudio.paused) {
+          _lofiAudio.volume = 0;
+          _lofiAudio.play().then(() => _fadeLofi(LOFI_VOL)).catch(() => {});
+        }
+      }, 400);
+    }
+  });
+}
+
+/* Switch back to lofi explicitly (iPod center button) */
+function _resumeLofi() {
+  if (_spotifyCtrl) { try { _spotifyCtrl.pause(); } catch(e) {} }
+  // Small delay to let Spotify fully stop before lofi starts
+  setTimeout(() => {
+    if (_lofiAudio) {
+      _lofiAudio.volume = 0;
+      _lofiAudio.play().then(() => _fadeLofi(LOFI_VOL)).catch(() => {});
+    }
+  }, 300);
+}
+
+function openSpeakerZoom() {
+  if (_speakerZoomed) return;
+  _speakerZoomed = true;
+  navMenu.classList.remove('open');
+
+  _updateIpodScreen();
+
+  // Move Spotify embed into the iPod panel slot
+  if (!_spotifyEl) {
+    _spotifyEl = document.createElement('div');
+    document.getElementById('spotify-bg').appendChild(_spotifyEl);
+  }
+  const slot = document.getElementById('ipod-spotify-slot');
+  if (slot) slot.appendChild(_spotifyEl);
+
+  // Init/resume Spotify
+  if (_spotifyCtrl) {
+    try { _spotifyCtrl.play(); } catch(e) {}
+  } else if (_spotifyAPI) {
+    _spotifyAPI.createController(_spotifyEl, {
+      width:'100%', height:'352',
+      uri:'spotify:playlist:37i9dQZEVXdgEheV90pQ48',
+    }, (ctrl) => { _spotifyCtrl = ctrl; _wireSpotifyLofi(ctrl); });
+  } else {
+    initSpotifyAPI();
+  }
+
+  _zoomToHotspot('speaker', 2.2, () => _openZoomUI('speaker-zoom-overlay', 'speaker-zoom-back'));
+}
+
+function closeSpeakerZoom() {
+  if (!_speakerZoomed) return;
+  _speakerZoomed = false;
+  // Park embed back (keep playing — bug fix)
+  if (_spotifyEl && _spotifyEl.parentNode) {
+    document.getElementById('spotify-bg').appendChild(_spotifyEl);
+  }
+  _closeZoomUI('speaker-zoom-overlay', 'speaker-zoom-back');
+}
+document.getElementById('speaker-zoom-back').addEventListener('click', closeSpeakerZoom);
+
+/* ── Music / Record coverflow zoom ──────────────────────── */
+const RECORD_TITLES = ['Rolling Sloans', 'South Side Free Music Program', 'Classical Origins'];
+const N_RECORDS = 3;
+let _musicZoomed = false;
+let _musicCenter = 0; // Rolling Sloans starts in focus
+
+/* Circular position: maps each slot's idx to -1, 0, or +1 relative to center.
+   Uses modular arithmetic so the carousel wraps infinitely. */
+function _setCoverflowPositions() {
+  document.querySelectorAll('.record-slot').forEach(slot => {
+    const idx = parseInt(slot.dataset.idx);
+    // Raw distance: 0, 1, or 2. Map 2 → -1 (wrap around left)
+    const raw = ((idx - _musicCenter) % N_RECORDS + N_RECORDS) % N_RECORDS;
+    slot.dataset.pos = raw === 2 ? '-1' : String(raw);
+  });
+  document.getElementById('music-record-title').textContent = RECORD_TITLES[_musicCenter];
+  // Never disable arrows — infinite circular carousel
+  document.getElementById('music-prev').disabled = false;
+  document.getElementById('music-next').disabled = false;
+}
+
+function openMusicZoom() {
+  if (_musicZoomed) return;
+  _musicZoomed = true;
+  navMenu.classList.remove('open');
+  _musicCenter = 0; // Rolling Sloans always first
+  document.querySelectorAll('.record-card').forEach(c => c.classList.remove('flipped'));
+  _setCoverflowPositions();
+  _zoomToHotspot('piano', 2.2, () => _openZoomUI('music-zoom-overlay', 'music-zoom-back'));
+}
+
+function closeMusicZoom() {
+  if (!_musicZoomed) return;
+  _musicZoomed = false;
+  _closeZoomUI('music-zoom-overlay', 'music-zoom-back');
+}
+document.getElementById('music-zoom-back').addEventListener('click', closeMusicZoom);
+
+// Circular navigation — wraps infinitely
+document.getElementById('music-prev').addEventListener('click', () => {
+  _musicCenter = (_musicCenter - 1 + N_RECORDS) % N_RECORDS;
+  document.querySelectorAll('.record-card').forEach(c => c.classList.remove('flipped'));
+  _setCoverflowPositions();
+});
+document.getElementById('music-next').addEventListener('click', () => {
+  _musicCenter = (_musicCenter + 1) % N_RECORDS;
+  document.querySelectorAll('.record-card').forEach(c => c.classList.remove('flipped'));
+  _setCoverflowPositions();
+});
+
+// Click center record → flip front/back
+document.querySelectorAll('.record-slot').forEach(slot => {
+  slot.addEventListener('click', () => {
+    if (slot.dataset.pos !== '0') {
+      // Clicking side record → bring it to center
+      const idx = parseInt(slot.dataset.idx);
+      _musicCenter = idx;
+      document.querySelectorAll('.record-card').forEach(c => c.classList.remove('flipped'));
+      _setCoverflowPositions();
+    } else {
+      // Clicking center record → flip
+      const card = slot.querySelector('.record-card');
+      card.classList.toggle('flipped');
+    }
+  });
+});
+
+/* ── About / Mirror zoom ─────────────────────────────────── */
+let _aboutZoomed = false;
+
+function openAboutZoom() {
+  if (_aboutZoomed) return;
+  _aboutZoomed = true;
+  navMenu.classList.remove('open');
+  _zoomToHotspot('mirror', 3.0, () => _openZoomUI('about-zoom-overlay', 'about-zoom-back'));
+}
+
+function closeAboutZoom() {
+  if (!_aboutZoomed) return;
+  _aboutZoomed = false;
+  _closeZoomUI('about-zoom-overlay', 'about-zoom-back');
+}
+document.getElementById('about-zoom-back').addEventListener('click', closeAboutZoom);
+
+/* ── Bookshelf zoom ──────────────────────────────────────── */
+let _bookshelfZoomed = false;
+
+function openBookshelfZoom() {
+  if (_bookshelfZoomed) return;
+  _bookshelfZoomed = true;
+  navMenu.classList.remove('open');
+  const hs = document.querySelector('[data-key="books"]');
+  _zoomToHotspot('books', 2.2, () => _openZoomUI('bookshelf-zoom-overlay', 'bookshelf-zoom-back'));
+}
+
+function closeBookshelfZoom() {
+  if (!_bookshelfZoomed) return;
+  _bookshelfZoomed = false;
+  _closeZoomUI('bookshelf-zoom-overlay', 'bookshelf-zoom-back');
+}
+document.getElementById('bookshelf-zoom-back').addEventListener('click', closeBookshelfZoom);
+
+/* ── Monitor zoom ─────────────────────────────────────────── */
+let _monitorZoomed = false;
+
+function openMonitorZoom() {
+  if (_monitorZoomed) return;
+  _monitorZoomed = true;
+  navMenu.classList.remove('open');
+
+  const hs  = document.querySelector('[data-key="laptop"]');
+  const pct = hs ? parseFloat(hs.style.left) / 100 : 0.46;
+  const destX = clamp(-(imgW * pct - window.innerWidth * 0.5));
+
+  // Render browser content into the monitor screen first
+  renderBrowserInMonitor();
+  _zoomToHotspot('laptop', 2.2, () => _openZoomUI('monitor-zoom-overlay', 'monitor-zoom-back'));
+}
+
+function closeMonitorZoom() {
+  if (!_monitorZoomed) return;
+  _monitorZoomed = false;
+  _closeZoomUI('monitor-zoom-overlay', 'monitor-zoom-back');
+}
+document.getElementById('monitor-zoom-back').addEventListener('click', closeMonitorZoom);
+
+// Wire up Formspree submission
+(function() {
+  const FORMSPREE_ID = 'YOUR_FORM_ID';
+  const form = document.getElementById('note-form');
+  if (!form) return;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name     = document.getElementById('nf-name').value.trim();
+    const subject  = document.getElementById('nf-subject').value.trim();
+    const email    = document.getElementById('nf-email').value.trim();
+    const linkedin = document.getElementById('nf-linkedin').value.trim();
+    const msg      = document.getElementById('nf-msg').value.trim();
+    const status   = document.getElementById('nf-status');
+    if (!name || !email || !msg) {
+      const missing = [!name&&'name', !email&&'email', !msg&&'message'].filter(Boolean);
+      status.style.color = '#c05a2a'; status.textContent = 'please fill in: ' + missing.join(', ');
+      return;
+    }
+    const btn = form.querySelector('.note-send');
+    btn.disabled = true; btn.textContent = 'sending…';
+    if (FORMSPREE_ID === 'YOUR_FORM_ID') {
+      const sub  = encodeURIComponent((subject||'note') + ' — from ' + name);
+      const body = encodeURIComponent(`${msg}\n\n— ${name}\n${email}${linkedin?'\n'+linkedin:''}`);
+      window.open(`mailto:susy.liu320@gmail.com?subject=${sub}&body=${body}`);
+      status.style.color = '#7a5c2e'; status.textContent = '✓ opening email client — thanks, ' + name + '!';
+      btn.textContent = 'sent ✓';
+      return;
+    }
+    try {
+      const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+        method:'POST', headers:{'Content-Type':'application/json',Accept:'application/json'},
+        body:JSON.stringify({name,subject,email,linkedin,message:msg})
+      });
+      if (res.ok) {
+        status.style.color = '#3a7a3a';
+        status.textContent = '✓ sent! thanks for reaching out, ' + name + ' 🌿';
+        btn.textContent = 'sent ✓'; form.reset();
+      } else throw new Error();
+    } catch {
+      status.style.color = '#c05a2a';
+      status.textContent = 'something went wrong — try susy.liu320@gmail.com directly';
+      btn.disabled = false; btn.textContent = 'send ✉';
+    }
+  });
+})();
+
 function animateTo(destX,cb) {
   cancelAnimationFrame(rafId);
   const from=curX,dist=destX-from,dur=750,t0=performance.now();
@@ -2855,6 +5085,166 @@ function animateTo(destX,cb) {
 }
 
 setInterval(applyLighting, 60000);
+
+/* ============================================================
+   LOFI MUSIC — time-of-day + weather-aware background tracks
+============================================================ */
+const LOFI_TRACKS = {
+  morning:   'assets/audio/Morning-Routine-Lofi-Study-Music%28chosic.com%29.mp3',
+  afternoon: 'assets/audio/Butterfly-chosic.com_.mp3',
+  golden:    'assets/audio/Golden-Hour-chosic.com_.mp3',
+  night:     'assets/audio/Ghostrifter-Official-Purple-Dream%28chosic.com%29.mp3',
+  late:      'assets/audio/Sonder%28chosic.com%29.mp3',
+  weather:   'assets/audio/purrple-cat-green-tea%28chosic.com%29.mp3',
+};
+
+let _lofiAudio = null;
+let _lofiSrc   = null;
+let _lofiKey   = null;  // current track key (for iPod display)
+const LOFI_VOL = 0.32;
+
+function _getLofiKey() {
+  if (['rain','snow','fog','storm'].includes(currentWeather)) return 'weather';
+  const lbl = getTimeCfg().label;
+  if (lbl === 'morning')                           return 'morning';
+  if (lbl === 'afternoon' || lbl === 'late afternoon') return 'afternoon';
+  if (lbl === 'golden hour')                       return 'golden';
+  if (lbl === 'dusk' || lbl === 'night')           return 'night';
+  return 'late';
+}
+
+function _getLofiSrc() {
+  if (['rain','snow','fog','storm'].includes(currentWeather)) return LOFI_TRACKS.weather;
+  const lbl = getTimeCfg().label;
+  if (lbl === 'morning')                      return LOFI_TRACKS.morning;
+  if (lbl === 'afternoon' || lbl === 'late afternoon') return LOFI_TRACKS.afternoon;
+  if (lbl === 'golden hour')                  return LOFI_TRACKS.golden;
+  if (lbl === 'dusk' || lbl === 'night')      return LOFI_TRACKS.night;
+  if (lbl === 'late night' || lbl === 'pre-dawn') return LOFI_TRACKS.late;
+  return LOFI_TRACKS.afternoon;
+}
+
+function _fadeLofi(targetVol, onDone) {
+  if (!_lofiAudio) return onDone && onDone();
+  const step = targetVol > _lofiAudio.volume ? 0.015 : -0.015;
+  const iv = setInterval(() => {
+    const next = _lofiAudio.volume + step;
+    if ((step > 0 && next >= targetVol) || (step < 0 && next <= targetVol)) {
+      _lofiAudio.volume = Math.max(0, Math.min(1, targetVol));
+      clearInterval(iv); if (onDone) onDone();
+    } else {
+      _lofiAudio.volume = Math.max(0, Math.min(1, next));
+    }
+  }, 40);
+}
+
+function startLofi() {
+  if (_lofiAudio) return;
+  _lofiAudio = new Audio();
+  _lofiAudio.loop = true;
+  _lofiAudio.volume = 0;
+  _lofiKey = _getLofiKey();
+  _lofiSrc = LOFI_TRACKS[_lofiKey];
+  _lofiAudio.src = _lofiSrc;
+  _lofiAudio.play().then(() => _fadeLofi(LOFI_VOL)).catch(() => {});
+  _updateIpodScreen();
+}
+
+function switchLofi() {
+  if (!_lofiAudio) return;
+  const nextKey = _getLofiKey();
+  const nextSrc = LOFI_TRACKS[nextKey];
+  if (nextSrc === _lofiSrc) return;
+  _fadeLofi(0, () => {
+    _lofiKey = nextKey;
+    _lofiSrc = nextSrc;
+    _lofiAudio.src = nextSrc;
+    _lofiAudio.play().then(() => _fadeLofi(LOFI_VOL)).catch(() => {});
+    _updateIpodScreen();
+  });
+}
+
+// Hook switchLofi into weather and lighting changes
+const _origSetWeather = setWeather;
+setWeather = function(name) { _origSetWeather(name); switchLofi(); };
+const _origApplyLighting = applyLighting;
+applyLighting = function() { _origApplyLighting(); switchLofi(); };
+
+/* ============================================================
+   TEST MODE
+============================================================ */
+let testMode = false;
+// _testOverrideHours and _testSkyOverride are declared with `var` near getTimeCfg above
+
+document.getElementById('test-toggle').addEventListener('click', () => {
+  testMode = !testMode;
+  document.body.classList.toggle('test-mode', testMode);
+});
+document.getElementById('test-close').addEventListener('click', () => {
+  testMode = false;
+  document.body.classList.remove('test-mode');
+});
+
+document.querySelectorAll('.tp-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const group = btn.closest('.tp-group');
+    const t = btn.dataset.test;
+
+    // Reset all
+    if (t === 'reset') {
+      _testOverrideHours = null;
+      _testSkyOverride   = null;
+      _currentSkyAnim    = null;
+      setWeather('clear');
+      applyLighting();
+      // Re-apply real sky
+      const realSky = getTimeCfg().sky;
+      applySky(realSky);
+      updateSkyAnims(realSky);
+      document.querySelectorAll('.tp-item').forEach(b => b.classList.remove('active'));
+      return;
+    }
+
+    // One-shot: flash button, fire animation, return
+    if (btn.classList.contains('tp-oneshot')) {
+      btn.classList.add('flash');
+      setTimeout(() => btn.classList.remove('flash'), 600);
+      if (t === 'tree-rustle') { _doRustle(); }
+      if (t === 'lamp-flicker') {
+        if (!lampOn) { lampOn = true; setLampOverlays(true); setTimeout(_doLampFlicker, 400); }
+        else _doLampFlicker();
+      }
+      return;
+    }
+
+    // Grouped radio: toggle off if already active
+    if (group) {
+      const wasActive = btn.classList.contains('active');
+      group.querySelectorAll('.tp-item').forEach(b => b.classList.remove('active'));
+      if (!wasActive) btn.classList.add('active');
+
+      // Time of day → overlays only, never touches sky
+      if (btn.dataset.hours !== undefined) {
+        _testOverrideHours = wasActive ? null : parseInt(btn.dataset.hours);
+        applyLighting(); // applyLighting skips sky when _testOverrideHours is set
+      }
+
+      // Sky state → image + animations only, never touches time overlays
+      if (btn.dataset.sky !== undefined) {
+        _testSkyOverride = wasActive ? null : btn.dataset.sky;
+        _currentSkyAnim  = null;
+        const skyToUse = _testSkyOverride || getTimeCfg().sky;
+        applySky(skyToUse);
+        updateSkyAnims(skyToUse);
+      }
+
+      // Precipitation
+      if (btn.dataset.wx !== undefined) {
+        setWeather(wasActive ? 'clear' : btn.dataset.wx);
+      }
+    }
+  });
+});
 
 /* ============================================================
    SPOTIFY  —  official iFrame API
@@ -2908,8 +5298,8 @@ function openSpotifyModal() {
     // API loaded but no controller yet — create one
     _spotifyAPI.createController(_spotifyEl, {
       width: '100%', height: '352',
-      uri: 'spotify:playlist:37i9dQZF1FbGvzBhiAw8na',
-    }, (ctrl) => { _spotifyCtrl = ctrl; try { ctrl.play(); } catch(e) {} });
+      uri: 'spotify:playlist:37i9dQZEVXdgEheV90pQ48',
+    }, (ctrl) => { _spotifyCtrl = ctrl; _wireSpotifyLofi(ctrl); });
   } else {
     // API still loading — override callback so it fires when ready
     const prev = window.onSpotifyIframeApiReady;
@@ -2918,8 +5308,8 @@ function openSpotifyModal() {
       if (typeof prev === 'function') prev(IFrameAPI);
       IFrameAPI.createController(_spotifyEl, {
         width: '100%', height: '352',
-        uri: 'spotify:playlist:37i9dQZF1FbGvzBhiAw8na',
-      }, (ctrl) => { _spotifyCtrl = ctrl; try { ctrl.play(); } catch(e) {} });
+        uri: 'spotify:playlist:37i9dQZEVXdgEheV90pQ48',
+      }, (ctrl) => { _spotifyCtrl = ctrl; _wireSpotifyLofi(ctrl); });
     };
     initSpotifyAPI(); // ensure the script is loading
   }
@@ -3009,15 +5399,13 @@ function spawnLeaf() {
 function scheduleLeaf() {
   setTimeout(spawnLeaf, 900 + Math.random() * 2200);
 }
-// Kick off after entering room
+// Kick off after entering room (leaf fall removed)
 setTimeout(() => {
   if (document.body.classList.contains('room-entered')) {
-    scheduleLeaf();
     _scheduleRustle();
   } else {
     document.getElementById('entry-door').addEventListener('click', () => {
-      setTimeout(scheduleLeaf,   2800);
-      setTimeout(_scheduleRustle, 5000 + Math.random() * 20000); // first rustle 5–25s in
+      setTimeout(_scheduleRustle, 5000 + Math.random() * 20000);
     }, { once:true });
   }
 }, 3000);
