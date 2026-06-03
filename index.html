@@ -195,7 +195,8 @@
        LIGHTING OVERLAYS
     ============================================================ */
     .overlay { position:absolute; pointer-events:none; transition:background 5s ease, opacity 5s ease, mix-blend-mode 0s; }
-    #ov-ambient { inset:0; z-index:2; }
+    #ov-ambient  { inset:0; z-index:2; }
+    #ov-ambient2 { inset:0; z-index:2; mix-blend-mode:screen; }
     #ov-window  { left:18%; top:0; width:24%; height:72%; border-radius:0 0 60% 60%; filter:blur(50px); z-index:3; }
     #ov-lamp-cube {
       /* Upper lamp glow — close halo around the bulb */
@@ -1100,6 +1101,119 @@
       text-align:center; font-style:italic; padding:0 0.5rem;
     }
 
+    /* ============================================================
+       SKY LAYER — time-of-day background seen through window
+    ============================================================ */
+    #sky-layer {
+      position: absolute;
+      left: 14%; top: 0%; width: 28%; height: 54%;
+      z-index: 1;
+      overflow: hidden;
+      pointer-events: none;
+      -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 40%, black 55%, transparent 100%);
+      mask-image:         radial-gradient(ellipse 90% 90% at 50% 40%, black 55%, transparent 100%);
+    }
+    #sky-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity 4s ease;
+    }
+
+    /* ============================================================
+       TREE LAYER — outdoor tree through window, reacts to wind/light
+    ============================================================ */
+    #tree-layer {
+      position: absolute;
+      left: 14%; top: 0%; width: 28%; height: 60%;
+      z-index: 2;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .tree-svg {
+      position: absolute;
+      bottom: -4%; left: 50%;
+      transform: translateX(-50%);
+      width: 85%; height: 95%;
+      transform-origin: bottom center;
+      animation: tree-sway 9s ease-in-out infinite;
+      transition: filter 5s ease;
+    }
+    @keyframes tree-sway {
+      0%, 100% { transform: translateX(-50%) rotate(0deg); }
+      28%       { transform: translateX(-50%) rotate(0.9deg); }
+      72%       { transform: translateX(-50%) rotate(-0.7deg); }
+    }
+    body.weather-wind .tree-svg,
+    body.weather-storm .tree-svg {
+      animation: tree-sway-wind 2.2s ease-in-out infinite;
+    }
+    @keyframes tree-sway-wind {
+      0%, 100% { transform: translateX(-50%) rotate(0deg); }
+      30%       { transform: translateX(-50%) rotate(4deg); }
+      65%       { transform: translateX(-50%) rotate(-2.5deg); }
+    }
+
+    /* ============================================================
+       WEATHER OVERLAYS — CSS-driven atmosphere layers
+    ============================================================ */
+    /* Fog / Haze */
+    #ov-fog {
+      position: absolute; inset: 0; z-index: 6; opacity: 0;
+      pointer-events: none;
+      transition: opacity 5s ease;
+      background: radial-gradient(ellipse at 30% 40%, rgba(195,208,228,0.52) 0%, rgba(170,188,215,0.22) 55%, transparent 100%);
+      filter: blur(8px);
+      animation: fog-drift 22s ease-in-out infinite;
+    }
+    body.weather-fog #ov-fog { opacity: 1; }
+    @keyframes fog-drift {
+      0%, 100% { transform: translateX(0) scaleX(1); }
+      50%       { transform: translateX(2.5%) scaleX(1.02); }
+    }
+
+    /* Wind streaks */
+    #ov-wind {
+      position: absolute; inset: 0; z-index: 5; opacity: 0;
+      pointer-events: none;
+      transition: opacity 2s ease;
+      background-image: repeating-linear-gradient(
+        98deg,
+        transparent 0px, transparent 12px,
+        rgba(210,225,255,0.045) 13px, rgba(210,225,255,0.045) 14px
+      );
+      background-size: 50px 100%;
+      animation: wind-streak 0.65s linear infinite;
+    }
+    body.weather-wind #ov-wind,
+    body.weather-storm #ov-wind { opacity: 1; }
+    @keyframes wind-streak {
+      from { background-position: 0 0; }
+      to   { background-position: -100px 0; }
+    }
+
+    /* Snow */
+    #ov-snow {
+      position: absolute; inset: 0; z-index: 7; opacity: 0;
+      pointer-events: none;
+      transition: opacity 3s ease;
+    }
+    body.weather-snow #ov-snow { opacity: 1; }
+    .snow-flake {
+      position: absolute;
+      top: -8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.88);
+      pointer-events: none;
+      animation: snow-fall linear infinite;
+    }
+    @keyframes snow-fall {
+      0%   { transform: translateY(0) translateX(0)           rotate(0deg);   opacity: 0; }
+      8%   { opacity: 0.85; }
+      90%  { opacity: 0.6; }
+      100% { transform: translateY(102vh) translateX(var(--sx,15px)) rotate(var(--sr,90deg)); opacity: 0; }
+    }
+
     /* Subtle curtain flutter (overlay, not the actual curtain pixels) */
     #curtain-flutter {
       position: absolute;
@@ -1177,6 +1291,24 @@
 <!-- Room -->
 <div id="room-container">
   <div id="room-wrapper">
+    <!-- Sky layer — behind room image, visible through window -->
+    <div id="sky-layer">
+      <img id="sky-img" src="assets/images/sky/clear.png" alt="" draggable="false" onerror="this.style.opacity=0">
+    </div>
+    <!-- Tree layer — animated outdoor tree through window -->
+    <div id="tree-layer">
+      <svg class="tree-svg" viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+        <rect x="88" y="218" width="24" height="82" rx="5" fill="rgba(38,22,8,0.72)"/>
+        <rect x="98" y="160" width="6"  height="65" rx="3" fill="rgba(38,22,8,0.55)" transform="rotate(-18,101,160)"/>
+        <rect x="96" y="170" width="5"  height="52" rx="3" fill="rgba(38,22,8,0.50)" transform="rotate(14,98,170)"/>
+        <ellipse cx="100" cy="135" rx="68" ry="95" fill="rgba(28,48,18,0.60)"/>
+        <ellipse cx="68"  cy="165" rx="42" ry="58" fill="rgba(33,55,20,0.52)"/>
+        <ellipse cx="133" cy="158" rx="46" ry="62" fill="rgba(26,47,16,0.52)"/>
+        <ellipse cx="100" cy="95"  rx="50" ry="68" fill="rgba(36,62,22,0.58)"/>
+        <ellipse cx="100" cy="68"  rx="32" ry="44" fill="rgba(42,72,26,0.50)"/>
+      </svg>
+    </div>
+
     <img id="room-image" src="assets/images/room.png" alt="Susy's room" draggable="false">
 
     <!-- Window ambient animations — positioned over the bay window area -->
@@ -1207,12 +1339,16 @@
     <div id="lamp-reveal"><img src="assets/images/room.png" draggable="false" alt=""></div>
 
     <div class="overlay" id="ov-ambient"></div>
+    <div class="overlay" id="ov-ambient2"></div>
     <div class="overlay" id="ov-window"></div>
     <div class="overlay" id="ov-lamp-cube"></div>
     <div id="ov-lamp-pool"></div>
     <div id="ov-lamp-flicker"></div>
     <div class="overlay" id="ov-lamp-edison"></div>
     <div class="overlay" id="ov-rain"></div>
+    <div id="ov-fog"></div>
+    <div id="ov-wind"></div>
+    <div id="ov-snow"></div>
 
     <!-- HOTSPOTS — drag to position in edit mode -->
     <div class="hotspot" data-key="worldmap"    data-label="significant places"  style="left:4.5%;  top:32%;"><div class="hs-ring"></div><div class="hs-label">significant places</div></div>
@@ -1744,66 +1880,82 @@ function renderHobbiesBag() {
 const TIME_CONFIGS = [
   {
     hours:[0,1,2,3,4], label:'late night',
-    imgFilter:  'saturate(0.45) brightness(0.62)',
-    ambient:    'rgba(12,18,55,0.68)',                  // deep indigo blanket
-    window:     'rgba(170,205,255,0.16)',                // pale blue moonlight spill
+    imgFilter:  'saturate(0.5) brightness(0.58) hue-rotate(10deg)',
+    ambient:    'rgba(28,8,88,0.78)',                    // rich deep purple-indigo
+    ambient2:   'rgba(0,20,80,0.30)',                    // secondary cool blue layer
+    window:     'rgba(140,175,255,0.22)',                // pale blue moonlight spill
     moonlight:  true,
+    sky:        'night',   // assets/images/sky/night.png
     cubeOpacity:0.55, cubeBg:'radial-gradient(circle,rgba(255,195,75,0.42) 0%,transparent 70%)',
   },
   {
     hours:[5,6], label:'pre-dawn',
-    imgFilter:  'saturate(0.60) brightness(0.72)',
-    ambient:    'rgba(55,35,90,0.38)',                   // fading deep violet
-    window:     'rgba(190,210,255,0.18)',                // blue-gray sky starting to wake
+    imgFilter:  'saturate(0.62) brightness(0.74)',
+    ambient:    'rgba(70,22,115,0.48)',                  // vivid violet pre-dawn
+    ambient2:   'rgba(10,30,100,0.20)',
+    window:     'rgba(185,195,255,0.22)',                // blue-gray sky waking
     moonlight:  true,
+    sky:        'cloudy',
     cubeOpacity:0.30, cubeBg:'radial-gradient(circle,rgba(255,195,75,0.28) 0%,transparent 70%)',
   },
   {
     hours:[7,8,9], label:'morning',
     imgFilter:  'saturate(0.90) brightness(0.96)',
     ambient:    'rgba(220,185,140,0.07)',                // faint warm cream wash
+    ambient2:   null,
     window:     'rgba(255,235,200,0.26)',                // soft warm morning light
     moonlight:  false,
+    sky:        'clear',
     cubeOpacity:0, cubeBg:'',
   },
   {
     hours:[10,11,12,13,14], label:'afternoon',
     imgFilter:  'saturate(1.0) brightness(1.0)',         // reference — no filter
     ambient:    'rgba(0,0,0,0)',
+    ambient2:   null,
     window:     'rgba(255,255,240,0.08)',                // subtle bright daylight
     moonlight:  false,
+    sky:        'clear',
     cubeOpacity:0, cubeBg:'',
   },
   {
     hours:[15,16], label:'late afternoon',
     imgFilter:  'saturate(1.05) brightness(1.01)',
     ambient:    'rgba(230,155,55,0.06)',                 // faint warm amber tint
+    ambient2:   null,
     window:     'rgba(255,210,130,0.20)',
     moonlight:  false,
+    sky:        'clear',
     cubeOpacity:0, cubeBg:'',
   },
   {
     hours:[17,18], label:'golden hour',
     imgFilter:  'saturate(1.18) brightness(1.03)',       // punchy warm saturation
     ambient:    'rgba(210,100,18,0.18)',                 // amber-orange wash
+    ambient2:   null,
     window:     'rgba(255,145,35,0.40)',                 // deep golden beam
     moonlight:  false,
+    sky:        'sunset',
     cubeOpacity:0.05, cubeBg:'radial-gradient(circle,rgba(255,190,70,0.10) 0%,transparent 70%)',
   },
   {
     hours:[19,20], label:'dusk',
-    imgFilter:  'saturate(0.82) brightness(0.88)',
-    ambient:    'rgba(75,42,115,0.32)',                  // purple dusk cast
-    window:     'rgba(120,80,180,0.38)',                 // violet twilight window
+    imgFilter:  'saturate(0.85) brightness(0.86)',
+    ambient:    'rgba(90,35,145,0.42)',                  // deep saturated purple dusk
+    ambient2:   'rgba(0,10,80,0.18)',
+    window:     'rgba(130,70,200,0.42)',                 // violet twilight window
     moonlight:  false,
+    sky:        'overcast',
     cubeOpacity:0.32, cubeBg:'radial-gradient(circle,rgba(255,190,70,0.26) 0%,transparent 70%)',
   },
   {
     hours:[21,22,23], label:'night',
-    imgFilter:  'saturate(0.52) brightness(0.70)',       // desaturated, dim
-    ambient:    'rgba(10,15,48,0.62)',                   // dark indigo night
-    window:     'rgba(155,195,255,0.20)',                // cool blue-white moonlight
+    imgFilter:  'saturate(0.55) brightness(0.65) hue-rotate(8deg)',
+    ambient:    'rgba(20,5,75,0.72)',                    // saturated blue-purple night
+    ambient2:   'rgba(0,15,70,0.28)',                    // cool blue depth
+    window:     'rgba(130,180,255,0.24)',                // cool moonlight blue
     moonlight:  true,
+    sky:        'night',
     cubeOpacity:0.50, cubeBg:'radial-gradient(circle,rgba(255,200,80,0.40) 0%,transparent 70%)',
   },
 ];
@@ -1817,11 +1969,14 @@ function applyLighting() {
   // Full-room ambient color cast
   document.getElementById('ov-ambient').style.background = cfg.ambient;
 
+  // Secondary cool blue/purple layer for night depth
+  const amb2 = document.getElementById('ov-ambient2');
+  amb2.style.background = cfg.ambient2 || 'rgba(0,0,0,0)';
+  amb2.style.opacity     = cfg.ambient2 ? '1' : '0';
+
   // Window glow — moonlight is a cool lighter spill; daylight is warm beam from top
-  // At night use 'screen'-style mix by centering the glow lower so it spills INTO room
   const winEl = document.getElementById('ov-window');
   if (cfg.moonlight) {
-    // Moonlight: soft wide pool from the window area, cooler and lower
     winEl.style.background = `radial-gradient(ellipse at 48% 20%, ${cfg.window} 0%, rgba(140,175,255,0.06) 55%, transparent 85%)`;
     winEl.style.mixBlendMode = 'screen';
   } else {
@@ -1829,10 +1984,86 @@ function applyLighting() {
     winEl.style.mixBlendMode = 'normal';
   }
 
+  // Sky image swap
+  const skyImg = document.getElementById('sky-img');
+  if (skyImg && cfg.sky) {
+    const nextSrc = `assets/images/sky/${cfg.sky}.png`;
+    if (!skyImg.src.endsWith(nextSrc)) {
+      skyImg.style.opacity = '0';
+      setTimeout(() => {
+        skyImg.src = nextSrc;
+        skyImg.style.opacity = '1';
+      }, 300);
+    }
+  }
+
+  // Tree tint reacts to lighting — warmer by day, cooler/desaturated at night
+  const treeSvg = document.querySelector('.tree-svg');
+  if (treeSvg) {
+    if (cfg.moonlight) {
+      treeSvg.style.filter = 'saturate(0.4) brightness(0.55) hue-rotate(20deg)';
+    } else if (cfg.label === 'golden hour') {
+      treeSvg.style.filter = 'saturate(1.2) brightness(0.9) sepia(0.3)';
+    } else if (cfg.label === 'dusk') {
+      treeSvg.style.filter = 'saturate(0.7) brightness(0.7) hue-rotate(10deg)';
+    } else {
+      treeSvg.style.filter = 'saturate(0.9) brightness(0.85)';
+    }
+  }
+
   // Lamp overlays — only update if lamp toggle is off (don't override manual state)
   if (!lampOn) { setLampOverlays(false); }
 
   document.getElementById('time-badge').textContent = cfg.label;
+}
+
+/* ============================================================
+   WEATHER SYSTEM
+============================================================ */
+const WEATHERS = ['clear','rain','fog','wind','snow','storm'];
+let currentWeather = 'clear';
+
+function setWeather(name) {
+  currentWeather = name;
+  // Remove all weather classes
+  WEATHERS.forEach(w => document.body.classList.remove('weather-' + w));
+  if (name !== 'clear') document.body.classList.add('weather-' + name);
+
+  // Rain overlay (existing)
+  const rainEl = document.getElementById('ov-rain');
+  if (rainEl) rainEl.style.opacity = (name === 'rain' || name === 'storm') ? '1' : '0';
+
+  // Snow particles
+  const snowEl = document.getElementById('ov-snow');
+  if (snowEl) {
+    if ((name === 'snow') && snowEl.childElementCount === 0) spawnSnow(snowEl);
+    snowEl.style.opacity = name === 'snow' ? '1' : '0';
+  }
+
+  // Curtain flutter speed reacts to wind
+  const curtain = document.getElementById('curtain-flutter');
+  if (curtain) {
+    curtain.style.animationDuration = (name === 'wind' || name === 'storm') ? '2.5s' : '7s';
+  }
+}
+
+function spawnSnow(container) {
+  for (let i = 0; i < 55; i++) {
+    const f = document.createElement('div');
+    f.className = 'snow-flake';
+    const size = 2 + Math.random() * 4;
+    const drift = (Math.random() - 0.5) * 80;
+    const rot   = Math.random() * 360;
+    f.style.cssText = `
+      left: ${Math.random() * 100}%;
+      width: ${size}px; height: ${size}px;
+      opacity: ${0.5 + Math.random() * 0.4};
+      --sx: ${drift}px; --sr: ${rot}deg;
+      animation-duration: ${5 + Math.random() * 8}s;
+      animation-delay: ${Math.random() * 8}s;
+    `;
+    container.appendChild(f);
+  }
 }
 
 /* ============================================================
