@@ -33,20 +33,31 @@
 
     /* ── Text block (desktop: left of door) ── */
     #entry-text {
+      position:relative; /* for ::before stacking */
       position:absolute; z-index:5;
       left:5%; top:50%; transform:translateY(-50%);
-      max-width:42%;
+      max-width:40%;
+    }
+    /* Soft backdrop so lines don't bleed through text */
+    #entry-text::before {
+      content:''; position:absolute;
+      inset:-3rem -4rem -3rem -2rem;
+      background:radial-gradient(ellipse 110% 90% at 38% 50%,
+        rgba(240,237,230,0.94) 0%,
+        rgba(240,237,230,0.72) 52%,
+        rgba(240,237,230,0) 100%);
+      z-index:-1; pointer-events:none;
     }
     #entry-name {
-      font-size:clamp(2rem,2.8vw,2.8rem);
-      font-weight:300; letter-spacing:0.2em;
-      color:#1a1714; line-height:1.05;
+      font-size:clamp(2.2rem,2.8vw,3rem);
+      font-weight:400; letter-spacing:0.18em;
+      color:#0f0c08; line-height:1.05;
       margin-bottom:1.5rem;
     }
     #entry-desc {
-      font-size:clamp(0.78rem,1vw,0.9rem);
-      color:#3a3530; line-height:1.95;
-      letter-spacing:0.015em; font-style:italic;
+      font-size:clamp(0.82rem,1.05vw,0.94rem);
+      color:#1a1410; line-height:1.95;
+      letter-spacing:0.01em; font-style:italic;
     }
     /* Mobile-only description block below door */
     #entry-desc-mob {
@@ -54,15 +65,18 @@
       position:absolute; z-index:5;
       left:50%; transform:translateX(-50%);
       bottom:4%; width:86%; text-align:center;
-      font-size:0.8rem; color:#3a3530;
+      font-size:0.82rem; color:#1a1410;
       line-height:1.8; letter-spacing:0.01em; font-style:italic;
+      background:radial-gradient(ellipse 100% 100% at 50% 50%,
+        rgba(240,237,230,0.9) 40%, rgba(240,237,230,0) 100%);
+      padding:1.2rem 0.5rem;
     }
 
     /* ── Door click target ── */
     #entry-door {
       position:absolute;
-      /* desktop: matches SVG door at x=59–76%, y=14–92% */
-      left:59%; width:17%; top:14%; height:78%;
+      /* desktop: matches SVG door at x=55–77%, y=15–85% */
+      left:55%; width:22%; top:15%; height:70%;
       z-index:7; cursor:pointer;
     }
     #entry-door::after {
@@ -82,22 +96,25 @@
     }
     @keyframes hint-breathe { 0%,100%{opacity:0.32;} 55%{opacity:0.72;} }
 
-    /* ── CSS Portal animation ── */
+    /* ── CSS Portal animation — grows from door, only on click ── */
     #entry-portal-css {
       position:absolute; inset:0; z-index:8;
-      display:flex; align-items:center; justify-content:center;
       pointer-events:none;
       opacity:0; transition:opacity 0.3s ease;
     }
     #entry-portal-css.visible { opacity:1; }
 
     .portal-scene {
-      position:relative;
+      position:absolute;
+      /* Anchored to centre of desktop door (~66% from left, 50% from top) */
+      left:66%; top:50%;
+      transform:translate(-50%,-50%) scale(0.04);
+      transition:transform 0.75s cubic-bezier(0.22,1.45,0.36,1);
       width:min(96vw,96vh); height:min(96vw,96vh);
-      transform:scale(0.05);
-      transition:transform 0.7s cubic-bezier(0.22,1.4,0.36,1);
     }
-    #entry-portal-css.visible .portal-scene { transform:scale(1); }
+    #entry-portal-css.visible .portal-scene {
+      transform:translate(-50%,-50%) scale(1);
+    }
 
     /* Background conic glow */
     .portal-glow {
@@ -184,8 +201,10 @@
       }
       #entry-desc { display:none; }
       #entry-desc-mob { display:block; }
-      /* door target: centred, matches mobile SVG door (38–62%, 20–82%) */
-      #entry-door { left:38%; width:24%; top:20%; height:62%; }
+      /* door target: centred, matches mobile SVG door (36–64%, 18–84%) */
+      #entry-door { left:36%; width:28%; top:18%; height:66%; }
+      /* Portal anchors to centre of mobile door */
+      .portal-scene { left:50%; top:51%; }
       .door-hint { bottom:-2.2rem; font-size:0.58rem; }
       /* Switch SVG to mobile room layout */
       .room-desktop { display:none !important; }
@@ -2943,6 +2962,19 @@
         <feDisplacementMap in="SourceGraphic" in2="noise"
                            scale="0.55" xChannelSelector="R" yChannelSelector="G"/>
       </filter>
+      <!-- Vignette masks: lines fade to nothing at edges, strong at VP -->
+      <radialGradient id="vig-d" cx="66" cy="50" r="58" gradientUnits="userSpaceOnUse">
+        <stop offset="20%" stop-color="white" stop-opacity="1"/>
+        <stop offset="78%" stop-color="white" stop-opacity="0.55"/>
+        <stop offset="100%" stop-color="white" stop-opacity="0"/>
+      </radialGradient>
+      <mask id="mask-d"><rect width="100" height="100" fill="url(#vig-d)"/></mask>
+      <radialGradient id="vig-m" cx="50" cy="40" r="55" gradientUnits="userSpaceOnUse">
+        <stop offset="20%" stop-color="white" stop-opacity="1"/>
+        <stop offset="75%" stop-color="white" stop-opacity="0.5"/>
+        <stop offset="100%" stop-color="white" stop-opacity="0"/>
+      </radialGradient>
+      <mask id="mask-m"><rect width="100" height="100" fill="url(#vig-m)"/></mask>
     </defs>
 
     <!-- Warm paper background -->
@@ -2950,6 +2982,8 @@
 
     <!-- ═══ DESKTOP ROOM (hidden on mobile) ═══ -->
     <g class="room-desktop">
+      <!-- mask fades lines to nothing at edges -->
+      <g mask="url(#mask-d)">
       <g filter="url(#sketchy-room)" stroke="#1e1a14" stroke-linecap="round" fill="none">
 
         <!-- Primary outlines (slightly bolder) -->
@@ -3028,31 +3062,97 @@
           <line x1="44" y1="34.4" x2="44" y2="65.6"/>
         </g>
       </g>
+      </g><!-- /mask-d -->
 
-      <!-- ── Desktop Door (x=59–76, y=14–92) ── -->
-      <g filter="url(#sketchy-door)" stroke="#1e1a14" fill="none" stroke-linecap="round">
-        <!-- Door fill (slightly lighter cream) -->
-        <rect x="59" y="14" width="17" height="78" fill="#f5f2eb" stroke-width="0.7" opacity="0.95"/>
-        <!-- Mid-rail divider -->
-        <line x1="59" y1="52.5" x2="76" y2="52.5" stroke-width="0.42" opacity="0.88"/>
-        <!-- Upper panel inset -->
-        <rect x="61.2" y="16.8" width="12.6" height="33.5" stroke-width="0.4" opacity="0.78"/>
-        <!-- Lower panel inset -->
-        <rect x="61.2" y="54.2" width="12.6" height="35.2" stroke-width="0.4" opacity="0.78"/>
-        <!-- Knob circle -->
-        <circle cx="61.8" cy="52.2" r="0.9" fill="#1e1a14" stroke="none" opacity="0.85"/>
-        <!-- Knob lever -->
-        <line x1="61.8" y1="52.2" x2="63.8" y2="52.2" stroke-width="0.45" opacity="0.8"/>
-        <!-- Threshold -->
-        <line x1="57.5" y1="92.2" x2="77.5" y2="92.2" stroke-width="0.48" opacity="0.55"/>
-        <!-- Door frame shadow lines (depth illusion) -->
-        <line x1="59" y1="14" x2="59" y2="92" stroke-width="1.1" opacity="0.14" stroke="#000"/>
-        <line x1="59" y1="14" x2="76" y2="14" stroke-width="0.7" opacity="0.1" stroke="#000"/>
+      <!-- ── Desktop Door (x=55–77, y=15–85) — reference style ── -->
+      <g filter="url(#sketchy-door)" stroke="#1e1a14" stroke-linecap="round">
+
+        <!-- Door body fill -->
+        <rect x="55" y="15" width="22" height="70" fill="#f5f2eb" stroke="none"/>
+        <!-- Outer frame (bold) -->
+        <rect x="55" y="15" width="22" height="70" fill="none" stroke-width="1.05" opacity="0.92"/>
+        <!-- Inset double-frame line -->
+        <rect x="56" y="16" width="20" height="68" fill="none" stroke-width="0.3" opacity="0.4"/>
+
+        <!-- ── Transom fanlight (y=15–27) ── -->
+        <!-- Arch: semi-ellipse from left to right of door interior -->
+        <path d="M 55.5,27 A 10.5,12 0 0 1 76.5,27" fill="none" stroke-width="0.72" opacity="0.9"/>
+        <!-- Inner arch (inset 1.5u) -->
+        <path d="M 57,27 A 9,10.5 0 0 1 75,27" fill="none" stroke-width="0.45" opacity="0.75"/>
+        <!-- Horizontal transom rail -->
+        <line x1="55" y1="27" x2="77" y2="27" stroke-width="0.72" opacity="0.88"/>
+        <!-- Radiating transom dividers from base-centre -->
+        <line x1="66" y1="27.5" x2="59.5" y2="17.5" stroke-width="0.42" opacity="0.78"/>
+        <line x1="66" y1="27.5" x2="72.5" y2="17.5" stroke-width="0.42" opacity="0.78"/>
+        <!-- Diamond in centre transom section -->
+        <path d="M 66,18.2 L 67.4,20.8 L 66,23.4 L 64.6,20.8 Z"
+              fill="#1e1a14" stroke="none" opacity="0.72"/>
+        <!-- Inner cross on diamond -->
+        <line x1="66" y1="19.2" x2="66" y2="22.4" stroke-width="0.3" stroke="#f5f2eb" opacity="0.9"/>
+        <line x1="64.9" y1="20.8" x2="67.1" y2="20.8" stroke-width="0.3" stroke="#f5f2eb" opacity="0.9"/>
+        <!-- Hash marks in left transom section -->
+        <line x1="57.2" y1="20"  x2="59.8" y2="23.5" stroke-width="0.3" opacity="0.55"/>
+        <line x1="56.5" y1="22"  x2="58.5" y2="25"   stroke-width="0.3" opacity="0.55"/>
+        <!-- Hash marks in right transom section -->
+        <line x1="72.2" y1="20"  x2="74.8" y2="23.5" stroke-width="0.3" opacity="0.55"/>
+        <line x1="73.5" y1="17.5" x2="76"  y2="21"   stroke-width="0.3" opacity="0.55"/>
+
+        <!-- ── Mid section rails (y=27–61) ── -->
+        <!-- Vertical centre rail -->
+        <line x1="66" y1="27" x2="66" y2="61" stroke-width="0.55" opacity="0.82"/>
+        <!-- Horizontal mid-rail at y=61 -->
+        <line x1="55" y1="61" x2="77" y2="61" stroke-width="0.65" opacity="0.85"/>
+
+        <!-- Left tall panel (inset rect) -->
+        <rect x="56.5" y="28.5" width="8.5" height="31" fill="none" stroke-width="0.48" opacity="0.82"/>
+        <!-- Right tall panel -->
+        <rect x="67" y="28.5" width="8.5" height="31" fill="none" stroke-width="0.48" opacity="0.82"/>
+
+        <!-- Diamond in left mid-panel, centred ~(60.75, 44) -->
+        <path d="M 60.75,40.8 L 62.6,44 L 60.75,47.2 L 58.9,44 Z"
+              fill="#1e1a14" stroke="none" opacity="0.68"/>
+        <line x1="60.75" y1="41.8" x2="60.75" y2="46.2" stroke-width="0.3" stroke="#f5f2eb" opacity="0.9"/>
+        <line x1="59.2"  y1="44"   x2="62.3"  y2="44"   stroke-width="0.3" stroke="#f5f2eb" opacity="0.9"/>
+        <!-- Diamond in right mid-panel, centred ~(71.25, 44) -->
+        <path d="M 71.25,40.8 L 73.1,44 L 71.25,47.2 L 69.4,44 Z"
+              fill="#1e1a14" stroke="none" opacity="0.68"/>
+        <line x1="71.25" y1="41.8" x2="71.25" y2="46.2" stroke-width="0.3" stroke="#f5f2eb" opacity="0.9"/>
+        <line x1="69.7"  y1="44"   x2="72.8"  y2="44"   stroke-width="0.3" stroke="#f5f2eb" opacity="0.9"/>
+
+        <!-- ── Bottom section (y=61–83) ── -->
+        <!-- Vertical bottom-section centre rail -->
+        <line x1="66" y1="61" x2="66" y2="83" stroke-width="0.55" opacity="0.82"/>
+        <!-- Left bottom panel -->
+        <rect x="56.5" y="62.5" width="8.5" height="19" fill="none" stroke-width="0.48" opacity="0.82"/>
+        <!-- Right bottom panel -->
+        <rect x="67" y="62.5" width="8.5" height="19" fill="none" stroke-width="0.48" opacity="0.82"/>
+        <!-- Hash marks left bottom panel (diagonal lower-left to upper-right) -->
+        <line x1="57.5" y1="79"  x2="63.5" y2="73"  stroke-width="0.32" opacity="0.5"/>
+        <line x1="57.5" y1="76"  x2="62"   y2="71"  stroke-width="0.32" opacity="0.5"/>
+        <line x1="59"   y1="80"  x2="64.5" y2="74.5" stroke-width="0.32" opacity="0.5"/>
+        <!-- Hash marks right bottom panel -->
+        <line x1="68"   y1="79"  x2="74"   y2="73"  stroke-width="0.32" opacity="0.5"/>
+        <line x1="68"   y1="76"  x2="72.5" y2="71"  stroke-width="0.32" opacity="0.5"/>
+        <line x1="69.5" y1="80"  x2="75"   y2="74.5" stroke-width="0.32" opacity="0.5"/>
+
+        <!-- ── Handle (lever, right side of door) ── -->
+        <!-- Backplate -->
+        <rect x="75.5" y="41.5" width="1.2" height="6" rx="0.5" fill="#1e1a14" stroke="none" opacity="0.75"/>
+        <!-- Lever horizontal bar -->
+        <line x1="75.5" y1="44.5" x2="79.2" y2="44.5" stroke-width="0.7" opacity="0.85"/>
+        <!-- Lever tip (slight droop) -->
+        <line x1="79.2" y1="44.5" x2="79.5" y2="45.5" stroke-width="0.6" opacity="0.75"/>
+
+        <!-- Bottom threshold -->
+        <line x1="53.5" y1="85" x2="78.5" y2="85" stroke-width="0.6" opacity="0.55"/>
+        <!-- Step shadow -->
+        <line x1="54"   y1="85.6" x2="78" y2="85.6" stroke-width="0.22" opacity="0.28"/>
       </g>
     </g>
 
     <!-- ═══ MOBILE ROOM (hidden on desktop, centred VP) ═══ -->
     <g class="room-mobile" style="display:none">
+      <g mask="url(#mask-m)">
       <g filter="url(#sketchy-room)" stroke="#1e1a14" stroke-linecap="round" fill="none">
 
         <!-- Outlines -->
@@ -3137,17 +3237,64 @@
           <line x1="74" y1="20.8" x2="74" y2="68.8"/>
         </g>
       </g>
+      </g><!-- /mask-m -->
 
-      <!-- ── Mobile Door (x=38–62, y=20–82, centred) ── -->
-      <g filter="url(#sketchy-door)" stroke="#1e1a14" fill="none" stroke-linecap="round">
-        <rect x="38" y="20" width="24" height="62" fill="#f5f2eb" stroke-width="0.7" opacity="0.95"/>
-        <line x1="38" y1="51.5" x2="62" y2="51.5" stroke-width="0.42" opacity="0.88"/>
-        <rect x="40.5" y="22.5" width="19" height="27"  stroke-width="0.4" opacity="0.78"/>
-        <rect x="40.5" y="53.5" width="19" height="26"  stroke-width="0.4" opacity="0.78"/>
-        <circle cx="40.8" cy="51.2" r="0.9" fill="#1e1a14" stroke="none" opacity="0.85"/>
-        <line x1="40.8" y1="51.2" x2="42.8" y2="51.2" stroke-width="0.45" opacity="0.8"/>
-        <line x1="36.5" y1="82.2" x2="63.5" y2="82.2" stroke-width="0.48" opacity="0.55"/>
-        <line x1="38" y1="20" x2="38" y2="82" stroke-width="1.1" opacity="0.13" stroke="#000"/>
+      <!-- ── Mobile Door (x=36–64, y=18–84, centred) — reference style ── -->
+      <g filter="url(#sketchy-door)" stroke="#1e1a14" stroke-linecap="round">
+        <!-- Door body -->
+        <rect x="36" y="18" width="28" height="66" fill="#f5f2eb" stroke="none"/>
+        <rect x="36" y="18" width="28" height="66" fill="none" stroke-width="1.05" opacity="0.92"/>
+        <rect x="37" y="19" width="26" height="64" fill="none" stroke-width="0.28" opacity="0.38"/>
+
+        <!-- Transom arch (y=18–31) -->
+        <path d="M 36.5,31 A 13.5,13.5 0 0 1 63.5,31" fill="none" stroke-width="0.72" opacity="0.9"/>
+        <path d="M 38,31 A 12,12 0 0 1 62,31" fill="none" stroke-width="0.45" opacity="0.72"/>
+        <line x1="36" y1="31" x2="64" y2="31" stroke-width="0.72" opacity="0.85"/>
+        <!-- Transom dividers from base-centre -->
+        <line x1="50" y1="31.5" x2="41.5" y2="21" stroke-width="0.42" opacity="0.75"/>
+        <line x1="50" y1="31.5" x2="58.5" y2="21" stroke-width="0.42" opacity="0.75"/>
+        <!-- Centre diamond -->
+        <path d="M 50,20.5 L 51.6,24 L 50,27.5 L 48.4,24 Z" fill="#1e1a14" stroke="none" opacity="0.7"/>
+        <line x1="50" y1="21.5" x2="50" y2="26.5" stroke-width="0.3" stroke="#f5f2eb" opacity="0.9"/>
+        <line x1="48.6" y1="24" x2="51.4" y2="24" stroke-width="0.3" stroke="#f5f2eb" opacity="0.9"/>
+        <!-- Hash marks left & right transom -->
+        <line x1="38" y1="23" x2="40.5" y2="27" stroke-width="0.3" opacity="0.5"/>
+        <line x1="38" y1="26" x2="40"   y2="29" stroke-width="0.3" opacity="0.5"/>
+        <line x1="59.5" y1="23" x2="62"  y2="27" stroke-width="0.3" opacity="0.5"/>
+        <line x1="60"   y1="26" x2="62"  y2="29" stroke-width="0.3" opacity="0.5"/>
+
+        <!-- Mid panels (y=31–60) -->
+        <line x1="50" y1="31" x2="50" y2="60" stroke-width="0.55" opacity="0.8"/>
+        <line x1="36" y1="60" x2="64" y2="60" stroke-width="0.65" opacity="0.85"/>
+        <rect x="37.5" y="32.5" width="11" height="26" fill="none" stroke-width="0.48" opacity="0.8"/>
+        <rect x="51.5" y="32.5" width="11" height="26" fill="none" stroke-width="0.48" opacity="0.8"/>
+        <!-- Diamonds in mid panels -->
+        <path d="M 43,42.5 L 45,46 L 43,49.5 L 41,46 Z" fill="#1e1a14" stroke="none" opacity="0.66"/>
+        <line x1="43" y1="43.5" x2="43" y2="48.5" stroke-width="0.3" stroke="#f5f2eb" opacity="0.9"/>
+        <line x1="41.4" y1="46" x2="44.6" y2="46" stroke-width="0.3" stroke="#f5f2eb" opacity="0.9"/>
+        <path d="M 57,42.5 L 59,46 L 57,49.5 L 55,46 Z" fill="#1e1a14" stroke="none" opacity="0.66"/>
+        <line x1="57" y1="43.5" x2="57" y2="48.5" stroke-width="0.3" stroke="#f5f2eb" opacity="0.9"/>
+        <line x1="55.4" y1="46" x2="58.6" y2="46" stroke-width="0.3" stroke="#f5f2eb" opacity="0.9"/>
+
+        <!-- Bottom panels (y=60–82) -->
+        <line x1="50" y1="60" x2="50" y2="82" stroke-width="0.55" opacity="0.8"/>
+        <rect x="37.5" y="61.5" width="11" height="19" fill="none" stroke-width="0.48" opacity="0.8"/>
+        <rect x="51.5" y="61.5" width="11" height="19" fill="none" stroke-width="0.48" opacity="0.8"/>
+        <!-- Hash marks bottom panels -->
+        <line x1="38.5" y1="78" x2="47" y2="69"   stroke-width="0.32" opacity="0.5"/>
+        <line x1="38.5" y1="75" x2="45" y2="68.5"  stroke-width="0.32" opacity="0.5"/>
+        <line x1="40"   y1="79" x2="47.5" y2="71.5" stroke-width="0.32" opacity="0.5"/>
+        <line x1="52.5" y1="78" x2="61" y2="69"    stroke-width="0.32" opacity="0.5"/>
+        <line x1="52.5" y1="75" x2="59" y2="68.5"   stroke-width="0.32" opacity="0.5"/>
+        <line x1="54"   y1="79" x2="61.5" y2="71.5"  stroke-width="0.32" opacity="0.5"/>
+
+        <!-- Lever handle (right side) -->
+        <rect x="63.5" y="42.5" width="1.2" height="6" rx="0.5" fill="#1e1a14" stroke="none" opacity="0.75"/>
+        <line x1="63.5" y1="45.5" x2="67" y2="45.5" stroke-width="0.7" opacity="0.85"/>
+        <line x1="67"   y1="45.5" x2="67.4" y2="46.5" stroke-width="0.6" opacity="0.72"/>
+
+        <!-- Threshold -->
+        <line x1="34.5" y1="84.2" x2="65.5" y2="84.2" stroke-width="0.6" opacity="0.52"/>
       </g>
     </g>
   </svg>
