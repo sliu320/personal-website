@@ -6336,6 +6336,7 @@ function openModal(key) {
   if (key === 'laptop')     { openMonitorZoom();    return; }
   if (key === 'trophy')     { openTrophyZoom();     return; }
   if (key === 'books')      { openBookshelfZoom();  return; }
+  if (key === 'worldmap')   { openWorldMapZoom();   return; }
   if (key === 'consulting') { openConsultingZoom(); return; }
   if (key === 'mirror')     { openAboutZoom();      return; }
   if (key === 'piano')      { openMusicZoom();      return; }
@@ -6363,7 +6364,6 @@ function openModal(key) {
     return;
   }
 
-  modalEditBtn.style.display = '';
   const saved = (() => { try { return localStorage.getItem('modal-'+key); } catch(e) { return null; } })();
   modalBody.innerHTML = saved || data.body;
   modalBody.contentEditable = 'false';
@@ -6376,17 +6376,27 @@ function openModal(key) {
 function closeModal() {
   if (isModalEditing) { isModalEditing=false; modalBody.contentEditable='false'; }
   if (currentModalKey === 'speaker') {
-    // Park embed back to hidden bg — keep playing, no pause
     if (_spotifyEl && _spotifyEl.parentNode) {
       document.getElementById('spotify-bg').appendChild(_spotifyEl);
     }
   }
-  // Restore edit button visibility (hidden for rich modals + speaker)
-  modalEditBtn.style.display = '';
+  // Destroy Leaflet map before clearing innerHTML
+  if (_wmMap) { _wmMap.remove(); _wmMap = null; }
   modalEditBtn.textContent = '✎ edit';
   modalEditBtn.classList.remove('editing');
+  const wasWmMode = modalBg.classList.contains('wm-mode');
+  modalBg.classList.remove('wm-mode');
   modalBody.innerHTML = '';
-  modalBg.classList.remove('open', 'wm-mode');
+  modalTitle.textContent = '';
+  if (wasWmMode) {
+    const modalEl = document.getElementById('modal');
+    modalEl.style.visibility = 'hidden';
+    modalBg.classList.remove('open');
+    setTimeout(() => { modalEl.style.visibility = ''; }, 500);
+    _zoomOut();
+  } else {
+    modalBg.classList.remove('open');
+  }
   document.getElementById('wm-zoom-back').style.display = '';
   currentModalKey = null;
 }
@@ -7004,6 +7014,19 @@ function _cfIsMobile() { return window.innerWidth <= 700; }
 function _cfNumPages() { return _cfIsMobile() ? CF_CASES.length : Math.ceil(CF_CASES.length / 2); }
 function _cfFrontIdx(p) { return p * 2; }
 function _cfBackIdx(p)  { return p * 2 + 1; }
+
+function openWorldMapZoom() {
+  _zoomToHotspot('worldmap', 2.2, () => {
+    currentModalKey = 'worldmap';
+    modalBg.classList.add('wm-mode');
+    document.getElementById('wm-zoom-back').style.display = 'block';
+    modalEditBtn.style.display = 'none';
+    modalResetBtn.classList.remove('visible');
+    modalBody.contentEditable = 'false';
+    renderWorldMap();
+    modalBg.classList.add('open');
+  }, '35%');
+}
 
 function openConsultingZoom() {
   if (_cfZoomed) return;
