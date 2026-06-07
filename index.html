@@ -103,7 +103,7 @@
       bottom:5%; left:50%; transform:translateX(-50%);
       width:82%; text-align:center;
       font-size:max(0.78rem,12px); color:var(--text-body); line-height:1.9;
-      transition:color 1.5s;
+      transition:color 1.5s; pointer-events:none;
     }
 
     /* Door area */
@@ -152,6 +152,9 @@
     #entry-door { cursor:pointer; z-index:7; }
 
     /* OPEN hint */
+    .door-subhint {
+      display:none;
+    }
     .door-hint {
       position:absolute; bottom:-2.8rem; left:50%; transform:translateX(-50%);
       font-size:max(0.72rem,11px); letter-spacing:0.38em; text-transform:uppercase;
@@ -167,54 +170,79 @@
     /* Mobile */
     @media (max-width:520px) {
       #entry-text {
-        right:auto; left:50%; top:7%; transform:translateX(-50%);
+        right:auto; left:50%; top:10%; transform:translateX(-50%);
         max-width:88%; text-align:center; animation:none; opacity:1;
       }
       #entry-name-wrap { display:block; text-align:center; }
-      #entry-tagline   { text-align:center; }
+      #entry-tagline   { text-align:center; margin-bottom:0; }
       #entry-desc      { display:none; }
-      #entry-desc-mob  { display:block; }
-      #door-area { left:50%; width:min(54vw,198px); }
-      .door-hint { bottom:-2.4rem; font-size:max(0.68rem,11px); }
+      #entry-desc-mob  {
+        display:block;
+        top:26%; bottom:auto;
+        left:50%; transform:translateX(-50%);
+        width:min(80vw,300px);
+        font-size:max(0.78rem,12px);
+        line-height:1.55;
+      }
+      #door-area { left:50%; top:62%; width:min(54vw,198px); }
+      .door-hint { bottom:-2.4rem; font-size:max(0.72rem,11px); }
+      .door-subhint {
+        display:block;
+        position:absolute;
+        bottom:-6rem; left:50%; transform:translateX(-50%);
+        width:min(80vw,300px);
+        text-align:center;
+        font-size:max(0.78rem,12px); line-height:1.55;
+        font-family:Georgia,'Times New Roman',serif;
+        color:var(--text-primary);
+        pointer-events:none;
+      }
     }
 
     /* ============================================================
        ONBOARDING  (appears after entering, fades after 8s)
     ============================================================ */
     #onboarding {
-      position:fixed; bottom:3rem; left:50%; transform:translateX(-50%);
+      position:fixed; top:50%; left:50%;
+      transform:translate(-50%, -50%);
       z-index:90;
-      background:rgba(13,11,8,0.80);
-      backdrop-filter:blur(12px);
+      background:rgba(13,11,8,0.82);
+      backdrop-filter:blur(14px);
       border:1px solid rgba(255,255,255,0.1);
-      border-radius:40px;
-      padding:0.7rem 1.5rem;
-      display:flex; align-items:center; gap:1rem;
+      border-radius:18px;
+      padding:1.6rem 2rem 1.4rem;
+      display:flex; flex-direction:column; align-items:center; gap:0.9rem;
       opacity:0; pointer-events:none;
       transition:opacity 0.6s ease;
-      white-space:nowrap;
-      flex-wrap:wrap; justify-content:center;
+      min-width:260px; max-width:min(88vw, 360px);
+      text-align:center;
     }
     #onboarding.visible { opacity:1; pointer-events:all; }
     #onboarding.fade-ob { opacity:0; pointer-events:none; }
 
     .ob-hint {
-      color:rgba(240,226,200,0.7);
-      font-size:0.74rem; letter-spacing:0.1em;
-      display:flex; align-items:center; gap:0.4rem;
+      color:rgba(240,226,200,0.8);
+      font-size:0.78rem; letter-spacing:0.07em; line-height:1.5;
+      display:flex; align-items:flex-start; gap:0.55rem;
+      text-align:left; width:100%;
     }
-    .ob-icon { font-size:0.85rem; }
-    .ob-divider { color:rgba(255,255,255,0.15); font-size:0.9rem; }
+    .ob-icon { font-size:0.9rem; flex-shrink:0; margin-top:0.05em; }
+    .ob-divider { width:100%; height:1px; background:rgba(255,255,255,0.08); }
+    .ob-desktop-note {
+      font-size:0.65rem; letter-spacing:0.08em;
+      color:rgba(240,226,200,0.35);
+      font-style:italic;
+    }
     #ob-got-it {
       background:rgba(255,255,255,0.08);
       border:1px solid rgba(255,255,255,0.18);
-      color:rgba(240,226,200,0.6);
-      padding:0.25rem 0.9rem; border-radius:20px;
-      font-size:0.7rem; letter-spacing:0.12em;
+      color:rgba(240,226,200,0.7);
+      padding:0.3rem 1.2rem; border-radius:20px;
+      font-size:0.72rem; letter-spacing:0.12em;
       cursor:pointer; font-family:inherit;
-      transition:all 0.2s;
+      transition:all 0.2s; margin-top:0.2rem;
     }
-    #ob-got-it:hover { background:rgba(255,255,255,0.16); color:rgba(240,226,200,0.9); }
+    #ob-got-it:hover { background:rgba(255,255,255,0.16); color:rgba(240,226,200,1); }
 
     /* ============================================================
        ROOM
@@ -2078,6 +2106,7 @@
       letter-spacing:0.04em;
     }
 
+
     /* ---- Hobbies Bag ---- */
     .bag-scene {
       position:relative; display:flex; flex-direction:column; align-items:center;
@@ -2662,7 +2691,7 @@
     /* ── Community Polaroid Scatter ─────────────────────────── */
     #community-zoom-overlay {
       background: transparent !important;
-      overflow: hidden !important;
+      overflow: hidden !important; /* overridden to scroll on mobile below */
     }
     .community-scatter {
       position: relative;
@@ -2782,9 +2811,45 @@
     }
     .com-blurb-close:hover { color: rgba(0,0,0,0.6); }
     @media (max-width: 600px) {
-      .cpol-frame { width: 180px; padding: 8px 8px 36px; }
-      .cpol-photos { width: 164px; height: 155px; }
-      #community-blurb-panel { bottom: 1rem; }
+      /* ── Overlay scrolls like sticky notes ── */
+      #community-zoom-overlay {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        display: block !important;
+      }
+      /* ── Single-column polaroid stack ── */
+      .community-scatter {
+        display: flex; flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        /* Top padding keeps first polaroid below the back button;
+           bottom padding gives room to scroll to last card */
+        padding: 4rem 0 5rem;
+        height: auto; width: 100%;
+        box-sizing: border-box;
+      }
+      .cpol {
+        position: relative !important;
+        top: auto !important; left: auto !important;
+        transform: none !important;
+        --rot: 0deg;
+      }
+      .cpol:hover, .cpol.active {
+        transform: translateY(-6px) scale(1.03) !important;
+      }
+      .cpol-frame { width: min(72vw, 260px); padding: 8px 8px 36px; }
+      .cpol-photos { width: 100%; height: min(55vw, 200px); }
+
+      /* Blurb panel: inline below polaroid, not fixed */
+      #community-blurb-panel {
+        position: relative !important;
+        top: auto !important; left: auto !important;
+        transform: none !important;
+        width: min(80vw, 300px);
+        margin: -0.4rem auto 0;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+      }
+      #community-blurb-panel.open { max-height: 600px; }
     }
 
     /* ══════════════════════════════════════════════════════
@@ -2958,12 +3023,12 @@
       .monitor-screen-inset .project-title { font-size: 0.9rem !important; }
       .monitor-screen-inset .project-desc  { font-size: 0.78rem !important; }
 
-      /* ── Awards: flex overlay, centered until trophy selected, then scroll ── */
+      /* ── Awards: trophy case pinned at top, blurb overflows for scroll ── */
       #trophy-zoom-overlay {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
-        justify-content: center !important;
+        justify-content: flex-start !important;
         overflow-y: auto !important;
         overflow-x: hidden !important;
         padding: 3.5rem 1rem 3rem !important;
@@ -2990,7 +3055,7 @@
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
-        justify-content: center !important;
+        justify-content: flex-start !important;
         overflow-y: auto !important;
         overflow-x: hidden !important;
         padding: 3.5rem 1rem 3rem !important;
@@ -3002,10 +3067,12 @@
         flex-direction: column !important;
         align-items: center !important;
       }
-      .hobbies-zoom-wrap.hobby-selected { /* no layout change needed */ }
-      .hobbies-bag-img-wrap { width: min(90vw, 380px) !important; }
+      .hobbies-bag-img-wrap { width: min(90vw, 380px) !important; flex-shrink: 0 !important; }
       .hobbies-blurb-panel { width: 96vw !important; }
-      .hobbies-blurb-panel.open { max-height: none !important; }
+      .hobbies-blurb-panel.open {
+        max-height: none !important;
+        overflow-y: visible !important;
+      }
       .hobbies-blurb-inner {
         flex-direction: column !important;
         height: auto !important;
@@ -3072,7 +3139,209 @@
 
       /* ── Awards: scrollable, trophy case centered initially ── */
     }
+  /* ---- World map picture-frame modal ---- */
+  #modal-bg.wm-mode {
+    background: rgba(0,0,0,0.72) !important;
+    backdrop-filter: blur(4px) !important;
+  }
+  #modal-bg.wm-mode #modal {
+    background: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    max-width: min(90vw, 860px) !important;
+    width: min(90vw, 860px) !important;
+    max-height: unset !important;
+    overflow: visible !important;
+    /* Outer frame — dark walnut */
+    outline: 18px solid #5c3a1e;
+    outline-offset: 0;
+    /* Double-frame inner shadow */
+    filter: drop-shadow(0 0 0 6px #3a2008) drop-shadow(0 16px 48px rgba(0,0,0,0.7));
+  }
+  /* Inner mat / lining */
+  #modal-bg.wm-mode #modal::before {
+    content: '';
+    position: absolute;
+    inset: -18px;
+    border: 5px solid #8b6240;
+    pointer-events: none;
+    z-index: 2;
+    box-shadow: inset 0 0 0 2px #3a2008, 0 0 0 2px #3a2008;
+  }
+  #modal-bg.wm-mode #modal-title,
+  #modal-bg.wm-mode #modal-close,
+  #modal-bg.wm-mode #modal-reset-btn { display: none !important; }
+  #modal-bg.wm-mode #modal-body {
+    margin: 0 !important; padding: 0 !important;
+  }
+  #modal-bg.wm-mode .wm-wrap { gap: 0 !important; }
+  #modal-bg.wm-mode .wm-title,
+  #modal-bg.wm-mode .wm-footnote { display: none !important; }
+  /* Plaque label centered on the top frame border */
+  #modal-bg.wm-mode #modal::after {
+    content: '✦ places that shaped me ✦';
+    position: absolute;
+    top: -14px; left: 50%; transform: translateX(-50%);
+    background: #7a5230;
+    color: #f5e8cc;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 0.7rem; letter-spacing: 0.14em;
+    padding: 0.22rem 1.1rem;
+    border-radius: 3px;
+    border: 1px solid #5c3a1e;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 3;
+  }
+  #modal-bg.wm-mode #wm-leaflet {
+    height: min(58vh, 520px) !important;
+    border-radius: 0 !important;
+  }
+
+  /* ---- Leaflet world map ---- */
+  .wm-wrap { display:flex; flex-direction:column; gap:0.8rem; }
+  .wm-title { font-size:1rem; font-weight:500; color:#2a1f0e; letter-spacing:0.04em; }
+  #wm-leaflet {
+    width:100%; height:340px; border-radius:10px;
+    overflow:hidden; z-index:0;
+  }
+  .wm-footnote { font-size:0.68rem; color:rgba(60,40,10,0.4); text-align:center; margin:0; letter-spacing:0.06em; }
+  /* Custom pin marker */
+  .wm-marker-pin {
+    width:14px; height:14px; border-radius:50%;
+    background:#c0622a; border:2.5px solid #fff;
+    box-shadow:0 2px 6px rgba(0,0,0,0.35);
+  }
+  /* Leaflet popup styling to match room aesthetic */
+  .leaflet-popup-content-wrapper {
+    background:#faf7f2 !important;
+    border-radius:8px !important;
+    box-shadow:0 4px 18px rgba(0,0,0,0.18) !important;
+    font-family:Georgia,'Times New Roman',serif !important;
+  }
+  .leaflet-popup-content {
+    font-size:0.8rem !important; line-height:1.55 !important;
+    color:#3a2a14 !important; margin:10px 14px !important;
+  }
+  .leaflet-popup-content strong { color:#1a1208 !important; }
+  .leaflet-popup-tip { background:#faf7f2 !important; }
+  .leaflet-popup-close-button { color:#a08060 !important; }
+  /* ============================================================
+     IPAD / TABLET  (≤ 1024px) — consulting, projects, community only
+  ============================================================ */
+  @media (max-width: 1024px) {
+
+    /* ── Consulting: same mobile folder layout ── */
+    #consulting-zoom-overlay {
+      display: flex !important; flex-direction: column !important;
+      align-items: center !important; justify-content: center !important;
+      overflow-x: hidden !important; overflow-y: hidden !important;
+      padding: 0 !important; gap: 0 !important;
+    }
+    .casefiles-bg { display: block !important; object-fit: fill !important; }
+    .casefiles-zoom-card {
+      width: 110vw !important; height: 82vh !important;
+      aspect-ratio: unset !important; filter: none !important; flex-shrink: 0 !important;
+    }
+    .casefiles-pages {
+      top: 6% !important; bottom: 6% !important;
+      left: 16% !important; right: 16% !important;
+      background: transparent !important;
+      border: none !important; border-radius: 0 !important; box-shadow: none !important;
+    }
+    .cf-left-page { display: none !important; }
+    .cf-right-page {
+      left: 0 !important; right: 0 !important;
+      padding: 1.2rem 1.1rem 0.5rem !important;
+      overflow-y: auto !important; overflow-x: hidden !important;
+      background: #fefcf5 !important;
+      border: 1px solid #c8b48a !important; border-radius: 2px !important;
+      box-shadow: inset 0 0 0 3px rgba(200,180,140,0.12), 0 2px 10px rgba(0,0,0,0.15) !important;
+    }
+    #cf-prev-arrow, #cf-next-arrow { display: none !important; }
+    .cf-nav { display: none !important; }
+    .cf-mobile-nav {
+      display: flex !important; align-items: center !important;
+      justify-content: space-between !important;
+      width: 72vw !important; padding: 0.5rem 0 !important; flex-shrink: 0 !important;
+    }
+    .cf-mob-btn {
+      background: rgba(255,255,255,0.18) !important;
+      border: 1px solid rgba(255,255,255,0.3) !important;
+      border-radius: 8px !important; color: rgba(255,255,255,0.9) !important;
+      font-size: 0.9rem !important; padding: 0.4rem 1.2rem !important; cursor: pointer !important;
+    }
+    .cf-mob-btn:disabled { opacity: 0.3 !important; }
+    #cf-mob-pagenum { color: rgba(255,255,255,0.7) !important; font-size: 0.75rem !important; font-family: 'Courier New', monospace !important; }
+    .cf-right-page > div, .cf-turner-face > div, .cf-turner-back > div {
+      height: auto !important; overflow: visible !important; flex-shrink: 0 !important;
+    }
+    .cf-cmp-row .cf-body { -webkit-line-clamp: unset !important; overflow: visible !important; }
+    .cf-cmp-row .cf-ul   { max-height: none !important; overflow: visible !important; }
+    .cf-toc-page, .cf-page-wrap { height: auto !important; overflow: visible !important; }
+    .cf-turner-face, .cf-turner-back {
+      overflow-y: auto !important; padding: 1rem 0.9rem !important;
+      background: #fefcf5 !important; border: 1px solid #c8b48a !important;
+    }
+
+    /* ── Projects / Monitor: vertical phone shape ── */
+    .monitor-zoom-card {
+      width: 72vw !important; height: auto !important;
+      max-height: 88vh !important; aspect-ratio: unset !important;
+      background: #1a1a2e; border-radius: 28px !important;
+      border: 6px solid #222 !important;
+      filter: drop-shadow(0 10px 32px rgba(0,0,0,0.6)) !important;
+      overflow: hidden;
+    }
+    .monitor-bg-img { display: none !important; }
+    .monitor-screen-inset {
+      position: static !important; inset: unset !important;
+      display: flex !important; flex-direction: column !important;
+      height: 76vh !important; border-radius: 22px !important;
+      overflow: hidden !important;
+    }
+    .monitor-screen-inset .browser-tab { font-size: 0.65rem !important; padding: 0.25rem 0.65rem !important; max-width: 110px !important; }
+    .monitor-screen-inset .project-title { font-size: 0.95rem !important; }
+    .monitor-screen-inset .project-desc  { font-size: 0.82rem !important; }
+
+    /* ── Community polaroids: single column ── */
+    #community-zoom-overlay {
+      overflow-y: auto !important; overflow-x: hidden !important;
+      display: block !important;
+    }
+    .community-scatter {
+      display: flex !important; flex-direction: column !important;
+      align-items: center !important;
+      gap: 1.2rem !important;
+      padding: 4rem 0 5rem !important;
+      height: auto !important; width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    .cpol {
+      position: relative !important;
+      top: auto !important; left: auto !important;
+      transform: none !important; --rot: 0deg;
+    }
+    .cpol:hover, .cpol.active {
+      transform: translateY(-6px) scale(1.03) !important;
+    }
+    .cpol-frame { width: min(52vw, 300px) !important; padding: 8px 8px 36px !important; }
+    .cpol-photos { width: 100% !important; height: min(40vw, 230px) !important; }
+    #community-blurb-panel {
+      position: relative !important; top: auto !important;
+      left: auto !important; transform: none !important;
+      width: min(60vw, 360px) !important;
+      margin: -0.4rem auto 0 !important;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.15) !important;
+    }
+    #community-blurb-panel.open { max-height: 600px !important; }
+  }
   </style>
+  <!-- Leaflet — loaded here, map only initialises when modal opens -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 </head>
 <body>
 
@@ -3098,7 +3367,7 @@
     <div id="entry-tagline">BCG-trained consultant · interested in early-stage startups</div>
     <div id="entry-desc">I'm drawn to systems that shape how people think, make decisions, and navigate complexity. Step into an interactive space exploring my work, interests, and experiments.</div>
   </div>
-  <div id="entry-desc-mob">I'm drawn to systems that shape how people think, make decisions, and navigate complexity.</div>
+  <div id="entry-desc-mob">I'm drawn to systems that shape how people think, make decisions, and navigate complexity. Step into an interactive space exploring my work, interests, and experiments.</div>
 
   <!-- Door -->
   <div id="door-area">
@@ -3791,6 +4060,7 @@
 </div>
 
 <button id="stickies-zoom-back" class="zoom-back-btn">← back</button>
+<button id="wm-zoom-back" class="zoom-back-btn">← back</button>
 <div id="stickies-zoom-overlay" class="world-zoom-overlay">
   <div class="sticky-scatter">
 
@@ -3890,10 +4160,12 @@
 <!-- Onboarding -->
 <div id="onboarding">
   <span class="ob-hint"><span class="ob-icon">↔</span> scroll or drag to explore</span>
-  <span class="ob-divider">·</span>
+  <div class="ob-divider"></div>
   <span class="ob-hint"><span class="ob-icon">✦</span> click rings to explore or use menu to navigate</span>
-  <span class="ob-divider">·</span>
+  <div class="ob-divider"></div>
   <span class="ob-hint"><span class="ob-icon">🥚</span> find all 5 easter eggs</span>
+  <div class="ob-divider"></div>
+  <span class="ob-desktop-note">For best experience, view on desktop</span>
   <button id="ob-got-it">got it</button>
 </div>
 
@@ -3930,7 +4202,7 @@ const CONTENT = {
    These inject custom HTML into modalBody for specific hotspots.
    Return true if handled, false to fall through to plain text.
 ============================================================ */
-const RICH_MODAL_KEYS = new Set(['polaroids','stickynotes']);
+const RICH_MODAL_KEYS = new Set(['polaroids','stickynotes','worldmap']);
 
 function renderRichModal(key) {
   switch(key) {
@@ -3943,6 +4215,7 @@ function renderRichModal(key) {
     case 'trophy':      renderTrophyCase();return true;
     case 'laptop':      renderBrowser();   return true;
     case 'hobbies':     renderHobbiesBag();return true;
+    case 'worldmap':    renderWorldMap();  return true;
     default: return false;
   }
 }
@@ -4838,6 +5111,71 @@ const TIME_CONFIGS = [
     cubeOpacity:0.55, cubeBg:'radial-gradient(circle,rgba(255,200,80,0.45) 0%,transparent 70%)',
   },
 ];
+/* ---- World Map (Leaflet) ---- */
+let _wmMap = null;
+
+function renderWorldMap() {
+  const PINS = [
+    { lat:39.9,  lon:116.4,  label:'Beijing',    desc:'<strong>Beijing</strong><br>Gap year startup — my first taste of 0-to-1 building in edtech.' },
+    { lat:42.36, lon:-71.06, label:'Boston',      desc:'<strong>Boston</strong><br>Where I\'m based now. MIT Sloan, startups, community building.' },
+    { lat:42.2,  lon:-72.6,  label:'W. Mass',     desc:'<strong>Western Mass</strong><br>Where I grew up. The roots.' },
+    { lat:41.85, lon:-87.63, label:'Chicago',     desc:'<strong>Chicago</strong><br>UChicago undergrad. South Side. Fell in love with community-building here.' },
+    { lat:26.1,  lon:119.3,  label:'Fujian',      desc:'<strong>Fujian</strong><br>My dad\'s hometown. Where I learned Gongfu tea and felt most connected to my roots.' },
+    { lat:48.85, lon:2.35,   label:'Paris',        desc:'<strong>Paris</strong><br>Part of my gap year traveling through Europe. First time navigating the world independently.' },
+    { lat:40.71, lon:-74.01, label:'New York',     desc:'<strong>New York City</strong><br>Semester away program in high school, and a city I kept coming back to for work. Always energizing.' },
+    { lat:-13.5, lon:-71.98, label:'Peru',         desc:'<strong>Andes Mountains, Peru</strong><br>3-day hike through the mountains. Beautiful, challenging, and one of those trips that puts life in perspective.' },
+    { lat:64.96, lon:-19.02, label:'Iceland',      desc:'<strong>Iceland</strong><br>One of my favorite places I\'ve ever visited. The landscape is unlike anywhere else in the world.' },
+    { lat:44.47, lon:-70.85, label:'Maine',        desc:'<strong>Sunday River, Maine</strong><br>Yearly Christmas ski trips with family friends. One of those traditions that grounds you.' },
+    { lat:37.77, lon:-122.42, label:'San Francisco', desc:'<strong>San Francisco</strong><br>Spending the summer here — soaking it all in.' },
+  ];
+
+  modalBody.innerHTML = `
+    <div class="wm-wrap">
+      <div class="wm-title">✦ places that shaped me</div>
+      <div id="wm-leaflet"></div>
+      <p class="wm-footnote">hover a pin to learn more</p>
+    </div>`;
+
+  // Destroy previous instance if modal was reopened
+  if (_wmMap) { _wmMap.remove(); _wmMap = null; }
+
+  // Init map after DOM is painted
+  requestAnimationFrame(() => {
+    const isMob = window.innerWidth <= 600;
+    _wmMap = L.map('wm-leaflet', {
+      center: isMob ? [28, -25] : [30, 10],
+      zoom: 2,
+      zoomControl: true,
+      attributionControl: false,
+      scrollWheelZoom: true,
+    });
+    _wmMap.zoomControl.setPosition('bottomright');
+
+    // CartoDB Positron — clean, muted, no API key needed
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd',
+      maxZoom: 19,
+    }).addTo(_wmMap);
+
+    // Custom terracotta pin icon
+    const pinIcon = L.divIcon({
+      className: '',
+      html: '<div class="wm-marker-pin"></div>',
+      iconSize: [14, 14],
+      iconAnchor: [7, 7],
+      popupAnchor: [0, -10],
+    });
+
+    PINS.forEach(p => {
+      const marker = L.marker([p.lat, p.lon], { icon: pinIcon })
+        .addTo(_wmMap)
+        .bindPopup(p.desc, { maxWidth: 220, closeButton: false, autoPan: true, autoPanPadding: [40, 40] });
+      marker.on('mouseover', function() { this.openPopup(); });
+      marker.on('mouseout',  function() { this.closePopup(); });
+    });
+  });
+}
+
 // Test overrides — var so they hoist and are visible inside getTimeCfg/applyLighting
 var _testOverrideHours = null; // set by test panel; null = real clock
 var _testSkyOverride   = null; // set by test panel; null = auto from time config
@@ -6019,6 +6357,7 @@ function openModal(key) {
     modalEditBtn.style.display = 'none';   // no edit mode for rich modals
     modalResetBtn.classList.remove('visible');
     modalBody.contentEditable = 'false';
+    if (key === 'worldmap') { modalBg.classList.add('wm-mode'); document.getElementById('wm-zoom-back').style.display = 'block'; }
     renderRichModal(key);
     modalBg.classList.add('open');
     return;
@@ -6047,7 +6386,8 @@ function closeModal() {
   modalEditBtn.textContent = '✎ edit';
   modalEditBtn.classList.remove('editing');
   modalBody.innerHTML = '';
-  modalBg.classList.remove('open');
+  modalBg.classList.remove('open', 'wm-mode');
+  document.getElementById('wm-zoom-back').style.display = '';
   currentModalKey = null;
 }
 
@@ -6096,7 +6436,11 @@ document.querySelectorAll('.hotspot:not(#hs-lamp-toggle)').forEach(hs => {
   hs.addEventListener('click', e => { if(editMode) return; e.stopPropagation(); openModal(hs.dataset.key); });
 });
 document.getElementById('modal-close').addEventListener('click', closeModal);
-modalBg.addEventListener('click', e => { if(e.target===modalBg) closeModal(); });
+modalBg.addEventListener('click', e => { if(e.target===modalBg || e.target===modalBg.firstElementChild?.parentElement) closeModal(); });
+// Also close when clicking the padding area outside #modal
+document.getElementById('modal-bg').addEventListener('mousedown', e => {
+  if (e.target === document.getElementById('modal-bg')) closeModal();
+});
 document.addEventListener('keydown', e => { if(e.key==='Escape') { closeModal(); if(editMode) exitEditMode(); } });
 
 /* ============================================================
@@ -7365,9 +7709,14 @@ function openCommunityZoom() {
 function closeCommunityZoom() {
   if (!_communityZoomed) return;
   _communityZoomed = false;
-  document.getElementById('community-blurb-panel').classList.remove('open');
+  const panel = document.getElementById('community-blurb-panel');
+  panel.classList.remove('open');
   document.querySelectorAll('.cpol').forEach(p => p.classList.remove('active'));
   _activeCpol = null;
+  // Ensure panel is back in body (in case it was moved for mobile)
+  if (!document.body.contains(panel) || panel.parentElement !== document.body) {
+    document.body.appendChild(panel);
+  }
   _closeZoomUI('community-zoom-overlay', 'community-zoom-back');
 }
 document.getElementById('community-zoom-back').addEventListener('click', closeCommunityZoom);
@@ -7437,12 +7786,17 @@ document.querySelectorAll('.cpol').forEach(pol => {
     const data = COMMUNITY_DATA[key];
     if (!data) return;
     const panel = document.getElementById('community-blurb-panel');
+    const isMobile = window.innerWidth <= 1024;
 
     // Clicking the already-active polaroid → deselect
     if (_activeCpol === key) {
       pol.classList.remove('active');
       panel.classList.remove('open');
       _activeCpol = null;
+      // On mobile restore panel to original parent
+      if (isMobile) {
+        document.body.appendChild(panel);
+      }
       return;
     }
 
@@ -7453,7 +7807,14 @@ document.querySelectorAll('.cpol').forEach(pol => {
 
     document.getElementById('com-blurb-title').textContent = data.title;
     document.getElementById('com-blurb-body').innerHTML  = data.body;
-    panel.classList.add('open');
+
+    // On mobile: move panel into scatter flow right after the clicked polaroid
+    if (isMobile) {
+      panel.classList.remove('open');
+      pol.after(panel);
+    }
+
+    requestAnimationFrame(() => panel.classList.add('open'));
   });
 });
 
@@ -7469,6 +7830,7 @@ function closeStickiesZoom() {
   _closeZoomUI('stickies-zoom-overlay', 'stickies-zoom-back');
 }
 document.getElementById('stickies-zoom-back').addEventListener('click', closeStickiesZoom);
+document.getElementById('wm-zoom-back').addEventListener('click', closeModal);
 
 document.querySelectorAll('.hobby-btn').forEach(btn => {
   btn.addEventListener('click', () => {
