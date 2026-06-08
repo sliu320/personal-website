@@ -2886,33 +2886,6 @@ document.getElementById('hs-lamp-toggle').addEventListener('mouseenter', () => {
 document.getElementById('tree-hover-zone').addEventListener('mouseenter', _doRustle);
 
 /* ── Trophy zoom ─────────────────────────────────────────── */
-const TROPHY_DATA = {
-  mens: {
-    name: 'Mens et Manus',
-    issuedBy: 'MIT Student Organizations, Leadership & Engagement Office',
-    scope: 'MIT-wide, graduate + undergraduate',
-    desc: 'Recognizes undergraduate and graduate students who embody mens et manus by pairing thoughtful leadership with meaningful action to create positive change within their organization, living group, dorm, or team community. Specifically honored for transforming ideas around community and belonging into impactful programming and empowering others to participate and lead within the MIT community.',
-    criteria: 'Three rounds of review post nomination, with final endorsement by Dean of Student Life and Chief of Staff.',
-    img: 'assets/images/trophies/mens-et-manus-detail.webp',
-  },
-  genai: {
-    name: 'GenAI Lab — Best Project',
-    issuedBy: 'MIT Initiative for the Digital Economy',
-    scope: '~80 students across 27 teams, representation across MIT and Sloan grad programs',
-    desc: 'Won Best Project in MIT\'s flagship GenAI Action Learning class, where students work with live companies to build GenAI use cases. Built a Development Application response tool for an Australian water utility company. Selected for highly intentional use of GenAI vs. human-in-the-loop given the use case, and intuitive user experience.',
-    criteria: 'Demo Day: 5-minute pitch and demo in front of judges including seasoned entrepreneurs (incl. YC-backed), VC, and AI researchers (incl. Google DeepMind).',
-    img: 'assets/images/trophies/genai-lab-detail.jpg',
-  },
-  deans: {
-    name: 'Graduated with Distinction',
-    issuedBy: 'University of Chicago',
-    scope: 'Undergraduate degree-seeking students',
-    desc: 'Recognized for academic excellence across three distinctions: <strong>Dean\'s List</strong> — GPA in top 20% of degree-seeking students for the academic year. <strong>Cum Laude</strong> — GPA in top 25% of Economics majors based on five-year rolling average. <strong>Sociology Thesis Honors</strong> — By advisor recommendation; thesis focused on Covid masking and distancing compliance.',
-    criteria: 'GPA-based ranking within degree program and department cohort.',
-    img: 'assets/images/trophies/deans-list-detail.webp',
-  },
-};
-
 let _trophyZoomed = false, _activeTrophy = null;
 
 function openTrophyZoom() {
@@ -2971,130 +2944,6 @@ document.querySelectorAll('.trophy-btn').forEach(btn => {
 /* Pages map: CF_CASES[0]=TOC(right, initial), [1]=GenAI Assess(left p1), [2]=GenAI Prop(right p1),
    [3]=Sales(left p2), [4]=Healthcare(right p2), [5]=Investment(left p3),
    [6]=PostM&A+DD(right p3), [7]=BI+Insourcing(left p4), [8]=Social(right p4) */
-const CF_CASES = [
-  /* 0 – TOC */
-  { type:'toc' },
-  /* 1 – GenAI Assessment */
-  { type:'featured',
-    title:'GENAI USE CASE ASSESSMENT',
-    client:'Global biopharma company',
-    tags:['Healthcare','AI/Digital','Strategy','Value Creation'],
-    skills:'Stakeholder alignment · Design thinking · Financial modeling · Executive communication · Cross-functional collaboration',
-    summary:'Assessed 100+ GenAI use cases across 11 business units, prioritizing 10 high-impact use cases projected to save $40M annually.',
-    context:'IT department exploring AI/GenAI as part of a global Value Creation Initiative. Case team developed a comprehensive AI/GenAI strategy including tech and org readiness roadmap and set of inaugural use cases.',
-    contribution:['Designed value-feasibility-risk framework for use case assessment','Conducted top-down industry evaluation of GenAI use cases across BCG','Co-developed workshops with client design arm to prioritize use cases','Modeled financial impact of top 10 use cases through meetings with BU leaders and BCG X data scientists','Prepared exec presentation materials to align key stakeholders incl. CTO'],
-    outcome:'Client moved forward with phased plan; first 5 use cases projected to save $40M annually. Full buy-in from BUs, Finance, and IT.',
-    learnings:'Early tech adoption at large companies prioritizes quick wins and safe bets. Pushback from BUs due to mistrust of centralized initiatives underscores the importance of aligned incentives.',
-  },
-  /* 2 – GenAI Proposal */
-  { type:'featured',
-    title:'GENAI USE CASE PROPOSAL',
-    client:'Global biopharma company',
-    tags:['Healthcare','AI/Digital','Strategy','Value Creation'],
-    skills:'Business development · Partnership development · Web dev · Storytelling & synthesis · Co-creation · Presentation design',
-    summary:'Developed materials supporting a $15M joint proposal with an external partner to implement key use cases — one of the first of its kind at BCG.',
-    context:'As a follow-on to the assessment, the client released an RFP for the build phase. The case team kicked off a two-week sprint to respond.',
-    contribution:['Collaborated with external partners to co-develop highly designed proposal slides','Consulted BCG X colleagues and North America AI node to create case studies','Directed a team of ~3 to build a microsite showcasing case studies and a video message from BCG\'s CEO'],
-    outcome:'Client selected another firm on price. Key learnings elevated to senior BCG partner discussions on AI/GenAI strategy moving forward.',
-    learnings:'Client chose implementation over stakeholder and change management. We may not have articulated clearly enough the necessity of buy-in and org readiness to realize the value of new technology.',
-  },
-  /* 3 – Sales Coverage */
-  { type:'featured',
-    title:'SALES COVERAGE MODEL REDESIGN',
-    client:'Fortune 500 engineering software company',
-    tags:['Tech','GTM','Sales','People & Org'],
-    skills:'GTM motions · Role and org design · Stakeholder alignment · Financial modeling · Executive comms · Expert interviews',
-    summary:'Redesigned the global sales coverage model and projected costs, working with worldwide sales leaders to align with a new CRO targeting 35% revenue growth over three years.',
-    context:'Client brought on a major investor targeting 35% revenue growth. BCG enlisted to redesign the sales coverage model and org for each GTM motion hand-in-hand with the new CRO.',
-    contribution:['Led GTM competitor analyses — RACI frameworks, GTM motions, customer segmentation, coverage ratios','Co-created sales model coverage designs and org structure with worldwide sales leaders, focused on enterprise motion','Modeled costs of proposed sales org','Prepared executive presentations and workshop materials for the CRO'],
-    outcome:'CRO and worldwide sales leaders aligned on RACI, coverage model, and ratios per customer segment. Case team extended for next phase.',
-    learnings:'New CRO challenged the Sales org budget, dwarfed by Customer Success. Outside perspective shifted the org from an incumbent "farming" mindset to a "hunter" mindset where Sales takes priority.',
-  },
-  /* 4 – Healthcare Commission */
-  { type:'featured',
-    title:'PROJECT MANAGEMENT FOR HEALTHCARE COMMISSION',
-    client:"State Governor's healthcare commission",
-    tags:['Public Sector','Healthcare'],
-    skills:'Project management · Stakeholder alignment · Mentorship',
-    summary:"Led project management across a BCG team of 15 and client team of 15 to develop healthcare policy recommendations for a state government's annual Commission report.",
-    context:"State governor created the commission post-Covid to develop long-term, system-wide recommendations. Members include blue-ribbon, nationally recognized leaders across New York's healthcare ecosystem.",
-    contribution:['Served as Acting Project Leader in the PMO, partnering with BCG partners and the Deputy Secretary of Health','Defined and aligned work plan priorities, recommendation frameworks, and report structure','Established integrated timelines and tracking systems across 3 case teams and senior stakeholders','Developed materials to socialize recommendations with the Governor and health system leaders','Mentored and managed a junior team member'],
-    outcome:'Report draft completed with recommendations socialized across key leaders in state government and across the health system.',
-    learnings:'Recommendations had to move through a large stakeholder set with frequent bottlenecks — flexible planning and proactive expectation-setting were essential.',
-  },
-  /* 5 – Investment Playbook */
-  { type:'featured',
-    title:'INVESTMENT PLAYBOOK & EXECUTIVE WORKSHOP',
-    client:'Environmental services family office',
-    tags:['Climate & Sustainability','Industrial Goods','Strategy'],
-    skills:'Process mapping · Cross-functional collaboration · Stakeholder alignment · Creative workshop design · Operating under ambiguity',
-    summary:"Designed and co-facilitated a 6-hour workshop for a CEO's direct reports to devise an investment playbook directing up to $1B in control investments over the next decade.",
-    context:"Given capital inflow from a recent portfolio sale, the CEO hired BCG to develop a strategic investment playbook. The org had considered chemicals cleanup for nearly a decade with no action, due in part to its siloed nature.",
-    contribution:['Partnered with BCG advisor (ex-EPA) to develop a detailed backgrounder on environmental chemicals cleanup as an investment opportunity','Designed a 6-hour interactive workshop simulating the investment playbook live with the CEO\'s direct reports, using chemicals cleanup as a live example','Coordinated across two other workstreams in a rapid three-week sprint'],
-    outcome:'Workshop and playbook earned a direct shout-out from the client. Helped break down silos by rallying people around a common problem and systems.',
-    learnings:'Project started with only high-level goals. Both the problem and success criteria were living concepts — defined through deep understanding and collaboration with the client.',
-  },
-  /* 6 – Post M&A + Due Diligence (compact, 2 cases) */
-  { type:'compact', cases:[
-    { title:'POST M&A GTM STRATEGY',
-      client:'Americas division of global industrial goods company',
-      tags:['Industrial Goods','GTM','M&A','Product'],
-      skills:'GTM strategy · Regional strategy · Product portfolio rationalization · Quantitative analysis · Competitor analysis',
-      context:"Client hired BCG to develop GTM strategy after an $8B acquisition of a competitor. Team worked with both companies to understand synergies across product, branding, geographic coverage, and manufacturing.",
-      contribution:['Delivered executive workshops enabling key decisions around new product portfolio, incl. cross-selling & rebranding','Shaped regional sales strategy through quantitative and qualitative market analyses','Proposed channel incentive programs given market best practices'],
-      outcome:'Efforts enabled BCG to win the second phase of implementation work.',
-    },
-    { title:'DUE DILIGENCE — SPECIALTY PHARMA',
-      client:'Global biopharma company',
-      tags:['Healthcare','Due Diligence'],
-      skills:'Financial modeling · Competitor analysis · Mentorship · Upwards management',
-      context:'Client engaged BCG for due diligence on a rare disease pharma acquisition target. BCG partners were pulled to a complex adjacent workstream, leaving me and a junior teammate to run our modules independently.',
-      contribution:['Modeled target company operating costs for 10 years, proactively engaging the senior team to deliver output requiring minimal client iteration','Mentored junior teammate to produce detailed competitor analyses'],
-      outcome:'Module delivered on time — senior team noted the quality of the financial model and competitor analyses.',
-    },
-  ]},
-  /* 7 – BI Tool + Insourcing (compact, 2 cases) */
-  { type:'compact', cases:[
-    { title:'SELF-SERVICE BI TOOL DESIGN',
-      client:'Global biopharma company',
-      tags:['Data/Digital','Product'],
-      skills:'UX and product design · Co-creation · Operating under uncertainty',
-      context:'BI team needed a vision for a tool communicating data insights to non-technical audiences. The workstream had stalled for 2 months due to vague objectives and unproductive client engagement.',
-      contribution:['Created design mockups drawing from BCG and best-practice data tools: dashboards, AI-driven insights, and a social-media-inspired interface','Designs re-energized client discussions and enabled the team to finalize vision and strategy on time'],
-      outcome:"Manager later noted that our success wouldn't have been possible without my initiative.",
-    },
-    { title:'INSOURCING TO GLOBAL CAPABILITIES CENTER',
-      client:'Global biopharma company',
-      tags:['Data/Digital','People & Org','Talent & Skills'],
-      skills:'Org and role design · Stakeholder alignment · Execution planning',
-      context:'Analytics team standing up a Global Capabilities Center (GCC) in India — hired BCG to identify 400 contractor roles to move, phase the transition, and design new role definitions and org.',
-      contribution:['Designed GCC org structure through meetings with global analytics leaders and contractors','Defined job family/skill hierarchies and role transition phasing considering business risk and interim operating model','Created hiring timeline and job descriptions for key senior roles'],
-      outcome:'Org design and role framework delivered on time, enabling the team to begin hiring against the new structure.',
-    },
-  ]},
-  /* 8 – Social Impact (3 cases) */
-  { type:'social', cases:[
-    { title:'HOUSING & HOMELESSNESS STRATEGY',
-      client:'Rhode Island Housing Department',
-      tags:['Public Sector','Social Impact'],
-      skills:'Process mapping · Stakeholder alignment · Expert interviews',
-      summary:'BCG engaged to develop a state-wide homelessness response after critical emergency shelters closed — read the full report <a href="https://www.bostonglobe.com/2023/04/24/metro/something-is-going-break-8-things-know-about-startling-new-report-detailing-housing-crisis-rhode-island/" target="_blank" rel="noopener">here</a>. Authored playbook for creating new shelter capacity — permitting and vendor selection — directly influencing the <a href="https://turnto10.com/news/local/department-of-housing-approved-purchase-charlesgate-facility-house-homeless-families-shelter-winter-amos-house-rhode-island-service-nursing-center-providence-october-31-2023" target="_blank" rel="noopener">purchase of a facility</a> to house 41 families. Developed comparative case studies across states.',
-    },
-    { title:'NON-PROFIT ALUMNI ENGAGEMENT PROGRAM',
-      client:'Regional branch of national non-profit (pro-bono)',
-      tags:['Pro-bono','Social Impact'],
-      skills:'Data analysis · Program design · Customer journey mapping · Co-creation',
-      summary:"Developed alumni engagement program from scratch to bolster fundraising & recruiting. Led analysis and segmentation of ~32K alumni into nine personas (demographic + psychographic). Defined program objectives, proposed targeted engagements per persona, mapped the user journey, and built the implementation roadmap.",
-    },
-    { title:'TALENT & SKILLS IP DEVELOPMENT',
-      client:'BCG Bruce Henderson Institute',
-      tags:['Future of Work','Thought Leadership'],
-      skills:'Stakeholder & community engagement · Content creation',
-      summary:"Advanced BCG's Talent & Skills offering by crafting proposal materials, curating tools and resources across functions, facilitating internal engagement initiatives, and preparing thought leadership for external publication. Topics: internal mobility, skills-based hiring, on-demand talent, micro-engagements.",
-    },
-  ]},
-];
-
 let _cfZoomed = false, _cfPhysPage = 0, _cfFlipping = false;
 
 function _cfIsMobile() { return window.innerWidth <= 700; }
@@ -3609,27 +3458,6 @@ document.getElementById('bookshelf-zoom-back').addEventListener('click', closeBo
 /* ── What's Next — 3 Doors ─────────────────────────────────── */
 let _doorZoomed = false;
 
-const DOOR_DATA = {
-  1: {
-    color:'#3a6b44',
-    excited:'Excited by helping founders tackle their most important challenges and scale their impact.',
-    lookingFor:['Chief of Staff or Founder Associate roles','Seed to Series B companies','Mission-driven founders tackling meaningful problems'],
-    dosBest:['Structured problem solving in ambiguous situations','Moving between strategy and execution','Aligning stakeholders & driving cross-functional initiatives','Acting as a force multiplier wherever the business needs it most'],
-  },
-  2: {
-    color:'#c47040',
-    excited:'Excited by owning outcomes and helping companies grow.',
-    lookingFor:['Product, Growth, GTM, or Business Operations roles','Series A to C companies with strong momentum','Teams where individuals have outsized ownership'],
-    dosBest:['Analytical and customer-centric decision making','Translating strategy into execution','Strong communication across technical and business teams','Bias toward action and experimentation'],
-  },
-  3: {
-    color:'#4f6899',
-    excited:'Excited by creating something new from the ground up.',
-    lookingFor:['New venture creation opportunities','Internal incubators and innovation teams','Venture studios, startup foundries & entrepreneurial orgs'],
-    dosBest:['Operating in undefined, ambiguous spaces','Evaluating opportunities and shaping strategy','Building new initiatives, products & operating models','Curiosity, adaptability, and learning by doing'],
-  },
-};
-
 let _activeDoor = null;
 function _buildDoorInfoHTML(data) {
   const lf = data.lookingFor.map(t=>`<li>${t}</li>`).join('');
@@ -3751,21 +3579,6 @@ document.querySelectorAll('.tea-car-dot').forEach(d => {
 });
 
 /* ── Hobbies — kit bag zoom ──────────────────────────────── */
-const HOBBY_DATA = {
-  volleyball: { name:'Volleyball', img:'assets/images/hobbies/volleyball.webp', imgPos:'center center',
-    desc:`<p>I picked up volleyball post-graduation, to the delight of my family, who have a long relationship with the sport. I captained a rec team of friends ranging from former athletes to total beginners. While we lost a lot early on, I shifted our focus to learning and improving together — casual, social weekly practices and simple norms like hi-fiving after every point.</p><p>Morale quickly improved and we even started winning by season's end. More importantly, it stuck — one friend who'd never felt "sporty" saw herself differently, another got fully hooked, and the team is still growing two years later.</p><p>Volleyball reinforced how I like to build communities: low pressure, high support, and people growing into it.</p>` },
-  soccer:     { name:'Soccer',     img:'assets/images/hobbies/soccer.webp',    imgPos:'center center', imgRot:'180deg',
-    desc:`<p>From my high school varsity team to "midnight soccer" in college to IM's at Sloan, I enjoy the strategic thinking, teamwork, and sportsmanship required to play the game. An incredibly accessible sport loved by folks across the globe, you can find pickup soccer almost anywhere.</p><p>Since participating in college IMs, I hold the belief that team sports is one of the best ways to build connection and community. Pictured is the Sloan IM team I organized, toughing out a rainy day, only to have the other team flake! Proud that we showed up for the love of the game.</p>` },
-  pingpong:   { name:'Ping Pong',  img:'assets/images/hobbies/ping pong.webp', imgPos:'center 25%',
-    desc:`<p>My parents met at an office ping pong tournament, so naturally, I grew up playing with my family at our basement ping pong table.</p><p>Pictured is me and a friend posing as winners of Sloan's Asian American Alliance ping pong tournament!</p>` },
-  dance:      { name:'Dance',      img:'assets/images/hobbies/dance.webp',      imgPos:'center 20%',
-    desc:`<p>Dance has always been a way for me to explore different modes of expression and different cultures. Growing up, I did Chinese traditional dance — we even performed at a Celtics halftime show! I learned ballet and jazz in high school, then joined a hip hop team and contemporary dance group in college. Post-college, I got into social dancing: swing, salsa, and bachata.</p><p>At Sloan I taught friends the Abracadabra (Lady Gaga) dance for a C-function event. My classmates not only put in the work — they chipped in creative direction, costumes, and skits. We created something better than any of us imagined. Dance can uniquely express the shared energy of a group.</p>` },
-  running:    { name:'Running',    img:'assets/images/hobbies/run.webp',       imgPos:'center center',
-    desc:`<p>My mom is a seasoned marathon runner with all the majors and more under her belt — and my biggest advocate on my own running journey (she gifts me race registrations for birthdays and holidays 😢). I have a 5k and 10k under my belt and am now training for a half marathon.</p><p>My mom also started a run club with other Asian moms, helping them go from couch to marathon. I take a page out of her book whenever I can — her dedication to the sport, community-building skills, and ability to share her passions with others.</p>` },
-  music:      { name:'Music',      img:'assets/images/hobbies/Music.webp',     imgPos:'center center',
-    desc:`<p>Music has always been a way for me to express myself and connect with others — from playing classical piano and chamber music growing up, to leading a free music program, to playing in Sloan's rock band.</p><p>Pictured is the <em>Tiny Living Room</em> concert I helped organize: a low-barrier, supportive environment for friends to share their musical pursuits. Check out the piano in my room to learn more.</p>` },
-};
-
 let _hobbiesZoomed = false;
 let _activeHobby = null;
 
@@ -3790,25 +3603,6 @@ document.getElementById('hobbies-zoom-back').addEventListener('click', closeHobb
 let _stickiesZoomed = false;
 /* ── Community Polaroid Scatter ─────────────────────────────── */
 let _communityZoomed = false;
-
-const COMMUNITY_DATA = {
-  atlantic: {
-    title: 'Community Building Chair',
-    body: `Elected role to foster community within ~80 person cohort (the "Atlantic Ocean"). I helped organize full cohort events like Friendsgiving and our holiday party, cross-cohort events of ~150+ people, and intracohort events such as a 40-person weekend trip, apple picking, and Lunar New Year dumpling making. A survey showed that 97% of the cohort rated sense of community a 5/5. I also became a Partiful VP, in the top 1% of hosts. I completed my first vibecoding projects for the Ocean — see the <a href="#" class="com-proj-link" data-proj="whereabout">WhereAbout</a> and <a href="#" class="com-proj-link" data-proj="friendsgiving">Friendsgiving</a> tabs at the monitor!`
-  },
-  prefx: {
-    title: 'Pre-F(x) Director',
-    body: `After going on my own pre-orientation trip before Sloan, I wanted to pay it forward and give the incoming class the same sense of belonging and community before stepping on campus. MBA Pre-F(x) trips will host ~350+ incoming first year students across ~20 student-led trips in August–September 2026. By implementing structured marketing, I helped increase registration by 20% from last year.`
-  },
-  bcg: {
-    title: 'BCG Campus Ambassador',
-    body: `I put together a 35-person bowling event with peers recruiting for consulting to help them connect with other BCG consultants on campus. I worked with the recruiting team and Ambassadors on Campus to coordinate funding and participation, and my efforts earned a shoutout by the Boston recruiting team.`
-  },
-  trips: {
-    title: 'MBA Trip Leader',
-    body: `Whether for my MBA cohort or across my class, I've organized ~15–20 person trips to Acadia, New Hampshire, New Orleans, and will take ~20 incoming first years to Montreal in the fall.`
-  }
-};
 
 function openCommunityZoom() {
   if (_communityZoomed) return;
