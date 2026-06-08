@@ -154,7 +154,10 @@
     /* Walking-through-the-door zoom — portal scales up to swallow the screen,
        while the doorway frame and landing scene fade away behind it */
     #entry.zoom-through #portal-wrap {
-      transform: scale(48);
+      /* Just enough to expand the doorway out to fill the screen — like the
+         door swinging open and widening, not a deep zoom into the image
+         (which would pixelate and require zooming back out once arrived) */
+      transform: scale(7.5);
     }
     #entry.zoom-through #door-leaf,
     #entry.zoom-through #frame-svg,
@@ -5317,7 +5320,7 @@ function applySky(skyName) {
 
   const nextSrc = `assets/images/sky/${skyName}.webp`;
   const curSrc  = skyImg.getAttribute('src') || '';
-  if (!curSrc.endsWith(`${skyName}.png`)) {
+  if (!curSrc.endsWith(`${skyName}.webp`)) {
     skyImg.style.opacity = '0';
     setTimeout(() => {
       skyImg.src = nextSrc;
@@ -5678,7 +5681,8 @@ function stopWindCanvas() { cancelAnimationFrame(_windRaf); _windRaf = null; }
 function applyLandingLighting() {
   const cfg = getTimeCfg();
   const isDaytime = !cfg.moonlight && cfg.label !== 'dusk';
-  const sky = cfg.sky;
+  // Match the room's sky resolution: test override > real-weather sync > time-of-day default
+  const sky = _testSkyOverride || _syncedSky || cfg.sky;
 
   // Set entry background to a solid colour matching the approximate sky
   // so the room is never visible before the sky image loads
@@ -5704,7 +5708,7 @@ function applyLandingLighting() {
       : '';
     skyImg.classList.toggle('sky-drifting', isOvercast);
     const nextSrc = `assets/images/landing/${sky}.webp`;
-    if (!skyImg.src.endsWith(`${sky}.png`)) {
+    if (!skyImg.src.endsWith(`${sky}.webp`)) {
       skyImg.style.opacity = '0';
       setTimeout(() => {
         skyImg.src = nextSrc;
