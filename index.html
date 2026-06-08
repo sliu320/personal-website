@@ -134,19 +134,44 @@
       position:absolute; inset:0; width:100%; height:100%;
     }
 
-    /* Portal gif — layer 1 */
+    /* Portal — layer 1: a glimpse of the room through the doorway */
     #portal-wrap {
       position:absolute; z-index:1;
       /* Clip to door interior — matches SVG clip rect (x=3.6,y=3.6 in 80×140 viewBox):
          top/bottom: 3.6/140 = 2.57%,  left/right: 3.6/80 = 4.5% */
       inset: 2.57% 4.5%;
       overflow:hidden; pointer-events:none;
+      transform-origin:center center;
+      transition: transform 1.35s cubic-bezier(0.61,0.06,0.32,0.99);
+      will-change: transform;
     }
     #portal-img {
       position:absolute; inset:0; width:100%; height:100%;
       object-fit:cover;
-      transform:rotate(90deg) scale(1.75);
+      object-position: 38% 62%;
       transform-origin:center center;
+    }
+    /* Walking-through-the-door zoom — portal scales up to swallow the screen,
+       while the doorway frame and landing scene fade away behind it */
+    #entry.zoom-through #portal-wrap {
+      transform: scale(48);
+    }
+    #entry.zoom-through #door-leaf,
+    #entry.zoom-through #frame-svg,
+    #entry.zoom-through #entry-text,
+    #entry.zoom-through #entry-desc-mob,
+    #entry.zoom-through .door-hint,
+    #entry.zoom-through .door-subhint,
+    #entry.zoom-through #portal-tint {
+      transition: opacity 0.5s ease;
+      opacity: 0;
+    }
+    #entry.zoom-through #land-sky,
+    #entry.zoom-through #land-trees,
+    #entry.zoom-through #land-ov-ambient,
+    #entry.zoom-through #land-ov-ambient2 {
+      transition: opacity 0.9s ease 0.3s;
+      opacity: 0;
     }
     #portal-tint {
       position:absolute; inset:0; z-index:2;
@@ -587,7 +612,7 @@
     ============================================================ */
     /* ── Easter egg counter ── */
     #egg-counter {
-      position:fixed; bottom:5.4rem; right:2rem; z-index:50;
+      position:fixed; bottom:1.4rem; right:2rem; z-index:50;
       display:none; align-items:center; justify-content:center;
       pointer-events:none;
       transition:opacity 0.4s ease;
@@ -626,7 +651,7 @@
     }
 
     #nav-btn {
-      position:fixed; bottom:2rem; right:2rem; z-index:50;
+      position:fixed; top:1.6rem; right:2rem; z-index:50;
       width:42px; height:42px; border-radius:50%;
       background:rgba(255,255,255,0.12); backdrop-filter:blur(12px);
       border:1px solid rgba(255,255,255,0.25); cursor:pointer;
@@ -636,13 +661,13 @@
     body.room-entered #nav-btn { display:flex; }
     #nav-btn:hover { background:rgba(255,255,255,0.22); }
     #nav-btn span { width:16px; height:1.5px; background:rgba(240,226,200,0.9); display:block; border-radius:2px; }
-    #nav-menu { position:fixed; bottom:5.8rem; right:2rem; z-index:50; background:rgba(13,11,8,0.88); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:0.8rem 0.5rem; min-width:190px; opacity:0; pointer-events:none; transform:translateY(8px); transition:opacity 0.25s, transform 0.25s; }
+    #nav-menu { position:fixed; top:5.2rem; right:2rem; z-index:50; background:rgba(13,11,8,0.88); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:0.8rem 0.5rem; min-width:190px; opacity:0; pointer-events:none; transform:translateY(-8px); transition:opacity 0.25s, transform 0.25s; }
     #nav-menu.open { opacity:1; pointer-events:all; transform:translateY(0); }
     .nav-item { display:block; width:100%; padding:0.55rem 1rem; color:rgba(240,226,200,0.75); font-size:0.82rem; letter-spacing:0.07em; background:none; border:none; text-align:left; cursor:pointer; font-family:inherit; border-radius:8px; transition:background 0.2s, color 0.2s; }
     .nav-item:hover { background:rgba(255,255,255,0.08); color:rgba(240,226,200,1); }
 
     #time-badge {
-      position:fixed; top:1.4rem; left:50%; transform:translateX(-50%); z-index:50;
+      position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); z-index:50;
       color:rgba(240,226,200,0.35); font-size:0.72rem; letter-spacing:0.1em;
       display:none; white-space:nowrap;
     }
@@ -3399,7 +3424,7 @@
 
     <!-- Layer 1: Portal gif + ambient tint -->
     <div id="portal-wrap">
-      <img id="portal-img" src="assets/images/landing/portal.gif" alt="">
+      <img id="portal-img" src="assets/images/room.webp" alt="">
       <div id="portal-tint"></div>
     </div>
 
@@ -5741,7 +5766,15 @@ document.getElementById('entry-door').addEventListener('click', function() {
   if (entry.classList.contains('opening')) return; // prevent double-click
   entry.classList.add('opening');
 
-  // Door leaf slides away immediately; short pause so portal is glimpsed, then fade
+  // Door leaf slides away immediately; brief pause so the room is glimpsed
+  // through the doorway, then we "walk through" — the portal zooms up to
+  // swallow the screen while the landing scene fades behind it.
+  setTimeout(() => {
+    entry.classList.add('zoom-through');
+  }, 550);
+
+  // As the zoom nears completion, reveal the actual room underneath and
+  // cross-fade the entry screen away — completing the illusion of stepping in.
   setTimeout(() => {
     entry.classList.add('fade-out');
     document.body.classList.add('room-entered');
@@ -5750,10 +5783,10 @@ document.getElementById('entry-door').addEventListener('click', function() {
       lampOn = true;
       setLampOverlays(true);
     }
-  }, 600);
+  }, 1650);
 
-  // Remove entry from DOM after fade completes (transition is 1.4s)
-  setTimeout(() => { entry.style.display = 'none'; }, 2100);
+  // Remove entry from DOM after fade completes
+  setTimeout(() => { entry.style.display = 'none'; }, 2500);
 
   // Pre-load Spotify while user is entering
   initSpotifyAPI();
