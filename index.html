@@ -82,10 +82,6 @@
       from { opacity:0; transform:translateY(-50%) translateX(-70px); }
       to   { opacity:1; transform:translateY(-50%) translateX(0); }
     }
-    @keyframes door-in {
-      from { opacity:0; transform:translate(-50%, 90px); }
-      to   { opacity:1; transform:translate(-50%, -50%); }
-    }
 
     /* Text block */
     #entry-text {
@@ -98,6 +94,7 @@
     #entry-name-wrap { display:inline-block; text-align:right; margin-bottom:0.65rem; }
     #entry-name {
       display:block;
+      font-family:'Big Caslon','Didot','Iowan Old Style','Georgia',serif;
       font-size:clamp(1.9rem,3vw,3.4rem);
       font-weight:400; letter-spacing:0.15em; text-transform:uppercase;
       color:var(--text-primary); line-height:1.0; white-space:nowrap;
@@ -106,12 +103,14 @@
       transition:color 1.5s, border-color 1.5s;
     }
     #entry-tagline {
-      font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;
-      font-size:max(0.72rem,11px); letter-spacing:0.06em;
+      font-family:'Iowan Old Style','Palatino Linotype','Georgia',serif;
+      font-style:italic;
+      font-size:max(0.78rem,12px); letter-spacing:0.04em;
       color:var(--text-secondary); margin-bottom:1.9rem;
       transition:color 1.5s;
     }
     #entry-desc {
+      font-family:'Iowan Old Style','Palatino Linotype','Georgia',serif;
       font-size:max(0.9rem,14px); color:var(--text-body); line-height:1.9;
       transition:color 1.5s;
     }
@@ -119,17 +118,81 @@
       display:none; position:absolute; z-index:5;
       bottom:5%; left:50%; transform:translateX(-50%);
       width:82%; text-align:center;
+      font-family:'Iowan Old Style','Palatino Linotype','Georgia',serif;
       font-size:max(0.78rem,12px); color:var(--text-body); line-height:1.9;
       transition:color 1.5s; pointer-events:none;
     }
 
     /* Door area */
     #door-area {
-      position:absolute; left:63%; top:50%;
+      /* FIXED (not absolute): #entry has overflow:hidden + (soon) a punch-hole
+         clip-path, but neither of those create a containing block for
+         fixed-position descendants — so a `position:fixed` #door-area (and
+         its frame/leaf children) escape that clipping entirely and paint at
+         true viewport coordinates, unaffected by whatever hole we cut into
+         #entry. Since #entry is itself position:fixed;inset:0 (= the exact
+         viewport), left/top percentages compute identically either way. */
+      position:fixed; left:63%; top:50%; z-index:201;
       width:min(17vw,210px); aspect-ratio:80/140;
-      opacity:0;
-      animation:door-in 1.25s cubic-bezier(0.16,1,0.3,1) 0.1s forwards;
+      /* Slides up into its resting spot on load. The door itself is opaque
+         (white leaf) so the room stays hidden throughout — this is just the
+         door's entrance, not a reveal of anything behind it. */
+      opacity:0; transform:translate(-50%, -50%);
+      animation: door-slide-in 1.1s cubic-bezier(0.22,1,0.36,1) 0.15s forwards;
     }
+    /* Gentle ambient kiss — #door-area now paints ABOVE #land-ov-ambient
+       (sibling, z-index:201), so without this it looks pasted on top of the
+       scene's lighting rather than part of it ("painted over the lighting").
+       A LOW-strength multiply wash (--door-ambient = same colour as the
+       scene-wide overlay, but at a fraction of the opacity) integrates it
+       into the mood while staying brighter than the fully-dimmed surroundings
+       — which is what reads as the door "glowing"/spotlit relative to the
+       room around it (that contrast, not a separate glow layer, was always
+       the actual effect — see #land-ov-ambient's mask-image cutout). Soft
+       blurred radial shape (not a hard-edged rect) so it doesn't read as a
+       flat tinted box. */
+    /* Soft halo bleeding into the background behind the door — recreated via
+       box-shadow (not a separate spread-out pseudo-element) so it blurs
+       smoothly outward from the door's exact silhouette, the way a light
+       source bleeds into a dim room rather than sitting in a bounded box.
+       --door-glow shifts warmth/intensity with time of day. */
+    #door-area {
+      box-shadow: 0 0 2.6vw 0.3vw var(--door-glow, rgba(255,214,166,0.16));
+    }
+    /* Lighting ON the door surface itself — a vignette: the white leaf is
+       darkened/tinted toward its edges (multiply blend, which actually shows
+       up against white — overlay/screen barely touch a white base) while the
+       centre stays clear/bright, so the centre reads as "lit" by contrast.
+       This is what was missing — the previous attempt brightened an
+       already-white centre (invisible) instead of shading the surrounding
+       surface (visible). Sits directly over the leaf/frame, exact size. */
+    #door-area::before {
+      content:''; position:absolute; inset:0; z-index:6; pointer-events:none;
+      mix-blend-mode:multiply; opacity:0.56;
+      background: radial-gradient(ellipse 60% 58% at 50% 42%,
+        transparent 0%, transparent 38%, var(--door-ambient, rgba(90,80,140,0.6)) 100%);
+      transition: background 2.4s ease, opacity 0.32s ease;
+    }
+    /* Both the vignette (::before) and the halo (box-shadow) are surface
+       dressing for the CLOSED door — once it's opening/revealing the room,
+       they must vanish quickly too, or the vignette rectangle visibly hangs
+       over the live room as it's revealed (looked like a dark floating
+       panel). Fade them out in lockstep with the leaf/frame. */
+    #door-area.opening::before,
+    #door-area.zoom-through::before {
+      opacity: 0;
+    }
+    #door-area.opening,
+    #door-area.zoom-through {
+      transition: box-shadow 0.32s ease;
+      box-shadow: 0 0 0 0 transparent;
+    }
+    @keyframes door-slide-in {
+      0%   { opacity:0; transform:translate(-50%, calc(-50% + 14vh)); }
+      60%  { opacity:1; }
+      100% { opacity:1; transform:translate(-50%, -50%); }
+    }
+
     #door-leaf, #frame-svg, #entry-door {
       position:absolute; inset:0; width:100%; height:100%;
     }
@@ -142,32 +205,58 @@
        outward until it covers the full viewport — an iris/tunnel reveal that
        lands the user at the room's true scale, no zoom-back-out needed. */
     #portal-wrap {
+      /* RETIRED: we no longer composite a separate static room snapshot —
+         instead we punch an expanding "hole" directly into #entry's
+         clip-path, revealing the REAL, live room DOM underneath (always
+         correct lighting/time-of-day, never a stale pre-rendered image).
+         See syncEntryHole()/animateDoorReveal(). Kept in DOM/CSS but hidden
+         to avoid touching the many other references to it. */
+      display:none;
       position:fixed; inset:0; z-index:1;
       overflow:hidden; pointer-events:none;
       clip-path: inset(50% 50% 50% 50%);
-      transition: clip-path 1.35s cubic-bezier(0.61,0.06,0.32,0.99);
-      will-change: clip-path;
+      opacity:0;
+      /* clip-path is driven frame-by-frame in JS during the reveal (see
+         animateDoorReveal) — no CSS transition on it, so our manual values
+         apply immediately each frame instead of fighting a transition. */
+      transition: opacity 0.4s ease;
     }
+    #portal-wrap.synced { opacity:1; }
     #portal-img {
       position:absolute; inset:0; width:100%; height:100%;
       object-fit:cover;
       object-position: 38% 62%;
     }
-    /* Walking-through-the-door reveal — the clipped "window" expands until it
-       swallows the whole screen, while the doorway frame and landing scene
-       fade away behind it (no transform/scale on the portal itself). */
-    #entry.zoom-through #portal-wrap {
-      clip-path: inset(0% 0% 0% 0%);
-    }
-    #entry.zoom-through #door-leaf,
-    #entry.zoom-through #frame-svg,
+    /* NOTE: the clip-path expansion and the frame/door-leaf scale-up are NOT
+       driven by CSS transitions — scale() (multiplicative) and clip-path inset
+       (linear in px) accelerate at different perceptual rates even under an
+       identical timing function, so they always look desynced. Instead both
+       are driven every frame from one shared progress value in JS
+       (see animateDoorReveal()) — they're two outputs of one number, so they
+       can't drift apart. The rules below only define the END opacity states;
+       transform/clip-path are set inline by the JS animation loop.
+    */
+    /* Opacity for the frame/leaf is now driven inline, frame-by-frame, from
+       the SAME shared progress as the scale (see animateDoorReveal) — it only
+       starts fading in the final stretch, once it has already grown past the
+       viewport edges, so it reads as "zooming past you" rather than "vanishing
+       mid-grow". No CSS transition here; JS writes win each frame. */
     #entry.zoom-through #entry-text,
     #entry.zoom-through #entry-desc-mob,
-    #entry.zoom-through .door-hint,
-    #entry.zoom-through .door-subhint,
-    #entry.zoom-through #portal-tint {
+    #door-area.zoom-through .door-subhint,
+    #door-area.zoom-through #portal-tint {
       transition: opacity 0.5s ease;
       opacity: 0;
+    }
+    /* .door-hint runs an infinite `breathe` opacity keyframe animation —
+       animations win over plain opacity/transition declarations, so the
+       rule above alone never actually hid it (it kept "breathing" at
+       0.65–1 right through the reveal and into the room). Cancel the
+       animation outright and force it to 0 so it actually disappears. */
+    #door-area.zoom-through .door-hint {
+      animation: none !important;
+      transition: opacity 0.4s ease;
+      opacity: 0 !important;
     }
     #entry.zoom-through #land-sky,
     #entry.zoom-through #land-trees,
@@ -188,7 +277,7 @@
       transition:transform 0.85s cubic-bezier(0.4,0,0.2,1) 0.05s,
                  opacity   0.35s ease 0.65s;
     }
-    #entry.opening #door-leaf { transform:scaleX(0); opacity:0; }
+    #door-area.opening #door-leaf { transform:scaleX(0); opacity:0; }
 
     /* Frame */
     #frame-svg { pointer-events:none; z-index:3; }
@@ -423,6 +512,15 @@
       /* Default ring color: white */
       --hs-r:255; --hs-g:255; --hs-b:255;
     }
+    /* Hotspot rings/labels live on the REAL room DOM, which is now visible
+       through the landing-page door peek (see syncEntryHole/animateDoorReveal
+       — we reveal the live room rather than a static snapshot so lighting is
+       always current). But the rings/pulsing animations shouldn't be visible
+       or interactive until the user has actually walked through the door —
+       otherwise they read as a stray glowing circle floating in the peek. */
+    body:not(.room-entered) .hotspot {
+      opacity:0; pointer-events:none; animation:none;
+    }
     .hs-ring {
       width:38px; height:38px; border-radius:50%;
       border:1.5px solid rgba(var(--hs-r),var(--hs-g),var(--hs-b), 0.55);
@@ -634,8 +732,11 @@
       pointer-events:none;
     }
     #egg-counter-label {
-      font-size:0.68rem; letter-spacing:0.1em;
-      color:rgba(245,236,220,0.92); font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;
+      font-size:0.72rem; letter-spacing:0.1em;
+      color:rgba(245,236,220,0.92);
+      /* Matches #time-badge's whimsical Georgia-serif voice (the page default)
+         instead of the flatter sans-serif UI font. */
+      font-family:'Georgia','Times New Roman',serif;
       white-space:nowrap; text-shadow:0 1px 5px rgba(0,0,0,0.55);
       transition:color 0.4s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
     }
@@ -668,15 +769,15 @@
     #nav-btn {
       position:fixed; top:1.6rem; right:2rem; z-index:50;
       width:42px; height:42px; border-radius:50%;
-      background:rgba(255,255,255,0.2); backdrop-filter:blur(12px);
-      border:1px solid rgba(255,255,255,0.4); cursor:pointer;
+      background:rgba(18,14,10,0.42); backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,0.08); cursor:pointer;
       display:none; flex-direction:column; align-items:center; justify-content:center; gap:5px;
       transition:background 0.3s;
       box-shadow:0 2px 10px rgba(0,0,0,0.25);
     }
     body.room-entered #nav-btn { display:flex; }
-    #nav-btn:hover { background:rgba(255,255,255,0.32); }
-    #nav-btn span { width:16px; height:1.5px; background:rgba(255,255,255,1); display:block; border-radius:2px; }
+    #nav-btn:hover { background:rgba(28,22,16,0.58); }
+    #nav-btn span { width:16px; height:1.5px; background:rgba(245,236,220,0.92); display:block; border-radius:2px; }
     #nav-menu { position:fixed; top:5.2rem; right:2rem; z-index:50; background:rgba(13,11,8,0.88); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:0.8rem 0.5rem; min-width:190px; opacity:0; pointer-events:none; transform:translateY(-8px); transition:opacity 0.25s, transform 0.25s; }
     #nav-menu.open { opacity:1; pointer-events:all; transform:translateY(0); }
     .nav-item { display:block; width:100%; padding:0.55rem 1rem; color:rgba(240,226,200,0.75); font-size:0.82rem; letter-spacing:0.07em; background:none; border:none; text-align:left; cursor:pointer; font-family:inherit; border-radius:8px; transition:background 0.2s, color 0.2s; }
@@ -684,6 +785,8 @@
 
     #time-badge {
       color:rgba(245,236,220,0.92); font-size:0.72rem; letter-spacing:0.1em;
+      /* Keeps the page's default Georgia serif — the warmer, more whimsical
+         voice you preferred — rather than the flatter sans-serif UI font. */
       white-space:nowrap;
       text-shadow:0 1px 5px rgba(0,0,0,0.55);
     }
@@ -1276,6 +1379,9 @@
       transition:border-color 0.2s;
     }
     .np-input:focus { border-bottom-color:rgba(100,65,15,0.85); }
+    /* Highlights a required field that's missing/invalid on submit attempt */
+    .np-input.np-invalid { border-color:#c05a2a !important; }
+    .np-input.np-invalid::placeholder { color:rgba(192,90,42,0.65); }
     .np-input::placeholder { color:rgba(110,75,35,0.60); font-style:italic; }
     .np-textarea {
       resize:none; flex:1; min-height:0; height:100%; align-self:stretch; line-height:1.7;
@@ -2505,7 +2611,8 @@
     }
     .door-info-col { flex:1; }
     .door-info-hdr {
-      font-size:0.78rem; font-weight:700; letter-spacing:0.1em;
+      font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;
+      font-size:0.7rem; font-weight:700; letter-spacing:0.14em;
       text-transform:uppercase; margin-bottom:0.4rem;
       color:var(--door-color, #1a4a2e);
     }
@@ -2858,8 +2965,9 @@
       padding: 1.4rem 1.6rem 1.2rem;
     }
     .com-blurb-title {
-      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.12em; color: #7a6040; margin-bottom: 0.65rem;
+      font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;
+      font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.14em; color: #7a6040; margin-bottom: 0.65rem;
     }
     .com-blurb-body {
       font-size: max(0.82rem, 13px); color: #2a1e10; line-height: 1.75;
@@ -3433,6 +3541,8 @@
   </div>
   <div id="entry-desc-mob">I'm drawn to systems that shape how people think, make decisions, and navigate complexity. Step into an interactive space exploring my work, interests, and experiments.</div>
 
+  </div><!-- /entry (closed early so #door-area is a sibling, immune to #entry's hole-punch clip-path) -->
+
   <!-- Door -->
   <div id="door-area">
 
@@ -3487,8 +3597,6 @@
     </div>
 
   </div><!-- /door-area -->
-
-</div>
 
 <!-- Edit toggle (only visible after entering) -->
 <button id="edit-toggle">✎ position</button>
@@ -4055,7 +4163,7 @@
           <img class="cpol-img active" src="assets/images/community/Atlantic/atlantic mixer.webp" alt="">
           <img class="cpol-img" src="assets/images/community/Atlantic/atlantic holiday party.webp" alt="">
           <img class="cpol-img" src="assets/images/community/Atlantic/snowball.webp" alt="">
-          <img class="cpol-img" src="assets/images/community/Atlantic/bodaborg.webp" alt="">
+          <img class="cpol-img" src="assets/images/community/Atlantic/bodaborg.webp" alt="" style="transform:rotate(90deg);">
           <img class="cpol-img" src="assets/images/community/Atlantic/friendsgiving.webp" alt="">
           <button class="cpol-prev" data-dir="-1" aria-label="previous">‹</button>
           <button class="cpol-next" data-dir="1"  aria-label="next">›</button>
@@ -4071,7 +4179,7 @@
          data-key="prefx">
       <div class="cpol-frame">
         <div class="cpol-photos" id="cphotos-prefx">
-          <img class="cpol-img active" src="assets/images/community/Pre-fx director/pre-fx.webp" alt="">
+          <img class="cpol-img active" src="assets/images/community/Pre-fx director/pre-fx.webp" alt="" style="transform:rotate(90deg);">
           <button class="cpol-prev" data-dir="-1" aria-label="previous">‹</button>
           <button class="cpol-next" data-dir="1"  aria-label="next">›</button>
           <div class="cpol-dots"></div>
@@ -4642,7 +4750,7 @@ function renderBookshelf() {
 
 /* ---- Notepad Contact Form ---- */
 function renderNotepad() {
-  const FORMSPREE_ID = 'YOUR_FORM_ID'; // replace with your Formspree form ID
+  const FORMSPREE_ID = 'mvznagda'; // replace with your Formspree form ID
 
   // Override modal to remove default padding — the notepad IS the modal
   document.getElementById('modal').style.padding = '0';
@@ -4651,7 +4759,7 @@ function renderNotepad() {
   document.getElementById('modal').style.overflow = 'visible';
 
   modalBody.innerHTML = `
-  <form id="note-form" novalidate style="
+  <form id="nf-note-form" novalidate style="
     display:flex; flex-direction:column;
     width:clamp(280px,36vw,400px);
     border-radius:6px 6px 4px 4px;
@@ -4711,7 +4819,7 @@ function renderNotepad() {
     <!-- Footer -->
     <div style="background:#fefdf8;padding:0.5rem 1rem 0.75rem;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(180,210,240,0.4);">
       <div id="nf-status" style="font-size:0.65rem;font-style:italic;color:#8a6a3a;"></div>
-      <button type="submit" style="
+      <button type="submit" id="nf-send" style="
         background:linear-gradient(135deg,#f5c832,#e0a800);
         border:none;border-radius:20px;padding:0.38rem 1.1rem;
         font-family:'Georgia',serif;font-size:0.76rem;font-weight:600;
@@ -4722,7 +4830,7 @@ function renderNotepad() {
     </div>
   </form>`;
 
-  document.getElementById('note-form').addEventListener('submit', async (e) => {
+  document.getElementById('nf-note-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const name     = document.getElementById('nf-name').value.trim();
     const subject  = document.getElementById('nf-subject').value.trim();
@@ -4731,15 +4839,39 @@ function renderNotepad() {
     const msg      = document.getElementById('nf-msg').value.trim();
     const status   = document.getElementById('nf-status');
 
-    if (!name || !email || !msg) {
-      const missing = [!name&&'name', !email&&'email', !msg&&'message'].filter(Boolean);
+    const nameEl  = document.getElementById('nf-name');
+    const emailEl = document.getElementById('nf-email');
+    // Reset any prior invalid-field highlighting
+    [nameEl, emailEl].forEach(el => { el.style.borderBottom = '1px solid rgba(180,210,240,0.55)'; });
+
+    const missing = [];
+    if (!name)  missing.push('name');
+    if (!email) missing.push('email');
+    if (!msg)   missing.push('message');
+
+    if (missing.length) {
+      missing.forEach(field => {
+        const el = field === 'name' ? nameEl : field === 'email' ? emailEl : null;
+        if (el) el.style.borderBottom = '1.5px solid #c05a2a';
+      });
       status.style.color = '#c05a2a';
       status.textContent = `please fill in: ${missing.join(', ')}`;
       return;
     }
+    // Basic email-shape check so "required" actually means something
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      emailEl.style.borderBottom = '1.5px solid #c05a2a';
+      status.style.color = '#c05a2a';
+      status.textContent = 'please enter a valid email address';
+      return;
+    }
 
-    const btn = document.querySelector('.np-send');
-    btn.disabled = true; btn.textContent = 'sending…';
+    const btn = document.getElementById('nf-send');
+    const originalBtnText = btn.textContent;
+    btn.disabled = true; btn.style.opacity = '0.6'; btn.style.cursor = 'default';
+    btn.textContent = 'sending…';
+    status.style.color = '#8a6a3a';
+    status.textContent = 'sending your note…';
 
     if (FORMSPREE_ID === 'YOUR_FORM_ID') {
       // Fallback: open email client
@@ -4762,16 +4894,21 @@ function renderNotepad() {
       });
       if (res.ok) {
         status.style.color = '#3a7a3a';
+        status.style.fontWeight = 'bold';
         status.textContent = '✓ sent! thanks for reaching out, ' + name + ' 🌿';
         btn.textContent = 'sent ✓';
-        document.getElementById('note-form').reset();
+        btn.style.background = 'linear-gradient(135deg,#8fd18f,#5fae5f)';
+        btn.style.color = '#1a3a1a';
+        document.getElementById('nf-note-form').reset();
       } else {
         throw new Error('server error');
       }
     } catch {
       status.style.color = '#c05a2a';
+      status.style.fontWeight = 'bold';
       status.textContent = 'something went wrong — try emailing susy.liu320@gmail.com directly';
-      btn.disabled = false; btn.textContent = 'send ✉';
+      btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
+      btn.textContent = originalBtnText;
     }
   });
 }
@@ -5250,6 +5387,31 @@ function renderWorldMap() {
 var _testOverrideHours = null; // set by test panel; null = real clock
 var _testSkyOverride   = null; // set by test panel; null = auto from time config
 var _syncedSky         = null; // set by real-weather sync; lower priority than test panel
+
+// Geolocation + a weather API round-trip is slow (often 1-3s) — long enough
+// that the landing page sits on a neutral placeholder noticeably before the
+// real sky appears. Cache the last resolved sky/weather in localStorage and
+// reuse it instantly on the next load (weather rarely flips dramatically
+// minute-to-minute), then silently re-sync in the background to correct it
+// if it has actually changed. This makes "recognition" feel near-instant on
+// repeat visits while staying accurate.
+function _loadCachedSky() {
+  try {
+    const c = JSON.parse(localStorage.getItem('landing-sky-cache') || 'null');
+    if (c && c.sky && (Date.now() - c.t) < 90 * 60 * 1000) return c; // 90 min freshness
+  } catch(e) {}
+  return null;
+}
+function _saveCachedSky(sky, label) {
+  try { localStorage.setItem('landing-sky-cache', JSON.stringify({ sky, label, t: Date.now() })); } catch(e) {}
+}
+// Note: only primes _syncedSky here (declared above). _syncedWeatherLabel is
+// declared with `let` further down (TIME BADGE section) — assigning it before
+// that declaration executes would throw (temporal dead zone), so the cached
+// weather *label* is applied separately, later, right where that var exists
+// (see _syncedWeatherLabel priming near its declaration).
+var _cachedSkyEntry = _loadCachedSky();
+if (_cachedSkyEntry) { _syncedSky = _cachedSkyEntry.sky; }
 function getTimeCfg() {
   const h = (_testOverrideHours !== null) ? _testOverrideHours : new Date().getHours();
   return TIME_CONFIGS.find(c=>c.hours.includes(h)) || TIME_CONFIGS[3];
@@ -5711,24 +5873,37 @@ function applyLandingLighting() {
     'night':          '#070614',
   };
   const entryEl = document.getElementById('entry');
-  if (entryEl) entryEl.style.background = skyBg[cfg.label] || '#1c2a3a';
+
+  // Until the real-weather sync resolves, we don't actually know which sky
+  // image is correct — loading the time-of-day default first (often
+  // "overcast") just means showing the wrong one and then jarringly swapping
+  // it a moment later. Instead, hold on a calm, neutral dark-blue placeholder
+  // with no sky image at all, and only commit to a sky image once we know
+  // which one is real. (applyLandingLighting() re-runs once sync completes.)
+  const stillResolving = (_testSkyOverride === null && _syncedSky === null);
+
+  if (entryEl) entryEl.style.background = stillResolving ? '#16243a' : (skyBg[cfg.label] || '#1c2a3a');
 
   // Sky image (same brightness/filter logic as room's applySky)
   const skyImg = document.getElementById('land-sky');
   if (skyImg) {
-    const isOvercast = sky === 'overcast' || sky === 'cloudy';
-    skyImg.style.filter = (isOvercast && isDaytime)
-      ? (sky === 'overcast' ? 'brightness(2.4) saturate(0.55)' : 'brightness(1.5) saturate(0.75)')
-      : '';
-    skyImg.classList.toggle('sky-drifting', isOvercast);
-    const nextSrc = `assets/images/landing/${sky}.webp`;
-    if (!skyImg.src.endsWith(`${sky}.webp`)) {
+    if (stillResolving) {
       skyImg.style.opacity = '0';
-      setTimeout(() => {
-        skyImg.src = nextSrc;
-        skyImg.onload = () => { skyImg.style.opacity = '1'; };
-      }, skyImg.src ? 350 : 0);
-    } else { skyImg.style.opacity = '1'; }
+    } else {
+      const isOvercast = sky === 'overcast' || sky === 'cloudy';
+      skyImg.style.filter = (isOvercast && isDaytime)
+        ? (sky === 'overcast' ? 'brightness(2.4) saturate(0.55)' : 'brightness(1.5) saturate(0.75)')
+        : '';
+      skyImg.classList.toggle('sky-drifting', isOvercast);
+      const nextSrc = `assets/images/landing/${sky}.webp`;
+      if (!skyImg.src.endsWith(`${sky}.webp`)) {
+        skyImg.style.opacity = '0';
+        setTimeout(() => {
+          skyImg.src = nextSrc;
+          skyImg.onload = () => { skyImg.style.opacity = '1'; };
+        }, skyImg.src ? 350 : 0);
+      } else { skyImg.style.opacity = '1'; }
+    }
   }
 
   // Tree lighting — same per-period filter as room
@@ -5753,6 +5928,24 @@ function applyLandingLighting() {
   // Portal tint — matches ambient so gif feels lit by time-of-day
   const pt = document.getElementById('portal-tint');
   if (pt) pt.style.background = cfg.ambient;
+
+  // Door ambient kiss — same colour as the scene-wide wash, applied at low
+  // strength directly to #door-area (see #door-area::after) so the door
+  // feels lit by the same time-of-day mood instead of pasted on top of it.
+  document.documentElement.style.setProperty('--door-ambient', cfg.ambient);
+
+  // Visible warm glow halo (see #door-area::before) — intensity/warmth
+  // shifts with time of day so it always reads, even when cfg.ambient
+  // itself is too faint to notice on its own.
+  if (cfg.moonlight) {
+    document.documentElement.style.setProperty('--door-glow', 'rgba(255,200,130,0.32)');
+  } else if (cfg.label === 'dusk') {
+    document.documentElement.style.setProperty('--door-glow', 'rgba(255,150,110,0.30)');
+  } else if (cfg.label === 'golden hour') {
+    document.documentElement.style.setProperty('--door-glow', 'rgba(255,195,130,0.32)');
+  } else {
+    document.documentElement.style.setProperty('--door-glow', 'rgba(255,235,205,0.22)');
+  }
 
   // Text colour — light text at night/dusk, dark text in daytime
   const lightText = cfg.moonlight || cfg.label === 'dusk';
@@ -5781,32 +5974,160 @@ applyLandingLighting();
    ENTRY DOOR
 ============================================================ */
 
-// Keep the fixed, full-viewport #portal-wrap visually "windowed" down to the
-// doorway's on-screen rect via clip-path — so before the reveal it looks
-// exactly like a glimpse through the door (not a full-screen image).
-function syncPortalClip() {
-  const entry = document.getElementById('entry');
-  const wrap = document.getElementById('portal-wrap');
-  const doorArea = document.getElementById('door-area');
-  if (!entry || !wrap || !doorArea) return;
-  if (entry.classList.contains('zoom-through')) return; // mid-reveal — leave it animating
-  const r = doorArea.getBoundingClientRect();
-  if (!r.width || !r.height) return;
-  const padX = r.width * 0.045, padY = r.height * 0.0257;
-  const top = Math.max(0, r.top + padY);
-  const left = Math.max(0, r.left + padX);
-  const right = Math.max(0, window.innerWidth - (r.right - padX));
-  const bottom = Math.max(0, window.innerHeight - (r.bottom - padY));
-  wrap.style.clipPath = `inset(${top}px ${right}px ${bottom}px ${left}px)`;
+// ── "Punch a hole in the landing overlay" reveal mechanism ──────────────
+// Instead of compositing a separate static room snapshot (which inevitably
+// drifts out of sync with the room's actual current lighting/time-of-day),
+// we cut an expanding rectangular HOLE directly into #entry's own
+// clip-path. Through that hole you see exactly what's underneath: the
+// REAL, live room DOM (#room-image/#sky-img/etc, already rendered with
+// today's current lighting) — always correct, by construction, because
+// it's not a copy of anything. #door-area (and its frame/leaf) is
+// `position:fixed`, so it escapes #entry's clipping and stays visible
+// & crisp regardless of the hole shape (see #door-area CSS comment).
+//
+// The hole is expressed as an SVG path with the `evenodd` fill rule:
+// an outer rectangle (the full viewport — "paint everything") minus an
+// inner rectangle (the hole — "...except this region, which becomes
+// transparent, revealing what's beneath"). Growing the inner rectangle
+// toward the viewport's edges is the entire "walking through the
+// doorway" effect — no separate image layer required.
+function _entryHolePath(l, t, r, b) {
+  const VW = window.innerWidth, VH = window.innerHeight;
+  return `path(evenodd, "M0 0H${VW}V${VH}H0Z M${l} ${t}H${r}V${b}H${l}Z")`;
 }
-syncPortalClip();
-window.addEventListener('resize', syncPortalClip);
-setTimeout(syncPortalClip, 400); // re-sync once entry intro animation settles door-area into place
+function _doorHoleRect() {
+  const doorArea = document.getElementById('door-area');
+  if (!doorArea) return null;
+  const r = doorArea.getBoundingClientRect();
+  if (!r.width || !r.height) return null;
+  const padX = r.width * 0.045, padY = r.height * 0.0257;
+  return {
+    left:   r.left + padX,
+    top:    r.top + padY,
+    right:  r.right - padX,
+    bottom: r.bottom - padY,
+  };
+}
+// Keep #entry's hole "windowed" down to the doorway's on-screen rect — so
+// before the reveal, the live room is already visible through the door at
+// its true scale (not a snapshot/peek of something else).
+function syncEntryHole() {
+  const entry = document.getElementById('entry');
+  if (!entry) return;
+  if (entry.classList.contains('zoom-through')) return; // mid-reveal — leave it animating
+  const hr = _doorHoleRect();
+  if (!hr) return;
+  entry.style.clipPath = _entryHolePath(hr.left, hr.top, hr.right, hr.bottom);
+}
+window.addEventListener('resize', syncEntryHole);
+// The door area flies/fades into place via the `door-in` keyframe animation —
+// syncing the hole before it settles produces a misplaced, late-popping
+// "peek". Wait for that entrance animation to finish, then measure the
+// door's final rect and snap the hole to it.
+const _doorAreaEl = document.getElementById('door-area');
+if (_doorAreaEl) {
+  // RACE CONDITION: this script sits near the bottom of a long document — by
+  // the time it parses & runs, the `door-in` entrance animation (1.25s+0.1s)
+  // has very likely ALREADY finished & fired its `animationend`, before this
+  // listener could ever catch it. Check whether it's already done and settle
+  // immediately in that case; only attach the listener if still running.
+  const alreadyDone = parseFloat(getComputedStyle(_doorAreaEl).opacity || '0') > 0.98;
+  if (alreadyDone) {
+    syncEntryHole();
+  } else {
+    _doorAreaEl.addEventListener('animationend', function onDoorIn(e) {
+      if (e.animationName !== 'door-slide-in') return;
+      _doorAreaEl.removeEventListener('animationend', onDoorIn);
+      syncEntryHole();
+    });
+  }
+}
+// Fallback in case neither path fires (e.g. reduced-motion skips the animation)
+setTimeout(syncEntryHole, 1600);
+
+// Shared eased progress drives BOTH the frame's scale-up and the portal's
+// clip-path reveal from one number each frame — they literally cannot drift
+// apart, unlike two independent CSS transitions on differently-shaped
+// properties (multiplicative scale vs. linear-in-px clip-path).
+function _easeInOutCubic(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
+
+function animateDoorReveal(durationMs, frameTargetScale, onDone) {
+  const entry    = document.getElementById('entry');
+  const doorArea = document.getElementById('door-area');
+  const frameSvg = document.getElementById('frame-svg');
+  if (!entry || !doorArea) return;
+
+  const VW = window.innerWidth, VH = window.innerHeight;
+  const start = _doorHoleRect();
+  if (!start) return;
+
+  // Kill any CSS transitions/positioning on the properties we're about to
+  // drive manually — otherwise the browser fights our per-frame inline
+  // writes (and stale `inset:0` rules would override our explicit box).
+  // The frame is switched from CSS layout (inset:0 within #door-area) to
+  // `position:fixed` with an explicit pixel box — so it can be resized to
+  // EXACTLY the hole's rectangle every frame (see below).
+  entry.style.transition = 'none';
+  if (frameSvg) {
+    // Don't track/scale the frame's box at all — that's what produced the
+    // "white rectangle expanding outward" (its light-coloured outline,
+    // var(--frame-color), growing toward viewport size before the room
+    // caught up). The original design simply faded the frame out in place
+    // as the reveal began (see #entry.zoom-through #frame-svg in the
+    // pre-rewrite version) — replicate that: quick opacity fade, no motion.
+    frameSvg.style.transition = 'opacity 0.32s ease';
+    frameSvg.style.opacity = '0';
+  }
+  void entry.offsetHeight; // commit
+
+  const t0 = performance.now();
+  function step(now) {
+    const p = Math.min(1, (now - t0) / durationMs);
+    const e = _easeInOutCubic(p);
+
+    // The hole's four edges interpolate from the doorway's rect toward the
+    // viewport's edges — at e=1 the hole IS the viewport, i.e. #entry is
+    // entirely "punched away" and the live room underneath is fully revealed.
+    const l = start.left   * (1 - e) + 0  * e;
+    const t = start.top    * (1 - e) + 0  * e;
+    const r = start.right  * (1 - e) + VW * e;
+    const b = start.bottom * (1 - e) + VH * e;
+    entry.style.clipPath = _entryHolePath(l, t, r, b);
+    // Force the browser to commit/repaint THIS frame's clip immediately —
+    // without this, large position:fixed layers can have their clip-path
+    // repaints batched/deferred (especially while another element is mid
+    // heavy-transform), so the visible window appears "stuck" at its
+    // starting size and only catches up in one jump at the very end.
+    void entry.offsetHeight;
+
+    // The frame's box is set to the EXACT SAME l/t/r/b numbers as the hole —
+    // not an independently-scaled copy. It is, by construction, a border
+    // drawn directly on the edge of the transparent region: same coordinates
+    // in, same coordinates out, every frame. They cannot drift apart because
+    // they ARE the same rectangle. This replaces the old transform:scale()
+    // approach, whose multiplicative growth curve subtly raced ahead of the
+    // clip-path's linear-in-px interpolation even under identical easing.
+    if (p < 1) {
+      requestAnimationFrame(step);
+    } else {
+      entry.style.clipPath = _entryHolePath(0, 0, VW, VH); // guarantee full punch-through
+      if (onDone) onDone();
+    }
+  }
+  requestAnimationFrame(step);
+}
 
 document.getElementById('entry-door').addEventListener('click', function() {
   const entry = document.getElementById('entry');
   if (entry.classList.contains('opening')) return; // prevent double-click
   entry.classList.add('opening');
+  const _da = document.getElementById('door-area');
+  if (_da) _da.classList.add('opening'); // #door-leaf swing-open selector now lives on #door-area (sibling of #entry)
+
+  // Snap the doorway "hole" to the door's current rect RIGHT NOW (in case the
+  // entrance-animation-driven sync hasn't run yet) — guarantees the live room
+  // is correctly windowed before any expansion begins.
+  syncEntryHole();
 
   // Door leaf slides away immediately; brief pause so the room is glimpsed
   // through the doorway, then we "walk through" — the doorway "window"
@@ -5814,14 +6135,23 @@ document.getElementById('entry-door').addEventListener('click', function() {
   // it swallows the whole screen. No scaling/zooming of the image itself —
   // it's always rendered at true scale, so we land in the room at the right
   // size with no jarring zoom-back-out.
+  const REVEAL_MS = 1350;
   setTimeout(() => {
-    syncPortalClip();           // lock in the exact current window rect
-    void document.getElementById('portal-wrap').offsetHeight; // force reflow
-    entry.classList.add('zoom-through');
+    entry.classList.add('zoom-through'); // triggers the opacity-fade rules (text/sky/etc.)
+    if (_da) _da.classList.add('zoom-through'); // door-hint/subhint/portal-tint live in #door-area now
+    // Frame scale-up and portal clip-reveal are driven together, frame-by-frame,
+    // from one shared progress value — guaranteed in lockstep (see comment above
+    // animateDoorReveal). frameTargetScale=11 grows the doorway frame until its
+    // borders push past the viewport edges at the same instant the room finishes
+    // filling the screen.
+    animateDoorReveal(REVEAL_MS, 11);
   }, 550);
 
-  // As the zoom nears completion, reveal the actual room underneath and
-  // cross-fade the entry screen away — completing the illusion of stepping in.
+  // Wait for the reveal to FULLY complete (550ms delay + 1350ms reveal = 1900ms)
+  // before cross-fading to the real room — starting the fade earlier would
+  // composite the still-expanding portal against the already-visible real room,
+  // which is exactly what made the reveal look like it "stalled" before filling
+  // the screen. Now there's a clean hand-off: portal fills screen → THEN fade.
   setTimeout(() => {
     entry.classList.add('fade-out');
     document.body.classList.add('room-entered');
@@ -5830,10 +6160,15 @@ document.getElementById('entry-door').addEventListener('click', function() {
       lampOn = true;
       setLampOverlays(true);
     }
-  }, 1650);
+  }, 1950);
 
-  // Remove entry from DOM after fade completes
-  setTimeout(() => { entry.style.display = 'none'; }, 2500);
+  // Remove entry (and the now-sibling door-area, which would otherwise sit
+  // on top of the room forever at z-index:201) from DOM after fade completes
+  setTimeout(() => {
+    entry.style.display = 'none';
+    const da = document.getElementById('door-area');
+    if (da) da.style.display = 'none';
+  }, 2750);
 
   // Pre-load Spotify while user is entering
   initSpotifyAPI();
@@ -6760,7 +7095,7 @@ document.querySelectorAll('.world-zoom-overlay').forEach(ov => {
 /* ============================================================
    TIME BADGE — shows time-of-day + live weather label
 ============================================================ */
-let _syncedWeatherLabel = null; // e.g. "clear · 22°C" — set after sync
+let _syncedWeatherLabel = (_cachedSkyEntry && _cachedSkyEntry.label) || null; // e.g. "clear · 22°C" — set after sync; primed from cache for instant display
 
 function _updateTimeBadge(timeLabel) {
   const badge = document.getElementById('time-badge');
@@ -6830,6 +7165,7 @@ async function syncRealWeather() {
     const tempC     = Math.round(c.temperature_2m);
     const tempF     = Math.round(tempC * 9/5 + 32);
     _syncedWeatherLabel = `${condLabel} · ${tempC}°C / ${tempF}°F`;
+    _saveCachedSky(sky, _syncedWeatherLabel); // cache for instant recognition next load
 
     // Apply — updates persist across applyLighting calls via _syncedSky
     _syncedSky = sky;
@@ -6837,6 +7173,9 @@ async function syncRealWeather() {
     applySky(sky);
     updateSkyAnims(sky);
     setWeather(weather);
+    // Landing page resolved its sky before this async sync finished (using the
+    // time-of-day default) — re-resolve now so it matches the room's real sky.
+    if (typeof applyLandingLighting === 'function') applyLandingLighting();
     _updateTimeBadge(getTimeCfg().label); // refresh badge immediately
 
     console.log(`🌤 Weather synced: code=${c.weather_code}, wind=${c.wind_speed_10m}kph, ${c.temperature_2m}°C → sky:${sky}, weather:${weather}`);
@@ -6845,11 +7184,14 @@ async function syncRealWeather() {
   }
 }
 
-// Sync on room entry, then refresh every 30 minutes
-document.getElementById('entry-door').addEventListener('click', () => {
-  setTimeout(syncRealWeather, 2800);
-  setInterval(syncRealWeather, 30 * 60 * 1000);
-}, { once: true });
+// Sync as soon as the landing page loads (not gated behind the door click) —
+// otherwise the landing page always shows the time-of-day default sky and
+// never matches the real-weather-synced sky the room ends up using, since by
+// the time you're inside the sync has finished but the landing already rendered
+// with the wrong default. Re-applies landing lighting once resolved (see
+// applyLandingLighting() call inside syncRealWeather), then refreshes every 30 min.
+setTimeout(syncRealWeather, 200); // start the geolocation+fetch round-trip ASAP — it's the slow part
+setInterval(syncRealWeather, 30 * 60 * 1000);
 
 /* ============================================================
    MUSIC NOTE PARTICLES — float up from JBL speaker while music plays
@@ -7110,7 +7452,7 @@ const CF_CASES = [
       client:'Rhode Island Housing Department',
       tags:['Public Sector','Social Impact'],
       skills:'Process mapping · Stakeholder alignment · Expert interviews',
-      summary:'BCG engaged to develop a state-wide homelessness response after critical emergency shelters closed. Authored playbook for creating new shelter capacity — permitting and vendor selection — directly influencing the purchase of a facility to house 41 families. Developed comparative case studies across states.',
+      summary:'BCG engaged to develop a state-wide homelessness response after critical emergency shelters closed — read the full report <a href="https://www.bostonglobe.com/2023/04/24/metro/something-is-going-break-8-things-know-about-startling-new-report-detailing-housing-crisis-rhode-island/" target="_blank" rel="noopener">here</a>. Authored playbook for creating new shelter capacity — permitting and vendor selection — directly influencing the <a href="https://turnto10.com/news/local/department-of-housing-approved-purchase-charlesgate-facility-house-homeless-families-shelter-winter-amos-house-rhode-island-service-nursing-center-providence-october-31-2023" target="_blank" rel="noopener">purchase of a facility</a> to house 41 families. Developed comparative case studies across states.',
     },
     { title:'NON-PROFIT ALUMNI ENGAGEMENT PROGRAM',
       client:'Regional branch of national non-profit (pro-bono)',
@@ -7786,7 +8128,7 @@ document.querySelectorAll('.tea-car-dot').forEach(d => {
 const HOBBY_DATA = {
   volleyball: { name:'Volleyball', img:'assets/images/hobbies/volleyball.webp', imgPos:'center center',
     desc:`<p>I picked up volleyball post-graduation, to the delight of my family, who have a long relationship with the sport. I captained a rec team of friends ranging from former athletes to total beginners. While we lost a lot early on, I shifted our focus to learning and improving together — casual, social weekly practices and simple norms like hi-fiving after every point.</p><p>Morale quickly improved and we even started winning by season's end. More importantly, it stuck — one friend who'd never felt "sporty" saw herself differently, another got fully hooked, and the team is still growing two years later.</p><p>Volleyball reinforced how I like to build communities: low pressure, high support, and people growing into it.</p>` },
-  soccer:     { name:'Soccer',     img:'assets/images/hobbies/soccer.webp',    imgPos:'center center',
+  soccer:     { name:'Soccer',     img:'assets/images/hobbies/soccer.webp',    imgPos:'center center', imgRot:'180deg',
     desc:`<p>From my high school varsity team to "midnight soccer" in college to IM's at Sloan, I enjoy the strategic thinking, teamwork, and sportsmanship required to play the game. An incredibly accessible sport loved by folks across the globe, you can find pickup soccer almost anywhere.</p><p>Since participating in college IMs, I hold the belief that team sports is one of the best ways to build connection and community. Pictured is the Sloan IM team I organized, toughing out a rainy day, only to have the other team flake! Proud that we showed up for the love of the game.</p>` },
   pingpong:   { name:'Ping Pong',  img:'assets/images/hobbies/ping pong.webp', imgPos:'center 25%',
     desc:`<p>My parents met at an office ping pong tournament, so naturally, I grew up playing with my family at our basement ping pong table.</p><p>Pictured is me and a friend posing as winners of Sloan's Asian American Alliance ping pong tournament!</p>` },
@@ -7998,7 +8340,7 @@ document.querySelectorAll('.hobby-btn').forEach(btn => {
         <h3>${data.name}</h3>
         ${data.desc}
       </div>
-      <div class="hobbies-blurb-img"><img src="${data.img}" alt="${data.name}" style="object-position:${data.imgPos||'center center'}"></div>`;
+      <div class="hobbies-blurb-img"><img src="${data.img}" alt="${data.name}" style="object-position:${data.imgPos||'center center'};${data.imgRot ? `transform:rotate(${data.imgRot});` : ''}"></div>`;
     panel.classList.add('open');
   });
 });
@@ -8104,7 +8446,7 @@ document.getElementById('monitor-zoom-back').addEventListener('click', closeMoni
 
 // Wire up Formspree submission
 (function() {
-  const FORMSPREE_ID = 'YOUR_FORM_ID';
+  const FORMSPREE_ID = 'mvznagda';
   const form = document.getElementById('note-form');
   if (!form) return;
   form.addEventListener('submit', async (e) => {
@@ -8115,13 +8457,45 @@ document.getElementById('monitor-zoom-back').addEventListener('click', closeMoni
     const linkedin = document.getElementById('nf-linkedin').value.trim();
     const msg      = document.getElementById('nf-msg').value.trim();
     const status   = document.getElementById('nf-status');
-    if (!name || !email || !msg) {
-      const missing = [!name&&'name', !email&&'email', !msg&&'message'].filter(Boolean);
-      status.style.color = '#c05a2a'; status.textContent = 'please fill in: ' + missing.join(', ');
+    const nameEl   = document.getElementById('nf-name');
+    const emailEl  = document.getElementById('nf-email');
+    const msgEl    = document.getElementById('nf-msg');
+
+    // Reset any prior invalid-field highlighting
+    [nameEl, emailEl, msgEl].forEach(el => { el.classList.remove('np-invalid'); });
+
+    const missing = [];
+    if (!name)  missing.push('name');
+    if (!email) missing.push('email');
+    if (!msg)   missing.push('message');
+
+    if (missing.length) {
+      const map = { name: nameEl, email: emailEl, message: msgEl };
+      missing.forEach(field => map[field] && map[field].classList.add('np-invalid'));
+      status.style.color = '#c05a2a';
+      status.textContent = 'please fill in: ' + missing.join(', ');
       return;
     }
-    const btn = form.querySelector('.note-send');
-    btn.disabled = true; btn.textContent = 'sending…';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      emailEl.classList.add('np-invalid');
+      status.style.color = '#c05a2a';
+      status.textContent = 'please enter a valid email address';
+      return;
+    }
+
+    // Button class is `.np-send` (not `.note-send`) — the previous selector
+    // mismatch made `btn` null, threw a silent TypeError on `btn.disabled`,
+    // and killed this whole handler before anything could send or show
+    // feedback. That's why "nothing happened" on click.
+    const btn = form.querySelector('.np-send');
+    if (!btn) return;
+    const originalText = btn.textContent;
+    btn.disabled = true; btn.style.opacity = '0.6'; btn.style.cursor = 'default';
+    btn.textContent = 'sending…';
+    status.style.color = '#8a6a3a';
+    status.style.fontWeight = 'normal';
+    status.textContent = 'sending your note…';
+
     if (FORMSPREE_ID === 'YOUR_FORM_ID') {
       const sub  = encodeURIComponent((subject||'note') + ' — from ' + name);
       const body = encodeURIComponent(`${msg}\n\n— ${name}\n${email}${linkedin?'\n'+linkedin:''}`);
@@ -8137,13 +8511,19 @@ document.getElementById('monitor-zoom-back').addEventListener('click', closeMoni
       });
       if (res.ok) {
         status.style.color = '#3a7a3a';
+        status.style.fontWeight = 'bold';
         status.textContent = '✓ sent! thanks for reaching out, ' + name + ' 🌿';
-        btn.textContent = 'sent ✓'; form.reset();
+        btn.textContent = 'sent ✓';
+        btn.style.background = 'linear-gradient(135deg,#8fd18f,#5fae5f)';
+        btn.style.color = '#1a3a1a';
+        form.reset();
       } else throw new Error();
     } catch {
       status.style.color = '#c05a2a';
+      status.style.fontWeight = 'bold';
       status.textContent = 'something went wrong — try susy.liu320@gmail.com directly';
-      btn.disabled = false; btn.textContent = 'send ✉';
+      btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
+      btn.textContent = originalText;
     }
   });
 })();
