@@ -3484,9 +3484,9 @@ function openSpeakerZoom() {
   const slot = document.getElementById('ipod-spotify-slot');
   if (slot) slot.appendChild(_spotifyEl);
 
-  // Init/resume Spotify
+  // Init Spotify embed (don't auto-play — user starts playback from inside the embed)
   if (_spotifyCtrl) {
-    try { _spotifyCtrl.play(); } catch(e) {}
+    // already initialized; just leave it as-is
   } else if (_spotifyAPI) {
     _spotifyAPI.createController(_spotifyEl, {
       width:'100%', height:'352',
