@@ -615,16 +615,17 @@
     ============================================================ */
     /* ── Easter egg counter ── */
     #egg-counter {
-      position:fixed; bottom:1.4rem; right:2rem; z-index:50;
+      position:fixed; bottom:1.5rem; left:50%; z-index:50;
       display:none; align-items:center; justify-content:center;
       pointer-events:none;
       transition:opacity 0.4s ease;
+      transform:translateX(calc(-50% + 5.6rem));
     }
     body.room-entered #egg-counter { display:flex; }
     #egg-counter-label {
       font-size:0.68rem; letter-spacing:0.1em;
-      color:rgba(240,226,200,0.45); font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;
-      white-space:nowrap;
+      color:rgba(240,226,200,0.7); font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;
+      white-space:nowrap; text-shadow:0 1px 4px rgba(0,0,0,0.35);
       transition:color 0.4s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
     }
     /* When an egg is found: pop up above everything, glow gold */
@@ -656,26 +657,29 @@
     #nav-btn {
       position:fixed; top:1.6rem; right:2rem; z-index:50;
       width:42px; height:42px; border-radius:50%;
-      background:rgba(255,255,255,0.12); backdrop-filter:blur(12px);
-      border:1px solid rgba(255,255,255,0.25); cursor:pointer;
+      background:rgba(255,255,255,0.2); backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,0.4); cursor:pointer;
       display:none; flex-direction:column; align-items:center; justify-content:center; gap:5px;
       transition:background 0.3s;
+      box-shadow:0 2px 10px rgba(0,0,0,0.25);
     }
     body.room-entered #nav-btn { display:flex; }
-    #nav-btn:hover { background:rgba(255,255,255,0.22); }
-    #nav-btn span { width:16px; height:1.5px; background:rgba(240,226,200,0.9); display:block; border-radius:2px; }
+    #nav-btn:hover { background:rgba(255,255,255,0.32); }
+    #nav-btn span { width:16px; height:1.5px; background:rgba(255,255,255,1); display:block; border-radius:2px; }
     #nav-menu { position:fixed; top:5.2rem; right:2rem; z-index:50; background:rgba(13,11,8,0.88); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:0.8rem 0.5rem; min-width:190px; opacity:0; pointer-events:none; transform:translateY(-8px); transition:opacity 0.25s, transform 0.25s; }
     #nav-menu.open { opacity:1; pointer-events:all; transform:translateY(0); }
     .nav-item { display:block; width:100%; padding:0.55rem 1rem; color:rgba(240,226,200,0.75); font-size:0.82rem; letter-spacing:0.07em; background:none; border:none; text-align:left; cursor:pointer; font-family:inherit; border-radius:8px; transition:background 0.2s, color 0.2s; }
     .nav-item:hover { background:rgba(255,255,255,0.08); color:rgba(240,226,200,1); }
 
     #time-badge {
-      position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); z-index:50;
-      color:rgba(240,226,200,0.35); font-size:0.72rem; letter-spacing:0.1em;
+      position:fixed; bottom:1.5rem; left:50%; z-index:50;
+      color:rgba(240,226,200,0.7); font-size:0.72rem; letter-spacing:0.1em;
       display:none; white-space:nowrap;
+      transform:translateX(calc(-50% - 3.4rem));
+      text-shadow:0 1px 4px rgba(0,0,0,0.35);
     }
-    #time-badge .tb-sep { opacity:0.5; margin:0 0.35em; }
-    #time-badge .tb-weather { color:rgba(220,235,255,0.38); }
+    #time-badge .tb-sep { opacity:0.6; margin:0 0.35em; }
+    #time-badge .tb-weather { color:rgba(220,235,255,0.7); }
     body.room-entered #time-badge { display:block; }
     body.edit-mode #time-badge { display:none; }
     body.edit-mode #nav-btn { display:none; }
