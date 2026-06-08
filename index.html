@@ -134,30 +134,30 @@
       position:absolute; inset:0; width:100%; height:100%;
     }
 
-    /* Portal — layer 1: a glimpse of the room through the doorway */
+    /* Portal — layer 1: a glimpse of the room through the doorway.
+       Pinned to the viewport at full scale (no scaling/zooming of the image
+       itself — that's what caused pixelation). Visually "clipped" down to the
+       doorway window via clip-path, which JS keeps in sync with the door's
+       on-screen rect. To "walk through", we simply animate that clip-path
+       outward until it covers the full viewport — an iris/tunnel reveal that
+       lands the user at the room's true scale, no zoom-back-out needed. */
     #portal-wrap {
-      position:absolute; z-index:1;
-      /* Clip to door interior — matches SVG clip rect (x=3.6,y=3.6 in 80×140 viewBox):
-         top/bottom: 3.6/140 = 2.57%,  left/right: 3.6/80 = 4.5% */
-      inset: 2.57% 4.5%;
+      position:fixed; inset:0; z-index:1;
       overflow:hidden; pointer-events:none;
-      transform-origin:center center;
-      transition: transform 1.35s cubic-bezier(0.61,0.06,0.32,0.99);
-      will-change: transform;
+      clip-path: inset(50% 50% 50% 50%);
+      transition: clip-path 1.35s cubic-bezier(0.61,0.06,0.32,0.99);
+      will-change: clip-path;
     }
     #portal-img {
       position:absolute; inset:0; width:100%; height:100%;
       object-fit:cover;
       object-position: 38% 62%;
-      transform-origin:center center;
     }
-    /* Walking-through-the-door zoom — portal scales up to swallow the screen,
-       while the doorway frame and landing scene fade away behind it */
+    /* Walking-through-the-door reveal — the clipped "window" expands until it
+       swallows the whole screen, while the doorway frame and landing scene
+       fade away behind it (no transform/scale on the portal itself). */
     #entry.zoom-through #portal-wrap {
-      /* Just enough to expand the doorway out to fill the screen — like the
-         door swinging open and widening, not a deep zoom into the image
-         (which would pixelate and require zooming back out once arrived) */
-      transform: scale(7.5);
+      clip-path: inset(0% 0% 0% 0%);
     }
     #entry.zoom-through #door-leaf,
     #entry.zoom-through #frame-svg,
@@ -5769,15 +5769,42 @@ applyLandingLighting();
    ENTRY DOOR
 ============================================================ */
 
+// Keep the fixed, full-viewport #portal-wrap visually "windowed" down to the
+// doorway's on-screen rect via clip-path — so before the reveal it looks
+// exactly like a glimpse through the door (not a full-screen image).
+function syncPortalClip() {
+  const entry = document.getElementById('entry');
+  const wrap = document.getElementById('portal-wrap');
+  const doorArea = document.getElementById('door-area');
+  if (!entry || !wrap || !doorArea) return;
+  if (entry.classList.contains('zoom-through')) return; // mid-reveal — leave it animating
+  const r = doorArea.getBoundingClientRect();
+  if (!r.width || !r.height) return;
+  const padX = r.width * 0.045, padY = r.height * 0.0257;
+  const top = Math.max(0, r.top + padY);
+  const left = Math.max(0, r.left + padX);
+  const right = Math.max(0, window.innerWidth - (r.right - padX));
+  const bottom = Math.max(0, window.innerHeight - (r.bottom - padY));
+  wrap.style.clipPath = `inset(${top}px ${right}px ${bottom}px ${left}px)`;
+}
+syncPortalClip();
+window.addEventListener('resize', syncPortalClip);
+setTimeout(syncPortalClip, 400); // re-sync once entry intro animation settles door-area into place
+
 document.getElementById('entry-door').addEventListener('click', function() {
   const entry = document.getElementById('entry');
   if (entry.classList.contains('opening')) return; // prevent double-click
   entry.classList.add('opening');
 
   // Door leaf slides away immediately; brief pause so the room is glimpsed
-  // through the doorway, then we "walk through" — the portal zooms up to
-  // swallow the screen while the landing scene fades behind it.
+  // through the doorway, then we "walk through" — the doorway "window"
+  // (clip-path on the fixed, full-scale portal image) expands outward until
+  // it swallows the whole screen. No scaling/zooming of the image itself —
+  // it's always rendered at true scale, so we land in the room at the right
+  // size with no jarring zoom-back-out.
   setTimeout(() => {
+    syncPortalClip();           // lock in the exact current window rect
+    void document.getElementById('portal-wrap').offsetHeight; // force reflow
     entry.classList.add('zoom-through');
   }, 550);
 
