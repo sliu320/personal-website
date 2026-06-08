@@ -4,7 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Susy Liu</title>
+  <meta name="description" content="Susy Liu — MIT Sloan MBA, builder, and operator. Step into my room to explore projects, community work, fashion tech, and more.">
+  <meta property="og:title" content="Susy Liu">
+  <meta property="og:description" content="Step into my room — an interactive portfolio exploring projects, community building, and what's next.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/room.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Susy Liu">
+  <meta name="twitter:description" content="Step into my room — an interactive portfolio exploring projects, community building, and what's next.">
+  <meta name="twitter:image" content="assets/images/room.webp">
   <style>
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     html, body { width:100%; height:100%; overflow:hidden; background:#0d0b08; font-family:'Georgia','Times New Roman',serif; }
 
@@ -385,6 +402,14 @@
       backdrop-filter:blur(3px);
       transition:width 0.25s, height 0.25s, background 0.25s, border-color 0.25s;
       animation:hs-pulse 2.8s ease-in-out infinite;
+    }
+    .hotspot:focus-visible .hs-ring {
+      width:46px; height:46px;
+      background:rgba(var(--hs-r),var(--hs-g),var(--hs-b), 0.22);
+      border-color:rgba(255,255,255,0.95);
+      outline:2px solid rgba(255,255,255,0.85);
+      outline-offset:3px;
+      animation:none;
     }
     .hotspot:hover .hs-ring {
       width:46px; height:46px;
@@ -2084,21 +2109,21 @@
     .proj-inner-panel.active { display:block; }
     .proj-inner-panel iframe { width:100%; border:none; border-radius:6px; display:block; }
     .proj-prompt-text {
-      font-size:0.78rem; color:#4a3f2f; line-height:1.7;
+      font-size:0.82rem; color:#4a3f2f; line-height:1.7;
       background:rgba(0,0,0,0.03); border-radius:6px; padding:0.8rem 1rem;
       border-left:3px solid rgba(122,92,46,0.3);
     }
-    .proj-prompt-label { font-size:0.6rem; letter-spacing:0.1em; color:#8a7a60; text-transform:uppercase; margin-bottom:0.4rem; font-weight:700; }
+    .proj-prompt-label { font-size:0.6rem; letter-spacing:0.1em; color:rgba(122,92,46,0.8); text-transform:uppercase; margin-bottom:0.4rem; font-weight:700; }
     /* DressingRoom timeline */
     .dr-timeline { display:flex; flex-direction:column; gap:1.2rem; padding:0.4rem 0; }
     .dr-step { display:flex; gap:1rem; align-items:flex-start; }
     .dr-img { width:130px; flex-shrink:0; border-radius:6px; object-fit:cover; height:100px; box-shadow:0 2px 8px rgba(0,0,0,0.12); }
     .dr-step-text { flex:1; }
-    .dr-step-label { font-size:0.68rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#7a5c2e; margin-bottom:0.3rem; }
-    .dr-step-text p { font-size:0.88rem; color:#3a2e1a; line-height:1.6; margin:0; }
+    .dr-step-label { font-size:0.6rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(122,92,46,0.8); margin-bottom:0.3rem; }
+    .dr-step-text p { font-size:0.82rem; color:#4a3f2f; line-height:1.7; margin:0; }
     .dr-step-learnings { flex-direction:column; }
     .dr-step-learnings ul { margin:0.4rem 0 0; padding:0 0 0 1.2rem; }
-    .dr-step-learnings li { font-size:0.85rem; color:#3a2e1a; line-height:1.55; margin-bottom:0.35rem; }
+    .dr-step-learnings li { font-size:0.82rem; color:#4a3f2f; line-height:1.7; margin-bottom:0.35rem; }
     .browser-status {
       background:rgba(0,0,0,0.04); border-top:1px solid rgba(0,0,0,0.06);
       padding:0.2rem 0.6rem; font-size:0.58rem; color:#888;
@@ -3353,7 +3378,7 @@
   <!-- Sky photo (src set by JS) -->
   <img id="land-sky" src="" alt="">
   <!-- Trees overlay -->
-  <img id="land-trees" src="assets/images/landing/trees.png" alt="">
+  <img id="land-trees" src="assets/images/landing/trees.webp" alt="">
 
   <!-- Ambient colour overlays — same values as room TIME_CONFIGS, set by JS -->
   <div id="land-ov-ambient"></div>
@@ -3464,13 +3489,13 @@
     <!-- Layer 1b: Sky animations — clouds or stars rendered on top of sky, behind trees -->
     <div id="sky-anim"></div>
     <!-- Layer 2: Trees — always visible, tinted by lighting -->
-    <img id="tree-img"  class="room-layer" src="assets/images/sky/trees.png"   alt="" draggable="false">
+    <img id="tree-img"  class="room-layer" src="assets/images/sky/trees.webp"   alt="" draggable="false">
     <!-- Invisible hover zone for tree rustle — positioned over window/tree area -->
     <div id="tree-hover-zone"></div>
     <!-- Layer 2b: Weather — clouds, rain, fog, snow sit in front of trees but behind room -->
     <div id="window-weather"></div>
     <!-- Layer 3: Room — transparent window so all layers below show through -->
-    <img id="room-image" class="room-layer" src="assets/images/room.png" alt="Susy's room" draggable="false">
+    <img id="room-image" class="room-layer" src="assets/images/room.webp" alt="An illustrated bedroom scene with clickable objects — a mirror (about me), laptop (projects), notepad (contact), trophy shelf (awards), wardrobe (fashion tech), and more. Use the menu for a traditional list view of these sections." draggable="false">
 
     <!-- Window ambient animations — positioned over the bay window area -->
     <div id="window-anim">
@@ -3493,7 +3518,7 @@
     <div id="curtain-flutter"></div>
 
     <!-- Lamp reveal: masked unfiltered room image — restores natural saturation in lamp zone -->
-    <div id="lamp-reveal"><img src="assets/images/room.png" draggable="false" alt=""></div>
+    <div id="lamp-reveal"><img src="assets/images/room.webp" draggable="false" alt=""></div>
 
     <div class="overlay" id="ov-ambient"></div>
     <div class="overlay" id="ov-ambient2"></div>
@@ -3649,7 +3674,7 @@
 <div id="trophy-zoom-overlay" class="world-zoom-overlay">
   <div class="trophy-zoom-wrap">
     <div class="trophy-zoom-card">
-      <img class="trophy-case-bg" src="assets/images/trophy-case.png" alt="trophy case">
+      <img class="trophy-case-bg" src="assets/images/trophy-case.webp" alt="trophy case">
       <div class="trophy-shelf">
         <button class="trophy-btn" data-trophy="mens">
           <img src="assets/images/trophies/mens-et-manus.png" alt="Mens et Manus">
@@ -3675,7 +3700,7 @@
 <button id="consulting-zoom-back" class="zoom-back-btn">← back</button>
 <div id="consulting-zoom-overlay" class="world-zoom-overlay">
   <div class="casefiles-zoom-card">
-    <img class="casefiles-bg" src="assets/images/case-files.png" alt="case files">
+    <img class="casefiles-bg" src="assets/images/case-files.webp" alt="case files">
     <div class="casefiles-pages" id="cf-pages"></div>
     <!-- Prev arrow on left side of folder -->
     <button class="cf-flip-arrow" id="cf-prev-arrow" title="previous page">
@@ -3826,7 +3851,7 @@
 <button id="bookshelf-zoom-back" class="zoom-back-btn">← back</button>
 <div id="bookshelf-zoom-overlay" class="world-zoom-overlay">
   <div class="bookshelf-zoom-card">
-    <img src="assets/images/bookshelf.png" alt="bookshelf">
+    <img src="assets/images/bookshelf.webp" alt="bookshelf">
   </div>
 </div>
 
@@ -3935,12 +3960,12 @@
           </div>
           <!-- Slide 1: cny photo -->
           <div class="tea-car-slide">
-            <img src="assets/images/tea/cny.jpeg" alt="Chinese New Year tea" class="tea-car-img">
+            <img src="assets/images/tea/cny.webp" alt="Chinese New Year tea" class="tea-car-img">
             <div class="tea-car-caption">I host an annual Chinese New Year potluck for my friends, complete with dumpling-making and plenty of the lucky color red.</div>
           </div>
           <!-- Slide 2: tea china photo -->
           <div class="tea-car-slide">
-            <img src="assets/images/tea/tea china.jpeg" alt="Tea ceremony" class="tea-car-img">
+            <img src="assets/images/tea/tea china.webp" alt="Tea ceremony" class="tea-car-img">
             <div class="tea-car-caption">Learning how to do the Gongfu tea ceremony with family in China.</div>
           </div>
         </div>
@@ -3960,7 +3985,7 @@
 <div id="hobbies-zoom-overlay" class="world-zoom-overlay">
   <div class="hobbies-zoom-wrap">
     <div class="hobbies-bag-img-wrap">
-      <img src="assets/images/kit bag.png" class="hobbies-bag-img" alt="kit bag">
+      <img src="assets/images/kit bag.webp" class="hobbies-bag-img" alt="kit bag">
       <div class="hobbies-bag-interior">
         <button class="hobby-btn" data-hobby="volleyball"><span>🏐</span><span class="hobby-btn-label">Volleyball</span></button>
         <button class="hobby-btn" data-hobby="soccer"><span>⚽</span><span class="hobby-btn-label">Soccer</span></button>
@@ -3988,11 +4013,11 @@
          data-key="atlantic">
       <div class="cpol-frame">
         <div class="cpol-photos" id="cphotos-atlantic">
-          <img class="cpol-img active" src="assets/images/community/Atlantic/atlantic mixer.jpg" alt="">
-          <img class="cpol-img" src="assets/images/community/Atlantic/atlantic holiday party.jpg" alt="">
-          <img class="cpol-img" src="assets/images/community/Atlantic/snowball.jpg" alt="">
-          <img class="cpol-img" src="assets/images/community/Atlantic/bodaborg.jpeg" alt="">
-          <img class="cpol-img" src="assets/images/community/Atlantic/friendsgiving.jpeg" alt="">
+          <img class="cpol-img active" src="assets/images/community/Atlantic/atlantic mixer.webp" alt="">
+          <img class="cpol-img" src="assets/images/community/Atlantic/atlantic holiday party.webp" alt="">
+          <img class="cpol-img" src="assets/images/community/Atlantic/snowball.webp" alt="">
+          <img class="cpol-img" src="assets/images/community/Atlantic/bodaborg.webp" alt="">
+          <img class="cpol-img" src="assets/images/community/Atlantic/friendsgiving.webp" alt="">
           <button class="cpol-prev" data-dir="-1" aria-label="previous">‹</button>
           <button class="cpol-next" data-dir="1"  aria-label="next">›</button>
           <div class="cpol-dots"></div>
@@ -4007,7 +4032,7 @@
          data-key="prefx">
       <div class="cpol-frame">
         <div class="cpol-photos" id="cphotos-prefx">
-          <img class="cpol-img active" src="assets/images/community/Pre-fx director/pre-fx.jpeg" alt="">
+          <img class="cpol-img active" src="assets/images/community/Pre-fx director/pre-fx.webp" alt="">
           <button class="cpol-prev" data-dir="-1" aria-label="previous">‹</button>
           <button class="cpol-next" data-dir="1"  aria-label="next">›</button>
           <div class="cpol-dots"></div>
@@ -4037,9 +4062,9 @@
          data-key="trips">
       <div class="cpol-frame">
         <div class="cpol-photos" id="cphotos-trips">
-          <img class="cpol-img active" src="assets/images/community/Sloan trips/acadia1.jpeg" alt="">
-          <img class="cpol-img" src="assets/images/community/Sloan trips/NOLA.jpg" alt="">
-          <img class="cpol-img" src="assets/images/community/Sloan trips/atlantic retreat.jpg" alt="">
+          <img class="cpol-img active" src="assets/images/community/Sloan trips/acadia1.webp" alt="">
+          <img class="cpol-img" src="assets/images/community/Sloan trips/NOLA.webp" alt="">
+          <img class="cpol-img" src="assets/images/community/Sloan trips/atlantic retreat.webp" alt="">
           <button class="cpol-prev" data-dir="-1" aria-label="previous">‹</button>
           <button class="cpol-next" data-dir="1"  aria-label="next">›</button>
           <div class="cpol-dots"></div>
@@ -4125,7 +4150,7 @@
 <button id="monitor-zoom-back" class="zoom-back-btn">← back</button>
 <div id="monitor-zoom-overlay" class="world-zoom-overlay">
   <div class="monitor-zoom-card">
-    <img class="monitor-bg-img" src="assets/images/monitor.png" alt="monitor">
+    <img class="monitor-bg-img" src="assets/images/monitor.webp" alt="monitor">
     <div class="monitor-screen-inset" id="monitor-screen-content">
       <!-- Browser UI injected by renderBrowser() -->
     </div>
@@ -4802,8 +4827,11 @@ function _browserProjectsData() {
       id: 'genai', tab: '🤖 GenAI Lab',
       title: 'GenAI Lab — Award-Winning Project',
       tags: ['LLM', 'Product', 'MIT Sloan', 'Best Project 🏆'],
-      desc: '<em>Details coming soon.</em> Winner of the class competition. Built with a small team over a semester.',
-      demo: '🤖', demoLabel: 'details · spring 2025', link: '#',
+      desc: 'Winner of the class competition. Built with a small team over a semester.',
+      customContent: `
+        <div style="display:flex;align-items:center;justify-content:center;height:200px;color:rgba(100,70,30,0.5);font-family:Georgia,serif;font-style:italic;font-size:1rem;">
+          🚧 Details coming soon
+        </div>`,
     },
     {
       id: 'dressingroom', tab: '👗 DressingRoom',
@@ -4836,7 +4864,7 @@ function _browserProjectsData() {
               </div>
             </div>
             <div class="dr-step">
-              <img src="assets/images/Projects/DressingRoom/fuse.jpg" alt="FUSE Accelerator" class="dr-img">
+              <img src="assets/images/Projects/DressingRoom/fuse.webp" alt="FUSE Accelerator" class="dr-img">
               <div class="dr-step-text">
                 <div class="dr-step-label">MIT FUSE Accelerator</div>
                 <p>We went through MIT's selective FUSE accelerator at the Martin Trust Center for Entrepreneurship, focused on primary market research. We won the Top Banana award for most PMR interviews completed in a week.</p>
@@ -5262,7 +5290,7 @@ function applySky(skyName) {
   // Pan the sky image for cloudy/overcast so clouds visibly drift
   skyImg.classList.toggle('sky-drifting', isOvercast);
 
-  const nextSrc = `assets/images/sky/${skyName}.png`;
+  const nextSrc = `assets/images/sky/${skyName}.webp`;
   const curSrc  = skyImg.getAttribute('src') || '';
   if (!curSrc.endsWith(`${skyName}.png`)) {
     skyImg.style.opacity = '0';
@@ -5650,7 +5678,7 @@ function applyLandingLighting() {
       ? (sky === 'overcast' ? 'brightness(2.4) saturate(0.55)' : 'brightness(1.5) saturate(0.75)')
       : '';
     skyImg.classList.toggle('sky-drifting', isOvercast);
-    const nextSrc = `assets/images/landing/${sky}.png`;
+    const nextSrc = `assets/images/landing/${sky}.webp`;
     if (!skyImg.src.endsWith(`${sky}.png`)) {
       skyImg.style.opacity = '0';
       setTimeout(() => {
@@ -6444,6 +6472,17 @@ modalResetBtn.addEventListener('click', () => {
 
 document.querySelectorAll('.hotspot:not(#hs-lamp-toggle)').forEach(hs => {
   hs.addEventListener('click', e => { if(editMode) return; e.stopPropagation(); openModal(hs.dataset.key); });
+  // Keyboard accessibility: make hotspots focusable and activatable via Enter/Space
+  if (!hs.hasAttribute('tabindex')) hs.setAttribute('tabindex', '0');
+  hs.setAttribute('role', 'button');
+  if (!hs.hasAttribute('aria-label')) hs.setAttribute('aria-label', hs.dataset.label || hs.dataset.key);
+  hs.addEventListener('keydown', e => {
+    if (editMode) return;
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+      e.preventDefault(); e.stopPropagation();
+      hs.click();
+    }
+  });
 });
 document.getElementById('modal-close').addEventListener('click', closeModal);
 modalBg.addEventListener('click', e => { if(e.target===modalBg || e.target===modalBg.firstElementChild?.parentElement) closeModal(); });
@@ -6806,7 +6845,7 @@ const TROPHY_DATA = {
     scope: 'MIT-wide, graduate + undergraduate',
     desc: 'Recognizes undergraduate and graduate students who embody mens et manus by pairing thoughtful leadership with meaningful action to create positive change within their organization, living group, dorm, or team community. Specifically honored for transforming ideas around community and belonging into impactful programming and empowering others to participate and lead within the MIT community.',
     criteria: 'Three rounds of review post nomination, with final endorsement by Dean of Student Life and Chief of Staff.',
-    img: 'assets/images/trophies/mens-et-manus-detail.jpg',
+    img: 'assets/images/trophies/mens-et-manus-detail.webp',
   },
   genai: {
     name: 'GenAI Lab — Best Project',
@@ -6822,7 +6861,7 @@ const TROPHY_DATA = {
     scope: 'Undergraduate degree-seeking students',
     desc: 'Recognized for academic excellence across three distinctions: <strong>Dean\'s List</strong> — GPA in top 20% of degree-seeking students for the academic year. <strong>Cum Laude</strong> — GPA in top 25% of Economics majors based on five-year rolling average. <strong>Sociology Thesis Honors</strong> — By advisor recommendation; thesis focused on Covid masking and distancing compliance.',
     criteria: 'GPA-based ranking within degree program and department cohort.',
-    img: 'assets/images/trophies/deans-list-detail.jpg',
+    img: 'assets/images/trophies/deans-list-detail.webp',
   },
 };
 
@@ -7035,8 +7074,8 @@ function openConsultingZoom() {
   const cfBg = document.querySelector('.casefiles-bg');
   if (cfBg) {
     cfBg.src = window.innerWidth <= 480
-      ? 'assets/images/case-files mobile.png'
-      : 'assets/images/case-files.png';
+      ? 'assets/images/case-files mobile.webp'
+      : 'assets/images/case-files.webp';
   }
   _cfPhysPage = 0;
   _cfBuildScene();
@@ -7048,7 +7087,7 @@ function closeConsultingZoom() {
   _cfZoomed = false;
   // Restore desktop image
   const cfBg = document.querySelector('.casefiles-bg');
-  if (cfBg) cfBg.src = 'assets/images/case-files.png';
+  if (cfBg) cfBg.src = 'assets/images/case-files.webp';
   _closeZoomUI('consulting-zoom-overlay', 'consulting-zoom-back');
 }
 document.getElementById('consulting-zoom-back').addEventListener('click', closeConsultingZoom);
@@ -7665,17 +7704,17 @@ document.querySelectorAll('.tea-car-dot').forEach(d => {
 
 /* ── Hobbies — kit bag zoom ──────────────────────────────── */
 const HOBBY_DATA = {
-  volleyball: { name:'Volleyball', img:'assets/images/hobbies/volleyball.JPG', imgPos:'center center',
+  volleyball: { name:'Volleyball', img:'assets/images/hobbies/volleyball.webp', imgPos:'center center',
     desc:`<p>I picked up volleyball post-graduation, to the delight of my family, who have a long relationship with the sport. I captained a rec team of friends ranging from former athletes to total beginners. While we lost a lot early on, I shifted our focus to learning and improving together — casual, social weekly practices and simple norms like hi-fiving after every point.</p><p>Morale quickly improved and we even started winning by season's end. More importantly, it stuck — one friend who'd never felt "sporty" saw herself differently, another got fully hooked, and the team is still growing two years later.</p><p>Volleyball reinforced how I like to build communities: low pressure, high support, and people growing into it.</p>` },
-  soccer:     { name:'Soccer',     img:'assets/images/hobbies/soccer.jpeg',    imgPos:'center center',
+  soccer:     { name:'Soccer',     img:'assets/images/hobbies/soccer.webp',    imgPos:'center center',
     desc:`<p>From my high school varsity team to "midnight soccer" in college to IM's at Sloan, I enjoy the strategic thinking, teamwork, and sportsmanship required to play the game. An incredibly accessible sport loved by folks across the globe, you can find pickup soccer almost anywhere.</p><p>Since participating in college IMs, I hold the belief that team sports is one of the best ways to build connection and community. Pictured is the Sloan IM team I organized, toughing out a rainy day, only to have the other team flake! Proud that we showed up for the love of the game.</p>` },
-  pingpong:   { name:'Ping Pong',  img:'assets/images/hobbies/ping pong.jpg', imgPos:'center 25%',
+  pingpong:   { name:'Ping Pong',  img:'assets/images/hobbies/ping pong.webp', imgPos:'center 25%',
     desc:`<p>My parents met at an office ping pong tournament, so naturally, I grew up playing with my family at our basement ping pong table.</p><p>Pictured is me and a friend posing as winners of Sloan's Asian American Alliance ping pong tournament!</p>` },
-  dance:      { name:'Dance',      img:'assets/images/hobbies/dance.jpg',      imgPos:'center 20%',
+  dance:      { name:'Dance',      img:'assets/images/hobbies/dance.webp',      imgPos:'center 20%',
     desc:`<p>Dance has always been a way for me to explore different modes of expression and different cultures. Growing up, I did Chinese traditional dance — we even performed at a Celtics halftime show! I learned ballet and jazz in high school, then joined a hip hop team and contemporary dance group in college. Post-college, I got into social dancing: swing, salsa, and bachata.</p><p>At Sloan I taught friends the Abracadabra (Lady Gaga) dance for a C-function event. My classmates not only put in the work — they chipped in creative direction, costumes, and skits. We created something better than any of us imagined. Dance can uniquely express the shared energy of a group.</p>` },
-  running:    { name:'Running',    img:'assets/images/hobbies/run.jpeg',       imgPos:'center center',
+  running:    { name:'Running',    img:'assets/images/hobbies/run.webp',       imgPos:'center center',
     desc:`<p>My mom is a seasoned marathon runner with all the majors and more under her belt — and my biggest advocate on my own running journey (she gifts me race registrations for birthdays and holidays 😢). I have a 5k and 10k under my belt and am now training for a half marathon.</p><p>My mom also started a run club with other Asian moms, helping them go from couch to marathon. I take a page out of her book whenever I can — her dedication to the sport, community-building skills, and ability to share her passions with others.</p>` },
-  music:      { name:'Music',      img:'assets/images/hobbies/Music.jpeg',     imgPos:'center center',
+  music:      { name:'Music',      img:'assets/images/hobbies/Music.webp',     imgPos:'center center',
     desc:`<p>Music has always been a way for me to express myself and connect with others — from playing classical piano and chamber music growing up, to leading a free music program, to playing in Sloan's rock band.</p><p>Pictured is the <em>Tiny Living Room</em> concert I helped organize: a low-barrier, supportive environment for friends to share their musical pursuits. Check out the piano in my room to learn more.</p>` },
 };
 
