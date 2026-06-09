@@ -2106,7 +2106,7 @@
     }
     /* Top green section */
     .about-top {
-      background:#2d5a3d;
+      background:#a8d8c8;
       display:flex; flex-direction:column; align-items:center;
       padding:1.4rem 1.6rem 1rem;
     }
@@ -2140,11 +2140,11 @@
     .about-title-block { text-align:center; }
     .about-title-about {
       font-size:2.2rem; font-weight:900; letter-spacing:0.2em;
-      color:#f0ece4; display:block; line-height:1;
+      color:#1a2e26; display:block; line-height:1;
     }
     .about-title-me {
       font-size:1.5rem; font-style:italic; font-weight:400;
-      color:#b8d4bc; display:block; margin-top:-0.1rem;
+      color:#2e4a40; display:block; margin-top:-0.1rem;
     }
     /* Body — warm beige */
     .about-body {
@@ -2162,15 +2162,15 @@
     /* Bottom green links strip — bleeds edge-to-edge out of the beige body */
     .about-links {
       text-align:center; font-size:0.92rem;
-      background:#2d5a3d;
+      background:#a8d8c8;
       margin:0 -2rem;
       padding:0.85rem 2rem;
     }
     .about-links a {
-      color:#c8e6cc; text-decoration:underline; letter-spacing:0.06em;
+      color:#1a2e26; text-decoration:underline; letter-spacing:0.06em;
       margin:0 0.5rem;
     }
-    .about-links a:hover { color:#fff; opacity:1; }
+    .about-links a:hover { color:#000; opacity:1; }
 
     /* ── BOOKSHELF card ────────────────────────────────────────── */
     .bookshelf-zoom-card {
