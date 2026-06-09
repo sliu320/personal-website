@@ -799,6 +799,8 @@ function renderBrowserInMonitor() {
     <div class="browser-status" id="browser-status">● susyliu.com — secure connection</div>`;
   _wireBrowserTabs(screen, projects);
   _wireCustomScrollbar(screen);
+  const closeBtn = screen.querySelector('.browser-win-btn-close');
+  if (closeBtn) closeBtn.addEventListener('click', () => closeMonitorZoom());
 }
 
 function renderBrowser() {
