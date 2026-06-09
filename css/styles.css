@@ -2303,7 +2303,7 @@
       padding:0; flex-wrap:wrap;
     }
     .browser-tab {
-      background:#d0b4dc;
+      background:#f0ece0;
       border:1px solid #1a1208;
       border-bottom:none;
       border-radius:10px 10px 0 0;
@@ -2317,13 +2317,13 @@
       margin-bottom:-2px;
     }
     .browser-tab.active {
-      background:#f5eeff;
+      background:#f2dce8;
       color:#1a0830; font-weight:600;
       border-color:#1a1208;
       z-index:2;
     }
     .browser-tab:hover:not(.active) {
-      background:#d8b8e8; color:#1a0830;
+      background:#e0d8c8; color:#1a0830;
     }
     .browser-content {
       background:linear-gradient(160deg, #ede4f8 0%, #f2eaf8 25%, #f8f0fd 60%, #fdf8ff 100%);
@@ -2342,7 +2342,7 @@
       border-left:1px solid #1a1208;
     }
     .browser-content::-webkit-scrollbar-thumb {
-      background:#d0b4dc;
+      background:#f2dce8;
       border-radius:2px;
       border:1px solid #1a1208;
     }
@@ -2350,7 +2350,7 @@
     /* Arrow buttons */
     .browser-content::-webkit-scrollbar-button:single-button {
       display:block; height:14px;
-      background:#d0b4dc; border:1px solid #1a1208;
+      background:#f2dce8; border:1px solid #1a1208;
       background-repeat:no-repeat; background-position:center;
     }
     .browser-content::-webkit-scrollbar-button:single-button:vertical:decrement {
