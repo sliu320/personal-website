@@ -817,31 +817,37 @@ function _browserProjectsData() {
     {
       id: 'monitor', tab: '🤝 Relationship OS',
       title: 'Relationship OS',
-      tags: ['Python', 'Notion API', 'LLM', 'Personal Tools'],
-      desc: 'A personal CRM that turns meeting notes into a living record of your relationships.',
+      tags: ['Python', 'Notion API', 'LLM', 'Personal Tools', 'In Progress 🚧'],
+      desc: 'A fully automated personal CRM built on Notion — still in progress. V1 is live; V2 is on the roadmap.',
       customContent: `
         <div class="proj-sections">
           <div class="proj-section" data-s="problem">
             <div class="proj-section-label">Problem</div>
-            <div class="proj-section-body">I take detailed notes in every meeting via Granola, but they sit in silos — no way to see the arc of a relationship across conversations, recall what someone cared about three months ago, or know who you've been neglecting. Relationship-building is high-leverage and almost entirely dependent on memory and intentionality most tools don't support.</div>
+            <div class="proj-section-body">MBA networking is high-volume and almost entirely manual — meeting 5–10 new people a week across coffee chats, events, and Zoom calls. My tool stack (Granola for notes, Gmail for outreach, Obsidian for reading) was generating rich relationship data, but none of it flowed together. The result: lost context, missed follow-ups, and relationships that decayed before they mattered.</div>
           </div>
           <div class="proj-section" data-s="built">
-            <div class="proj-section-label">What I Built</div>
+            <div class="proj-section-label">What I Built — V1 (live)</div>
             <div class="proj-section-body"><ul>
-              <li><strong>Ingestion pipeline:</strong> Granola notes → Notion with structured metadata per person</li>
-              <li><strong>Relationship arc summaries:</strong> LLM synthesizes all meetings with a person — what you've discussed, what they care about, open threads</li>
-              <li><strong>Reconnect prompts:</strong> surfaces people you haven't spoken to in a while with context, so reaching back out feels natural</li>
-              <li><strong>Article matching:</strong> cross-references reading vault against people's interests to suggest "send this to X"</li>
-              <li><strong>Built on Notion:</strong> data stays portable and human-readable — no black box</li>
+              <li><strong>Granola → Notion pipeline:</strong> meeting notes auto-sync to a People DB; <code>auto_linker.py</code> runs every 15 min, parses attendee emails, finds or creates People rows, and links meetings — zero manual entry</li>
+              <li><strong>Gmail ingestion:</strong> <code>email_linker.py</code> runs every 30 min on messages tagged <em>crm-log</em>, detects inbound/outbound direction, and logs contact history</li>
+              <li><strong>Relationship health automation:</strong> Status field auto-managed — any new meeting or email sets Active; staleness check degrades Active → Warm (30 days) → Dormant (90 days); Archived is the only manual state</li>
+              <li><strong>LLM enrichment per meeting:</strong> single Claude call extracts name, company, role, tags, warmth, priority, relationship summary, and action items</li>
+              <li><strong>Built on Notion:</strong> data stays portable and human-readable — no proprietary black box</li>
             </ul></div>
           </div>
           <div class="proj-section" data-s="outcome">
-            <div class="proj-section-label">Outcome</div>
-            <div class="proj-section-body">In active personal use. Surfaced reconnection prompts I wouldn't have thought of, and made follow-ups feel less effortful.</div>
+            <div class="proj-section-label">What's Coming — V2+</div>
+            <div class="proj-section-body"><ul>
+              <li><strong>Pre-meeting briefs:</strong> Notion button triggers a Claude call synthesizing past notes + web research → structured brief written to the Person page</li>
+              <li><strong>Network connector:</strong> after every new meeting, Claude scans all existing People for intro opportunities — surfaces specific, non-generic matches to an Intro Suggestions DB</li>
+              <li><strong>Weekly digest:</strong> Sunday email with prioritized re-engagement nudges, intro suggestions, and article send recommendations</li>
+              <li><strong>Article matching:</strong> Obsidian reading vault scanned against People profiles — surfaces "send this to X" suggestions when you save something new</li>
+              <li><strong>Calendar integration:</strong> looks ahead 7 days for 1:1s, creates People stubs pre-meeting so context is ready before the conversation</li>
+            </ul></div>
           </div>
           <div class="proj-section" data-s="learnings">
             <div class="proj-section-label">Learnings</div>
-            <div class="proj-section-body">The hardest part wasn't the pipeline — it was calibrating summarization depth. Too sparse misses nuance; too detailed and you never read it. Sweet spot: one paragraph narrative + a short list of open threads per person.</div>
+            <div class="proj-section-body">Idempotency is everything in an always-on pipeline — every script needed to be safe to re-run without creating duplicates or overwriting good data. The other surprise: the relationship health status automation (Active → Warm → Dormant) turned out to be the most immediately useful feature, surfacing neglected relationships without any prompting.</div>
           </div>
         </div>`,
     },
