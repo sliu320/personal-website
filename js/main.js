@@ -376,7 +376,7 @@ function renderBookshelf() {
 
 /* ---- Notepad Contact Form ---- */
 function renderNotepad() {
-  const FORMSPREE_ID = 'mvznagda'; // replace with your Formspree form ID
+  const FORMSPREE_ID = 'mvznagda';
 
   // Override modal to remove default padding — the notepad IS the modal
   document.getElementById('modal').style.padding = '0';
@@ -615,6 +615,37 @@ function renderTrophyCase() {
 function _browserProjectsData() {
   return [
     {
+      id: 'overview', tab: '🗂 All Projects',
+      title: 'Projects',
+      tags: [],
+      desc: '',
+      customContent: `
+        <div class="proj-overview">
+          <div class="proj-bucket">
+            <div class="proj-bucket-label">Things I built with others</div>
+            <div class="proj-bucket-links">
+              <a class="proj-bucket-link" data-goto="genai">🤖 GenAI Lab</a>
+              <a class="proj-bucket-link" data-goto="bidding">📚 BeaverBid — Course Bidder</a>
+              <a class="proj-bucket-link" data-goto="foodgroups">🥗 FoodGroups</a>
+              <a class="proj-bucket-link" data-goto="dressingroom">👗 DressingRoom</a>
+            </div>
+          </div>
+          <div class="proj-bucket">
+            <div class="proj-bucket-label">Things I built for others</div>
+            <div class="proj-bucket-links">
+              <a class="proj-bucket-link" data-goto="whereabout">📍 WhereAbout</a>
+              <a class="proj-bucket-link" data-goto="friendsgiving">🦃 Friendsgiving</a>
+            </div>
+          </div>
+          <div class="proj-bucket">
+            <div class="proj-bucket-label">Things I built for myself</div>
+            <div class="proj-bucket-links">
+              <a class="proj-bucket-link" data-goto="monitor">🤝 Relationship OS</a>
+            </div>
+          </div>
+        </div>`,
+    },
+    {
       id: 'monitor', tab: '🤝 Relationship OS',
       title: 'Relationship OS',
       tags: ['Python', 'NLP', 'Dashboard', 'Real-time'],
@@ -743,16 +774,19 @@ function _buildBrowserHTML(projects) {
   let tabsHtml = '', panelsHtml = '';
   projects.forEach((p, i) => {
     tabsHtml += `<div class="browser-tab${i===0?' active':''}" data-tab="${p.id}">${p.tab}</div>`;
-    const tagsHtml = `<div class="project-tags">${p.tags.map(t=>`<span class="project-tag">${t}</span>`).join('')}</div>`;
+    const tagsHtml = p.tags.length ? `<div class="project-tags">${p.tags.map(t=>`<span class="project-tag">${t}</span>`).join('')}</div>` : '';
+    const backLink = p.id !== 'overview' ? `<a class="proj-back-link" href="javascript:void(0)">← all projects</a>` : '';
     if (p.customContent) {
       panelsHtml += `<div class="project-panel${i===0?' active':''}" id="proj-${p.id}">
+        ${backLink}
         <div class="project-title">${p.title}</div>
         ${tagsHtml}
-        <div class="project-desc">${p.desc}</div>
+        ${p.desc ? `<div class="project-desc">${p.desc}</div>` : ''}
         ${p.customContent}
       </div>`;
     } else {
       panelsHtml += `<div class="project-panel${i===0?' active':''}" id="proj-${p.id}">
+        ${backLink}
         <div class="project-title">${p.title}</div>
         ${tagsHtml}
         <div class="project-desc">${p.desc}</div>
@@ -774,6 +808,21 @@ function _wireBrowserTabs(root, projects) {
       if (urlEl) urlEl.textContent = `susyliu.com/projects/${id}`;
       const stEl = root.querySelector('#browser-status');
       if (stEl) stEl.textContent = `● susyliu.com/projects/${id} — secure connection`;
+    });
+  });
+  // Wire overview bucket links → switch to target tab
+  root.querySelectorAll('.proj-bucket-link[data-goto]').forEach(link => {
+    link.addEventListener('click', () => {
+      const id = link.dataset.goto;
+      const targetTab = root.querySelector(`.browser-tab[data-tab="${id}"]`);
+      if (targetTab) targetTab.click();
+    });
+  });
+  // Wire per-project back-to-overview links
+  root.querySelectorAll('.proj-back-link').forEach(link => {
+    link.addEventListener('click', () => {
+      const overviewTab = root.querySelector('.browser-tab[data-tab="overview"]');
+      if (overviewTab) overviewTab.click();
     });
   });
   // Wire inner sub-tabs (e.g. FoodGroups pitch/video/prompt)
