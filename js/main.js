@@ -3565,8 +3565,13 @@ function _buildDoorInfoHTML(data) {
     </div>`;
 }
 
+let _doorNavLock = false;
 document.querySelectorAll('.door-col').forEach(col => {
   col.addEventListener('click', () => {
+    if (_doorNavLock) return;
+    _doorNavLock = true;
+    setTimeout(() => { _doorNavLock = false; }, 350);
+
     const num = parseInt(col.dataset.door);
     const data = DOOR_DATA[num];
     const isMobile = window.innerWidth <= 480;
