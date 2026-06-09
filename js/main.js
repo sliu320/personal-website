@@ -3789,9 +3789,11 @@ document.getElementById('community-blurb-panel').addEventListener('click', e => 
     }
 
     photos.querySelector('.cpol-prev').addEventListener('click', e => {
+      e.stopPropagation();
       goTo(cur - 1);
     });
     photos.querySelector('.cpol-next').addEventListener('click', e => {
+      e.stopPropagation();
       goTo(cur + 1);
     });
   });
