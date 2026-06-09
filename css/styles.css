@@ -2106,7 +2106,7 @@
     }
     /* Top green section */
     .about-top {
-      background:#a8d8c8;
+      background:#cce0d3;
       display:flex; flex-direction:column; align-items:center;
       padding:1.4rem 1.6rem 1rem;
     }
@@ -2162,7 +2162,7 @@
     /* Bottom green links strip — bleeds edge-to-edge out of the beige body */
     .about-links {
       text-align:center; font-size:0.92rem;
-      background:#a8d8c8;
+      background:#cce0d3;
       margin:0 -2rem;
       padding:0.85rem 2rem;
     }
