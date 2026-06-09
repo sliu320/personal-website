@@ -3790,6 +3790,7 @@ document.getElementById('community-blurb-panel').addEventListener('click', e => 
       return;
     }
     let cur = 0;
+    let _navLock = false; // debounce: blocks iOS ghost-click double-fire
 
     // Build dots
     const dotsEl = photos.querySelector('.cpol-dots');
@@ -3800,6 +3801,9 @@ document.getElementById('community-blurb-panel').addEventListener('click', e => 
     });
 
     function goTo(n) {
+      if (_navLock) return;
+      _navLock = true;
+      setTimeout(() => { _navLock = false; }, 350);
       imgs[cur].classList.remove('active');
       dotsEl.children[cur].classList.remove('active');
       cur = (n + imgs.length) % imgs.length;
