@@ -3760,19 +3760,27 @@ document.getElementById('community-blurb-panel').addEventListener('click', e => 
       dotsEl.children[cur].classList.add('active');
     }
 
+    let _navLock = false;
+    function safeGoTo(n) {
+      if (_navLock) return;
+      _navLock = true;
+      goTo(n);
+      setTimeout(() => { _navLock = false; }, 350);
+    }
+
     function wireArrow(btn, dir) {
       // touchend: handle immediately + preventDefault kills the synthetic click
       btn.addEventListener('touchend', e => {
         e.stopPropagation();
         e.preventDefault();
         _lastTouchNav = Date.now();
-        goTo(cur + dir);
+        safeGoTo(cur + dir);
       });
       // click: desktop fallback — skip if a touchend just fired this within 600ms
       btn.addEventListener('click', e => {
         e.stopPropagation();
         if (Date.now() - _lastTouchNav < 600) return;
-        goTo(cur + dir);
+        safeGoTo(cur + dir);
       });
     }
 
