@@ -2138,31 +2138,32 @@
     .about-title-block { text-align:center; }
     .about-title-about {
       font-size:2.2rem; font-weight:900; letter-spacing:0.2em;
-      color:#2d5a45; display:block; line-height:1;
+      color:#4a3f2f; display:block; line-height:1;
     }
     .about-title-me {
       font-size:1.5rem; font-style:italic; font-weight:400;
-      color:#2d5a45; display:block; margin-top:-0.1rem;
+      color:#7a5c2e; display:block; margin-top:-0.1rem;
     }
-    /* Bottom sage body */
+    /* Bottom body — warm beige matching other modals */
     .about-body {
-      background:#8aad96;
+      background:#f5f0e8;
       padding:1.2rem 2rem 1.2rem;
       flex:1;
+      border-top:1px solid rgba(74,63,47,0.12);
     }
     .about-body p {
-      font-size:1rem; /* = 16px, well above 14px minimum */
-      color:#faf8f3; line-height:1.75;
+      font-size:1rem;
+      color:#3a2f1e; line-height:1.75;
       text-align:center; margin-bottom:1rem;
     }
     .about-body p:last-of-type { margin-bottom:1.1rem; }
     .about-links {
       text-align:center; font-size:0.92rem;
-      border-top:1px solid rgba(255,255,255,0.3);
+      border-top:1px solid rgba(74,63,47,0.18);
       padding-top:0.8rem; margin-top:0.3rem;
     }
     .about-links a {
-      color:#faf8f3; text-decoration:underline; letter-spacing:0.06em;
+      color:#7a5c2e; text-decoration:underline; letter-spacing:0.06em;
       margin:0 0.5rem;
     }
     .about-links a:hover { opacity:0.75; }
