@@ -3790,7 +3790,7 @@ document.getElementById('community-blurb-panel').addEventListener('click', e => 
       return;
     }
     let cur = 0;
-    let _navLock = false; // debounce: blocks iOS ghost-click double-fire
+    let _lastTouchNav = 0; // timestamp of last touchend nav, to suppress synthetic click
 
     // Build dots
     const dotsEl = photos.querySelector('.cpol-dots');
@@ -3801,9 +3801,6 @@ document.getElementById('community-blurb-panel').addEventListener('click', e => 
     });
 
     function goTo(n) {
-      if (_navLock) return;
-      _navLock = true;
-      setTimeout(() => { _navLock = false; }, 350);
       imgs[cur].classList.remove('active');
       dotsEl.children[cur].classList.remove('active');
       cur = (n + imgs.length) % imgs.length;
@@ -3811,14 +3808,24 @@ document.getElementById('community-blurb-panel').addEventListener('click', e => 
       dotsEl.children[cur].classList.add('active');
     }
 
-    photos.querySelector('.cpol-prev').addEventListener('click', e => {
-      e.stopPropagation();
-      goTo(cur - 1);
-    });
-    photos.querySelector('.cpol-next').addEventListener('click', e => {
-      e.stopPropagation();
-      goTo(cur + 1);
-    });
+    function wireArrow(btn, dir) {
+      // touchend: handle immediately + preventDefault kills the synthetic click
+      btn.addEventListener('touchend', e => {
+        e.stopPropagation();
+        e.preventDefault();
+        _lastTouchNav = Date.now();
+        goTo(cur + dir);
+      });
+      // click: desktop fallback — skip if a touchend just fired this within 600ms
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        if (Date.now() - _lastTouchNav < 600) return;
+        goTo(cur + dir);
+      });
+    }
+
+    wireArrow(photos.querySelector('.cpol-prev'), -1);
+    wireArrow(photos.querySelector('.cpol-next'),  1);
   });
 })();
 
