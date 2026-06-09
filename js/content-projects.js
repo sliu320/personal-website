@@ -299,18 +299,18 @@ const PROJECTS_DATA = [
           </div>
         </div>
         <div class="proj-section proj-section--demo" data-s="demo">
-          <div class="proj-section-label">Demo</div>
+          <div class="proj-section-label">Demo &nbsp;<a href="https://beaver-bid.lovable.app/" target="_blank" rel="noopener" class="proj-demo-live-link">↗ beaver-bid.lovable.app</a></div>
           <div class="proj-demo-strip">
             <figure class="proj-demo-item">
-              <img src="assets/images/Projects/BeaverBid/bb-ai-advisor.png" alt="AI Advisor filtering courses" class="proj-demo-img proj-demo-img--wide" loading="lazy">
+              <img src="assets/images/Projects/BeaverBid/beaver bid 1.png" alt="AI Advisor filtering courses" class="proj-demo-img proj-demo-img--wide" loading="lazy">
               <figcaption>AI Advisor filters courses and surfaces recommended classes. Award-winning professors are tagged; student intel and bid history are shown inline.</figcaption>
             </figure>
             <figure class="proj-demo-item">
-              <img src="assets/images/Projects/BeaverBid/bb-bid-simulator.png" alt="Bid Simulator" class="proj-demo-img proj-demo-img--tall" loading="lazy">
+              <img src="assets/images/Projects/BeaverBid/beaver bid 2.png" alt="Bid Simulator" class="proj-demo-img proj-demo-img--tall" loading="lazy">
               <figcaption>Build a bidding scenario with pre-filled point recommendations based on fill rates and round history. Auto-balance allocates your full 1,000 pts; time conflicts are flagged automatically.</figcaption>
             </figure>
             <figure class="proj-demo-item">
-              <img src="assets/images/Projects/BeaverBid/bb-degree-progress.png" alt="Degree and Certificate Progress" class="proj-demo-img proj-demo-img--wide" loading="lazy">
+              <img src="assets/images/Projects/BeaverBid/beaver bid 3.png" alt="Degree and Certificate Progress" class="proj-demo-img proj-demo-img--wide" loading="lazy">
               <figcaption>Upload your transcript to track graduation progress, including towards each Sloan certificate.</figcaption>
             </figure>
           </div>

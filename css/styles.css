@@ -2486,6 +2486,7 @@
 
     /* ── Project screenshot demo strip ──────────────────────── */
     .proj-section--demo { margin-top:0.5rem; }
+    .proj-demo-live-link { font-size:0.65rem; font-style:normal; color:#7a5c2e; text-decoration:underline; letter-spacing:0.01em; font-family:Georgia,serif; }
     .proj-demo-strip {
       display: flex;
       gap: 1rem;
