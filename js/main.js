@@ -307,16 +307,8 @@ function renderManila() {
 
 /* ---- Sticky Note Board (ideas) ---- */
 function renderStickies() {
-  const notes = [
-    { color:'sticky-y', hdr:'🟡 technology & community', body:'How do we build technology that actually serves the communities it claims to?' },
-    { color:'sticky-b', hdr:'🔵 coordination', body:'Why is it so hard to coordinate people around shared problems? And what does it take to unlock that?' },
-    { color:'sticky-g', hdr:'🟢 talent & credentials', body:'What does a post-credential world look like? Who gets left behind and who gets unlocked?' },
-    { color:'sticky-p', hdr:'🟣 community ownership', body:'What would a truly community-owned platform look like? Is it economically viable?' },
-    { color:'sticky-o', hdr:'🟠 ai × education', body:'Can AI make high-quality mentorship and learning abundant without killing the human parts that matter?' },
-    { color:'sticky-y', hdr:'🟡 adjacent possible', body:'The next wave of interesting ideas is at the intersection of AI tools and physical communities. What does that look like in 5 years?' },
-  ];
   let html = `<div class="sticky-board">`;
-  notes.forEach(n => {
+  STICKY_NOTES.forEach(n => {
     html += `<div class="sticky ${n.color}"><div class="sticky-hdr">${n.hdr}</div>${n.body}</div>`;
   });
   html += `</div>
@@ -617,25 +609,20 @@ function _browserProjectsData() {
       customContent: `
         <div class="proj-overview">
           <div class="proj-bucket">
-            <div class="proj-bucket-label">Things I built with others</div>
+            <div class="proj-bucket-label">Featured</div>
             <div class="proj-bucket-links">
               <a class="proj-bucket-link" data-goto="genai">🤖 GenAI Lab</a>
-              <a class="proj-bucket-link" data-goto="bidding">📚 BeaverBid — Course Bidder</a>
-              <a class="proj-bucket-link" data-goto="foodgroups">🥗 FoodGroups</a>
               <a class="proj-bucket-link" data-goto="dressingroom">👗 DressingRoom</a>
+              <a class="proj-bucket-link" data-goto="foodgroups">🥗 FoodGroups</a>
+              <a class="proj-bucket-link" data-goto="bidding">📚 BeaverBid</a>
+              <a class="proj-bucket-link" data-goto="monitor">🤝 Relationship OS</a>
             </div>
           </div>
           <div class="proj-bucket">
-            <div class="proj-bucket-label">Things I built for others</div>
+            <div class="proj-bucket-label">Things I built for my community</div>
             <div class="proj-bucket-links">
               <a class="proj-bucket-link" data-goto="whereabout">📍 WhereAbout</a>
               <a class="proj-bucket-link" data-goto="friendsgiving">🦃 Friendsgiving</a>
-            </div>
-          </div>
-          <div class="proj-bucket">
-            <div class="proj-bucket-label">Things I built for myself</div>
-            <div class="proj-bucket-links">
-              <a class="proj-bucket-link" data-goto="monitor">🤝 Relationship OS</a>
             </div>
           </div>
         </div>`,
@@ -1068,12 +1055,19 @@ var _syncedSky         = null; // set by real-weather sync; lower priority than 
 function _loadCachedSky() {
   try {
     const c = JSON.parse(localStorage.getItem('landing-sky-cache') || 'null');
-    if (c && c.sky && (Date.now() - c.t) < 90 * 60 * 1000) return c; // 90 min freshness
+    if (!c || !c.sky) return null;
+    if ((Date.now() - c.t) >= 30 * 60 * 1000) return null; // 30 min max freshness
+    // Discard immediately if the time phase has changed since the cache was written
+    // (e.g. cached during golden hour, now it's night — don't show sunset sky at 9pm)
+    const currentPhase = TIME_CONFIGS.find(cfg => cfg.hours.includes(new Date().getHours()));
+    if (currentPhase && c.phase && c.phase !== currentPhase.label) return null;
+    return c;
   } catch(e) {}
   return null;
 }
 function _saveCachedSky(sky, label) {
-  try { localStorage.setItem('landing-sky-cache', JSON.stringify({ sky, label, t: Date.now() })); } catch(e) {}
+  const phase = TIME_CONFIGS.find(cfg => cfg.hours.includes(new Date().getHours()));
+  try { localStorage.setItem('landing-sky-cache', JSON.stringify({ sky, label, phase: phase ? phase.label : null, t: Date.now() })); } catch(e) {}
 }
 // Note: only primes _syncedSky here (declared above). _syncedWeatherLabel is
 // declared with `let` further down (TIME BADGE section) — assigning it before
@@ -1851,7 +1845,6 @@ document.getElementById('entry-door').addEventListener('click', function() {
   setTimeout(() => {
     const ob = document.getElementById('onboarding');
     ob.classList.add('visible');
-    setTimeout(() => dismissOnboarding(), 9000);
   }, 2500);
 });
 
@@ -1863,7 +1856,99 @@ function dismissOnboarding() {
   ob.classList.add('fade-ob');
   setTimeout(() => ob.remove(), 700);
 }
-document.getElementById('ob-got-it').addEventListener('click', dismissOnboarding);
+document.getElementById('ob-explore').addEventListener('click', dismissOnboarding);
+
+/* ============================================================
+   GUIDED TOUR
+============================================================ */
+const TOUR_STEPS = [
+  { key: 'mirror',     label: 'About' },
+  { key: 'consulting', label: 'Consulting' },
+  { key: 'laptop',     label: 'Projects' },
+  { key: 'trophy',     label: 'Awards' },
+  { key: 'door',       label: "What's Next" },
+  { key: 'contact',    label: 'Leave a Note' },
+];
+
+let _tourMode = false;
+let _tourIdx  = -1;
+
+function _tourPulseHotspot(key, cb) {
+  const hs = document.querySelector(`.hotspot[data-key="${key}"]`);
+  if (hs) {
+    hs.classList.add('hs-tour-active');
+    _tourActiveHs = hs; // cleared in _openZoomUI once overlay fully lands
+    setTimeout(() => cb && cb(), 200); // open modal shortly after highlight appears
+  } else {
+    if (cb) cb();
+  }
+}
+
+function startTour() {
+  dismissOnboarding();
+  _tourMode = true;
+  _tourIdx  = 0;
+  document.body.classList.add('tour-mode');
+  _updateTourBar();
+  document.getElementById('tour-bar').classList.add('visible');
+  _tourPulseHotspot(TOUR_STEPS[0].key, () => openModal(TOUR_STEPS[0].key));
+}
+
+function _exitTour() {
+  _tourMode = false;
+  _tourIdx  = -1;
+  document.body.classList.remove('tour-mode');
+  document.getElementById('tour-bar').classList.remove('visible');
+  _origCloseActiveZoom();
+}
+
+function _tourAdvance() {
+  _tourIdx++;
+  const atEnd = _tourIdx >= TOUR_STEPS.length;
+
+  // Temporarily leave tour mode so close runs normally
+  _tourMode = false;
+  _origCloseActiveZoom();
+
+  if (atEnd) {
+    document.body.classList.remove('tour-mode');
+    document.getElementById('tour-bar').classList.remove('visible');
+    setTimeout(() => document.getElementById('tour-end').classList.add('visible'), 500);
+    return;
+  }
+
+  _tourMode = true;
+  _updateTourBar();
+  // Wait for zoom-out to settle (300ms), then pulse hotspot (600ms), then open
+  setTimeout(() => {
+    _tourPulseHotspot(TOUR_STEPS[_tourIdx].key, () => openModal(TOUR_STEPS[_tourIdx].key));
+  }, 300);
+}
+
+function _updateTourBar() {
+  const next = TOUR_STEPS[_tourIdx + 1];
+  document.getElementById('tour-step-indicator').textContent =
+    `${_tourIdx + 1} / ${TOUR_STEPS.length}`;
+  document.getElementById('tour-next-btn').textContent =
+    next ? `Next: ${next.label} →` : 'Finish tour';
+}
+
+// Capture-phase listeners on all zoom-back buttons:
+// in tour mode intercept before the original close handler fires → exit tour
+document.querySelectorAll('[id$="-zoom-back"]').forEach(btn => {
+  btn.addEventListener('click', e => {
+    if (!_tourMode) return;
+    e.stopImmediatePropagation();
+    _exitTour();
+  }, true);
+});
+
+document.getElementById('ob-tour').addEventListener('click', startTour);
+document.getElementById('tour-exit-btn').addEventListener('click', _exitTour);
+document.getElementById('tour-next-btn').addEventListener('click', _tourAdvance);
+document.getElementById('tour-end-close').addEventListener('click', () => {
+  document.getElementById('tour-end').classList.remove('visible');
+});
 
 /* ============================================================
    PANORAMA
@@ -2607,11 +2692,21 @@ function _zoomToHotspot(key, scale, onOpen, originY) {
   const destX = clamp(-(imgW * pct - window.innerWidth * 0.5));
   animateTo(destX, () => {
     const hsScreenX = Math.round(imgW * pct + destX);
-    container.style.transition      = 'transform 0.75s cubic-bezier(0.35,0,0.1,1)';
-    container.style.transformOrigin = `${hsScreenX}px ${yOrigin}`;
-    container.style.transform       = `scale(${scale || 2.2})`;
-    container.style.cursor          = 'default';
-    setTimeout(onOpen, 650);
+    if (_tourMode) {
+      // Softer zoom for tour — less motion, gentler easing
+      container.style.transition      = 'transform 0.5s ease-out';
+      container.style.transformOrigin = `${hsScreenX}px ${yOrigin}`;
+      container.style.transform       = `scale(${(scale || 2.2) * 0.65})`;
+      container.style.cursor          = 'default';
+      setTimeout(onOpen, 420);
+    } else {
+      // Original zoom for regular exploration
+      container.style.transition      = 'transform 0.75s cubic-bezier(0.35,0,0.1,1)';
+      container.style.transformOrigin = `${hsScreenX}px ${yOrigin}`;
+      container.style.transform       = `scale(${scale || 2.2})`;
+      container.style.cursor          = 'default';
+      setTimeout(onOpen, 650);
+    }
   });
 }
 
@@ -2664,6 +2759,9 @@ function _getZoomMood() {
   return { filter, bg };
 }
 
+// Holds the hotspot DOM element highlighted during a tour step — cleared when overlay lands
+let _tourActiveHs = null;
+
 function _openZoomUI(overlayId, backBtnId) {
   const { filter, bg } = _getZoomMood();
   const bd = document.getElementById('zoom-backdrop');
@@ -2673,6 +2771,11 @@ function _openZoomUI(overlayId, backBtnId) {
   ov.style.filter = filter;
   ov.classList.add('visible');
   document.getElementById(backBtnId).style.display = 'block';
+  // Clear tour hotspot highlight after the overlay has fully faded in (450ms transition)
+  if (_tourActiveHs) {
+    const hs = _tourActiveHs; _tourActiveHs = null;
+    setTimeout(() => hs.classList.remove('hs-tour-active'), 450);
+  }
 }
 
 function _closeZoomUI(overlayId, backBtnId) {
@@ -2700,6 +2803,14 @@ function closeActiveZoom() {
   else if (_stickiesZoomed)   closeStickiesZoom();
   else if (_teaZoomed)        closeTeaZoom();
 }
+
+// Preserve reference for tour system to call directly (bypasses tour interception)
+const _origCloseActiveZoom = closeActiveZoom;
+// In tour mode: clicking outside a zoom card advances the tour instead of closing
+closeActiveZoom = function() {
+  if (_tourMode) { _tourAdvance(); return; }
+  _origCloseActiveZoom();
+};
 
 /* Click on backdrop (outside card) → close */
 document.querySelectorAll('.world-zoom-overlay').forEach(ov => {
@@ -2991,7 +3102,10 @@ document.querySelectorAll('.trophy-btn').forEach(btn => {
 let _cfZoomed = false, _cfPhysPage = 0, _cfFlipping = false;
 
 function _cfIsMobile() { return window.innerWidth <= 700; }
-function _cfNumPages() { return _cfIsMobile() ? _CF_PAGES.length : Math.ceil(_CF_PAGES.length / 2); }
+// Desktop shows two content pages per spread (right = p*2, left = p*2−1).
+// An even content count needs an extra spread so the last page (left slot of
+// a spread whose right slot is empty) is reachable.
+function _cfNumPages() { return _cfIsMobile() ? _CF_PAGES.length : Math.ceil((_CF_PAGES.length + 1) / 2); }
 function _cfFrontIdx(p) { return p * 2; }
 function _cfBackIdx(p)  { return p * 2 + 1; }
 
@@ -3035,6 +3149,9 @@ document.getElementById('consulting-zoom-back').addEventListener('click', closeC
 
 /* ── Page renderers ──────────────────────────────────────── */
 function _cfTocHTML() {
+  // cfJumpTo(desktopSpread, mobileContentIdx)
+  // Desktop spreads: 0=TOC, 1=GenAI+BI, 2=Sales+Investment, 3=PostMA+HCPMO, 4=Social
+  // Mobile content indices match _CF_PAGES order (0-based)
   const item = (label, tags, pg, dp, mi) =>
     `<div class="cf-toc-item">
       <div class="cf-toc-item-main">
@@ -3048,19 +3165,22 @@ function _cfTocHTML() {
     <div class="cf-toc-right">
       <div class="cf-toc-section">
         <div class="cf-toc-hdr">Featured</div>
-        ${item('GenAI use case assessment','Healthcare · AI/Digital · Strategy','2',0,1)}
+        ${item('GenAI use case assessment','Healthcare · AI/Digital · Strategy','2',1,1)}
         ${item('Self-service BI tool design','Data/Digital · Product · UX','3',1,2)}
-        ${item('Sales coverage model redesign','Tech · GTM · Sales · People &amp; Org','4',1,3)}
+        ${item('Sales coverage model redesign','Tech · GTM · Sales · People &amp; Org','4',2,3)}
         ${item('Investment playbook &amp; executive workshop','Climate · Industrial Goods · Strategy','5',2,4)}
       </div>
       <div class="cf-toc-section">
         <div class="cf-toc-hdr">Additional Casework</div>
-        ${item('Post M&amp;A GTM strategy · Alumni engagement program','Industrial Goods · GTM · User Research','6',2,5)}
-        ${item('Healthcare commission PMO · GenAI use case proposal','Public Sector · AI/Digital · Sprint','7',3,6)}
+        ${item('Post M&amp;A GTM strategy','Industrial Goods · GTM · M&amp;A','6',3,5)}
+        ${item('Non-profit alumni engagement program','User Research · Growth · Program Design','6',3,5)}
+        ${item('Healthcare commission PMO','Public Sector · Healthcare · PMO','7',3,6)}
+        ${item('GenAI use case proposal','Healthcare · AI/Digital · Sprint','7',3,6)}
       </div>
       <div class="cf-toc-section">
         <div class="cf-toc-hdr">Social Impact &amp; IP Development</div>
-        ${item('State housing &amp; homelessness strategy · Talent &amp; skills IP','Public Sector · Future of Work','8',3,7)}
+        ${item('State housing &amp; homelessness strategy','Public Sector · Social Impact','8',4,7)}
+        ${item('Talent &amp; skills IP development','Future of Work · Thought Leadership','8',4,7)}
       </div>
     </div>
   </div>`;
@@ -3121,37 +3241,26 @@ function _cfCompactHTML(cases) {
   return `<div style="height:100%;display:flex;flex-direction:column;gap:0;font-size:0.73em;justify-content:space-around;">${joined}</div>`;
 }
 
-function _cfSocialHTML(cases) {
-  /* Three cases separated by divider rules. Each has title divider + summary. */
-  const caseParts = cases.map(c => {
-    const tagStrip = c.tags.join(' · ');
-    return `<div style="display:flex;flex-direction:column;overflow:hidden;min-height:0;gap:0.12rem;">
-      <div style="flex-shrink:0;">
-        <div class="cf-tag-strip" style="margin-bottom:0.06rem;">${tagStrip}</div>
-        <div class="cf-soc-title">${c.title}</div>
-        <div class="cf-metaline" style="margin-bottom:0;font-size:0.68rem;"><strong>Client:</strong> ${c.client} &nbsp;·&nbsp; <strong>Skills:</strong> ${c.skills}</div>
-      </div>
-      <div style="flex:1;min-height:0;overflow:hidden;">
-        <div class="cf-hdr">Summary</div>
-        <div class="cf-body cf-soc-body">${c.summary}</div>
-      </div>
-    </div>`;
-  });
-  const joined = caseParts.join('<hr class="cf-case-sep">');
-  return `<div style="height:100%;display:flex;flex-direction:column;gap:0;font-size:0.82em;justify-content:space-around;">${joined}</div>`;
-}
-
 // Filtered page list — hidden entries are preserved in CF_CASES but never rendered
 const _CF_PAGES = CF_CASES.filter(c => !c.hidden);
 
 function _cfPageHTML(idx) {
   if (idx === undefined || idx < 0 || idx >= _CF_PAGES.length) return '';
   const c = _CF_PAGES[idx];
-  if (c.type === 'toc')      return _cfTocHTML();
-  if (c.type === 'featured') return _cfFeaturedHTML(c);
-  if (c.type === 'compact')  return _cfCompactHTML(c.cases);
-  if (c.type === 'social')   return _cfSocialHTML(c.cases);
-  return '';
+  let inner = '';
+  if (c.type === 'toc')      inner = _cfTocHTML();
+  else if (c.type === 'featured') inner = _cfFeaturedHTML(c);
+  else if (c.type === 'compact')  inner = _cfCompactHTML(c.cases);
+  else return '';
+
+  // TOC (idx 0): no page number. All other pages: number in bottom outer corner.
+  // Even idx = right-hand page → number bottom-right; odd = left-hand → bottom-left.
+  if (idx === 0) return inner;
+  const pgNum = idx + 1;
+  // Even idx = right-hand page (front) → number bottom-right
+  // Odd idx  = left-hand page  (back)  → number bottom-left
+  const side = idx % 2 === 0 ? 'right' : 'left';
+  return `${inner}<span class="cf-pg-num cf-pg-num-${side}">${pgNum}</span>`;
 }
 
 /* Build/rebuild the scene at the current _cfPhysPage */
@@ -3247,13 +3356,13 @@ function _cfFlip(dir) {
 
   } else {
     // ── Back flip: reverse of forward ─────────────────────────
-    // A right-side turner (same element as forward) starts at -180° with its
-    // BACK face (old left page content) visible on the LEFT side, then sweeps
-    // to 0° where its FACE (new right page content) lands on the right.
-    // Both lp and rp are pre-populated with new content so the only motion
-    // is the turner sweeping across — no snap or content swap after animation.
+    // Turner starts at -180° (visually on the LEFT side, back face = old left page
+    // content), then sweeps rightward to 0° where its FACE (destination right page)
+    // lands on the right. rp is NOT updated until the turner reaches 0° and covers
+    // it — updating rp at the start would cause the right page to snap to new content
+    // before the animation begins (the turner can't cover rp from the left).
     lp.innerHTML = targetPhys > 0 ? _cfPageHTML(_cfBackIdx(targetPhys - 1)) : '';
-    rp.innerHTML = _cfPageHTML(_cfFrontIdx(targetPhys));
+    // rp intentionally left showing current content until the turner covers it
 
     const turner = document.createElement('div');
     turner.className = 'cf-turner cf-turner-rev';
@@ -3266,6 +3375,8 @@ function _cfFlip(dir) {
 
     setTimeout(() => {
       _cfPhysPage = targetPhys;
+      // Swap rp under the cover of the turner face (now at 0°, same content) — invisible to user
+      rp.innerHTML = _cfPageHTML(_cfFrontIdx(targetPhys));
       _updateCfNav();
       turner.remove();
       _cfFlipping = false;
@@ -4001,7 +4112,8 @@ function animateTo(destX,cb) {
   })(performance.now());
 }
 
-setInterval(applyLighting, 60000);
+// Keep room + landing page in sync every minute
+setInterval(() => { applyLighting(); applyLandingLighting(); }, 60000);
 
 /* ============================================================
    LOFI MUSIC — time-of-day + weather-aware background tracks
@@ -4114,6 +4226,7 @@ document.querySelectorAll('.tp-item').forEach(btn => {
       _currentSkyAnim    = null;
       setWeather('clear');
       applyLighting();
+      applyLandingLighting();
       // Re-apply real sky
       const realSky = getTimeCfg().sky;
       applySky(realSky);
@@ -4143,7 +4256,8 @@ document.querySelectorAll('.tp-item').forEach(btn => {
       // Time of day → overlays only, never touches sky
       if (btn.dataset.hours !== undefined) {
         _testOverrideHours = wasActive ? null : parseInt(btn.dataset.hours);
-        applyLighting(); // applyLighting skips sky when _testOverrideHours is set
+        applyLighting();        // updates room overlays
+        applyLandingLighting(); // keeps landing page in sync
       }
 
       // Sky state → image + animations only, never touches time overlays
