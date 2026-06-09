@@ -666,7 +666,6 @@ function _wireBrowserTabs(root, projects) {
   // Nav buttons
   const btnBack    = root.querySelector('.browser-nav-back');
   const btnForward = root.querySelector('.browser-nav-fwd');
-  const btnRefresh = root.querySelector('.browser-nav-refresh');
   const btnHome    = root.querySelector('.browser-nav-home');
 
   if (btnBack) btnBack.addEventListener('click', () => {
@@ -674,11 +673,6 @@ function _wireBrowserTabs(root, projects) {
   });
   if (btnForward) btnForward.addEventListener('click', () => {
     if (histIdx < history.length - 1) { histIdx++; _switchTo(history[histIdx], false); }
-  });
-  if (btnRefresh) btnRefresh.addEventListener('click', () => {
-    const btn = btnRefresh;
-    btn.style.opacity = '0.4';
-    setTimeout(() => { btn.style.opacity = ''; }, 400);
   });
   if (btnHome) btnHome.addEventListener('click', () => _switchTo('overview', true));
 
@@ -776,9 +770,8 @@ function renderBrowserInMonitor() {
     <div class="browser-chrome">
       <div class="browser-bar">
         <div class="browser-nav-btns">
-          <button class="browser-nav-btn browser-nav-back"    title="Back"    disabled>&#x2190;</button>
-          <button class="browser-nav-btn browser-nav-fwd"     title="Forward" disabled>&#x2192;</button>
-          <button class="browser-nav-btn browser-nav-refresh" title="Refresh">&#x21BA;</button>
+          <button class="browser-nav-btn browser-nav-back"    title="Back"    disabled>&#x25C4;</button>
+          <button class="browser-nav-btn browser-nav-fwd"     title="Forward" disabled>&#x25BA;</button>
           <button class="browser-nav-btn browser-nav-home"    title="Home">&#x2302;</button>
         </div>
         <div class="browser-url-wrap">
