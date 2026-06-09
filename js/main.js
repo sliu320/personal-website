@@ -629,31 +629,71 @@ function _buildBrowserHTML(projects) {
 }
 
 function _wireBrowserTabs(root, projects) {
+  // ── Tab history for back/forward ──
+  let history = [projects[0].id];
+  let histIdx  = 0;
+  let skipHistory = false; // flag so navigating via back/fwd doesn't double-push
+
+  function _switchTo(id, pushToHistory) {
+    root.querySelectorAll('.browser-tab').forEach(t => t.classList.toggle('active', t.dataset.tab===id));
+    root.querySelectorAll('.project-panel').forEach(p => p.classList.toggle('active', p.id==='proj-'+id));
+    const urlEl = root.querySelector('#browser-url');
+    if (urlEl) urlEl.textContent = `susyliu.com/projects/${id}`;
+    const stEl = root.querySelector('#browser-status');
+    if (stEl) stEl.textContent = `● susyliu.com/projects/${id} — secure connection`;
+    if (pushToHistory) {
+      history = history.slice(0, histIdx + 1); // clear forward stack
+      history.push(id);
+      histIdx = history.length - 1;
+    }
+    _updateNavBtns();
+    // reset scroll to top on tab change
+    const content = root.querySelector('#browser-content');
+    if (content) content.scrollTop = 0;
+  }
+
+  function _updateNavBtns() {
+    const btnBack    = root.querySelector('.browser-nav-back');
+    const btnForward = root.querySelector('.browser-nav-fwd');
+    if (btnBack)    btnBack.disabled    = histIdx <= 0;
+    if (btnForward) btnForward.disabled = histIdx >= history.length - 1;
+  }
+
   root.querySelectorAll('.browser-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const id = tab.dataset.tab;
-      root.querySelectorAll('.browser-tab').forEach(t => t.classList.toggle('active', t.dataset.tab===id));
-      root.querySelectorAll('.project-panel').forEach(p => p.classList.toggle('active', p.id==='proj-'+id));
-      const urlEl = root.querySelector('#browser-url');
-      if (urlEl) urlEl.textContent = `susyliu.com/projects/${id}`;
-      const stEl = root.querySelector('#browser-status');
-      if (stEl) stEl.textContent = `● susyliu.com/projects/${id} — secure connection`;
-    });
+    tab.addEventListener('click', () => _switchTo(tab.dataset.tab, true));
   });
+
+  // Nav buttons
+  const btnBack    = root.querySelector('.browser-nav-back');
+  const btnForward = root.querySelector('.browser-nav-fwd');
+  const btnRefresh = root.querySelector('.browser-nav-refresh');
+  const btnHome    = root.querySelector('.browser-nav-home');
+
+  if (btnBack) btnBack.addEventListener('click', () => {
+    if (histIdx > 0) { histIdx--; _switchTo(history[histIdx], false); }
+  });
+  if (btnForward) btnForward.addEventListener('click', () => {
+    if (histIdx < history.length - 1) { histIdx++; _switchTo(history[histIdx], false); }
+  });
+  if (btnRefresh) btnRefresh.addEventListener('click', () => {
+    const btn = btnRefresh;
+    btn.style.opacity = '0.4';
+    setTimeout(() => { btn.style.opacity = ''; }, 400);
+  });
+  if (btnHome) btnHome.addEventListener('click', () => _switchTo('overview', true));
+
+  _updateNavBtns();
+
   // Wire overview bucket links → switch to target tab
   root.querySelectorAll('.proj-bucket-link[data-goto]').forEach(link => {
     link.addEventListener('click', () => {
       const id = link.dataset.goto;
-      const targetTab = root.querySelector(`.browser-tab[data-tab="${id}"]`);
-      if (targetTab) targetTab.click();
+      _switchTo(id, true);
     });
   });
   // Wire per-project back-to-overview links
   root.querySelectorAll('.proj-back-link').forEach(link => {
-    link.addEventListener('click', () => {
-      const overviewTab = root.querySelector('.browser-tab[data-tab="overview"]');
-      if (overviewTab) overviewTab.click();
-    });
+    link.addEventListener('click', () => _switchTo('overview', true));
   });
   // Wire inner sub-tabs (e.g. FoodGroups pitch/video/prompt)
   root.querySelectorAll('.proj-inner-tab').forEach(tab => {
@@ -735,9 +775,14 @@ function renderBrowserInMonitor() {
   screen.innerHTML = `
     <div class="browser-chrome">
       <div class="browser-bar">
+        <div class="browser-nav-btns">
+          <button class="browser-nav-btn browser-nav-back"    title="Back"    disabled>&#x2190;</button>
+          <button class="browser-nav-btn browser-nav-fwd"     title="Forward" disabled>&#x2192;</button>
+          <button class="browser-nav-btn browser-nav-refresh" title="Refresh">&#x21BA;</button>
+          <button class="browser-nav-btn browser-nav-home"    title="Home">&#x2302;</button>
+        </div>
         <div class="browser-url-wrap">
           <div class="browser-url" id="browser-url">susyliu.com/projects/${firstId}</div>
-          <div class="browser-url-arrow">&#x25BE;</div>
         </div>
         <div class="browser-win-btns">
           <button class="browser-win-btn" title="Minimise">&#x2013;</button>

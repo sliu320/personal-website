@@ -2306,16 +2306,34 @@
       font-family:'Courier New',monospace; letter-spacing:0.02em;
       outline:none;
     }
-    .browser-url-arrow {
-      width:18px; flex-shrink:0;
+    /* ── Windows 95-style nav buttons (back/fwd/refresh/home) ── */
+    .browser-nav-btns {
+      display:flex; gap:2px; flex-shrink:0; align-items:center;
+    }
+    .browser-nav-btn {
+      width:20px; height:18px;
       background:#d0b4dc;
       border-top:2px solid #f0e0f8;
-      border-left:2px solid #5a3a7a;
+      border-left:2px solid #f0e0f8;
       border-bottom:2px solid #5a3a7a;
+      border-right:2px solid #5a3a7a;
+      font-size:0.72rem; line-height:1; color:#1a0830;
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      padding:0; font-family:Georgia,serif; user-select:none;
+    }
+    .browser-nav-btn:active {
+      border-top:2px solid #5a3a7a;
+      border-left:2px solid #5a3a7a;
+      border-bottom:2px solid #f0e0f8;
       border-right:2px solid #f0e0f8;
-      display:flex; align-items:center; justify-content:center;
-      font-size:0.5rem; color:#1a0830; cursor:default;
-      user-select:none;
+    }
+    .browser-nav-btn:disabled {
+      color:#9a80aa; cursor:default;
+      border-top:2px solid #f0e0f8;
+      border-left:2px solid #f0e0f8;
+      border-bottom:2px solid #5a3a7a;
+      border-right:2px solid #5a3a7a;
+      opacity:0.55;
     }
     /* ── Windows 95-style title bar buttons (top-right) ── */
     .browser-win-btns {
