@@ -332,7 +332,7 @@
       display:flex; flex-direction:column; align-items:center; gap:0.9rem;
       opacity:0; pointer-events:none;
       transition:opacity 0.6s ease;
-      min-width:260px; max-width:min(88vw, 360px);
+      min-width:260px; max-width:min(88vw, 468px);
       text-align:center;
     }
     #onboarding.visible { opacity:1; pointer-events:all; }
@@ -351,16 +351,104 @@
       color:rgba(240,226,200,0.35);
       font-style:italic;
     }
-    #ob-got-it {
-      background:rgba(255,255,255,0.08);
-      border:1px solid rgba(255,255,255,0.18);
-      color:rgba(240,226,200,0.7);
-      padding:0.3rem 1.2rem; border-radius:20px;
-      font-size:0.72rem; letter-spacing:0.12em;
+    .ob-actions {
+      display:flex; flex-direction:column; gap:0.5rem;
+      width:100%; margin-top:0.2rem;
+    }
+    #ob-tour {
+      background:rgba(255,255,255,0.13);
+      border:1px solid rgba(255,255,255,0.28);
+      color:rgba(240,226,200,0.95);
+      padding:0.4rem 1.2rem; border-radius:20px;
+      font-size:0.72rem; letter-spacing:0.1em;
+      cursor:pointer; font-family:inherit;
+      transition:all 0.2s;
+    }
+    #ob-tour:hover { background:rgba(255,255,255,0.22); color:#fff; }
+    #ob-explore {
+      background:transparent; border:none;
+      color:rgba(240,226,200,0.45);
+      padding:0.2rem 0.5rem;
+      font-size:0.65rem; letter-spacing:0.1em;
+      cursor:pointer; font-family:inherit;
+      transition:color 0.2s;
+    }
+    #ob-explore:hover { color:rgba(240,226,200,0.75); }
+
+    /* ── Tour bar ─────────────────────────────────────────────── */
+    #tour-bar {
+      position:fixed; bottom:1.4rem; left:50%; transform:translateX(-50%);
+      z-index:10001;
+      display:flex; align-items:center; gap:0.8rem;
+      background:rgba(13,11,8,0.88); backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,0.12); border-radius:32px;
+      padding:0.45rem 0.6rem 0.45rem 0.8rem;
+      opacity:0; pointer-events:none;
+      transition:opacity 0.35s ease, transform 0.35s ease;
+      transform:translateX(-50%) translateY(8px);
+      white-space:nowrap;
+    }
+    #tour-bar.visible {
+      opacity:1; pointer-events:all;
+      transform:translateX(-50%) translateY(0);
+    }
+    #tour-exit-btn {
+      background:transparent; border:none;
+      color:rgba(240,226,200,0.45); font-size:0.65rem;
+      letter-spacing:0.08em; cursor:pointer; font-family:inherit;
+      padding:0.2rem 0.5rem; border-radius:20px;
+      transition:color 0.2s;
+    }
+    #tour-exit-btn:hover { color:rgba(240,226,200,0.9); }
+    #tour-step-indicator {
+      color:rgba(240,226,200,0.5); font-size:0.65rem;
+      letter-spacing:0.1em; padding:0 0.2rem;
+    }
+    #tour-next-btn {
+      background:rgba(255,255,255,0.1);
+      border:1px solid rgba(255,255,255,0.2);
+      color:rgba(240,226,200,0.9);
+      padding:0.3rem 0.9rem; border-radius:20px;
+      font-size:0.7rem; letter-spacing:0.08em;
+      cursor:pointer; font-family:inherit;
+      transition:all 0.2s;
+    }
+    #tour-next-btn:hover { background:rgba(255,255,255,0.2); color:#fff; }
+
+    /* ── Tour end overlay ─────────────────────────────────────── */
+    #tour-end {
+      position:fixed; inset:0; z-index:10002;
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(0,0,0,0.45); backdrop-filter:blur(4px);
+      opacity:0; pointer-events:none;
+      transition:opacity 0.4s ease;
+    }
+    #tour-end.visible { opacity:1; pointer-events:all; }
+    #tour-end-card {
+      background:rgba(13,11,8,0.92); backdrop-filter:blur(16px);
+      border:1px solid rgba(255,255,255,0.12); border-radius:18px;
+      padding:2rem 2.2rem 1.6rem;
+      display:flex; flex-direction:column; align-items:center; gap:0.9rem;
+      max-width:min(88vw,442px); text-align:center;
+    }
+    #tour-end-title {
+      color:rgba(240,226,200,0.95); font-size:1rem;
+      font-family:Georgia,serif; letter-spacing:0.04em;
+    }
+    #tour-end-body {
+      color:rgba(240,226,200,0.6); font-size:0.76rem;
+      line-height:1.6; letter-spacing:0.03em;
+    }
+    #tour-end-close {
+      background:rgba(255,255,255,0.1);
+      border:1px solid rgba(255,255,255,0.22);
+      color:rgba(240,226,200,0.9);
+      padding:0.4rem 1.4rem; border-radius:20px;
+      font-size:0.72rem; letter-spacing:0.1em;
       cursor:pointer; font-family:inherit;
       transition:all 0.2s; margin-top:0.2rem;
     }
-    #ob-got-it:hover { background:rgba(255,255,255,0.16); color:rgba(240,226,200,1); }
+    #tour-end-close:hover { background:rgba(255,255,255,0.2); color:#fff; }
 
     /* ============================================================
        ROOM
@@ -528,6 +616,16 @@
       animation:none;
     }
     @keyframes hs-pulse { 0%,100%{ transform:scale(1); opacity:0.65; } 50%{ transform:scale(1.12); opacity:1; } }
+    /* Tour mode: warm amber highlight + visible label, no extra animation */
+    .hotspot.hs-tour-active .hs-ring {
+      animation:none !important;
+      border-color:rgba(255,200,80,0.95) !important;
+      background:rgba(255,180,40,0.22) !important;
+      box-shadow:0 0 10px 2px rgba(255,190,60,0.35) !important;
+      width:46px !important; height:46px !important;
+      transition:none !important;
+    }
+    .hotspot.hs-tour-active .hs-label { opacity:1 !important; }
     .hs-label {
       position:absolute; top:46px; left:50%; transform:translateX(-50%);
       white-space:nowrap; background:rgba(13,11,8,0.72); color:rgba(240,226,200,0.9);
@@ -1298,6 +1396,8 @@
       display:none; transition:background 0.2s;
     }
     .zoom-back-btn:hover { background:rgba(0,0,0,0.5); }
+    /* Hide back buttons during guided tour — tour bar handles navigation */
+    body.tour-mode .zoom-back-btn { display:none !important; }
 
     /* ── NOTE card ─────────────────────────────────────────── */
     /* ── Pure CSS stationery notepad ──────────────────────────── */
@@ -1628,6 +1728,22 @@
 
     /* Hide left page when empty (nothing flipped yet) */
     .cf-left-page:empty { border-color:transparent; background:transparent; }
+
+    /* Page numbers — bottom outer corner (right pages: bottom-right; left pages: bottom-left).
+       Span is a direct child of the page container (position:absolute), so absolute coords
+       are relative to that container's padding box. Offset inward from the panel edge. */
+    .cf-pg-num {
+      position:absolute; bottom:0.6rem;
+      font-size:0.72rem; font-family:Georgia,serif;
+      color:#6b5240; letter-spacing:0.04em;
+      pointer-events:none; user-select:none;
+    }
+    .cf-pg-num-right { right:1.6rem; }
+    .cf-pg-num-left  { left:1.6rem; }
+    /* Mobile: single panel is always the right page — pin to bottom-right */
+    @media (max-width:700px) {
+      .cf-pg-num-left { left:auto; right:1.2rem; }
+    }
 
     /* Page content typography */
     .cf-tag {
