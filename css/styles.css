@@ -3010,18 +3010,18 @@
       flex-shrink:0;
     }
     /* Per-door color themes */
-    /* Door 1: Aged sage green */
-    .door-col-1 .door-frame::before    { border-color:#4a6a3e; }
-    .door-col-1 .door-frame-interior   { background:#2e4228; }
-    .door-col-1 .door-panel-face       { background:#4a6a3e; }
+    /* Door 1: Lofi navy blue */
+    .door-col-1 .door-frame::before    { border-color:#3f5a8c; }
+    .door-col-1 .door-frame-interior   { background:#1f2a47; }
+    .door-col-1 .door-panel-face       { background:#3a4f7a; }
     .door-col-1 .door-panel-inset      { background:transparent; border-color:rgba(255,248,235,0.4); }
-    .door-col-1 .door-sill             { background:#2e4228; }
-    /* Door 2: Warm walnut */
-    .door-col-2 .door-frame::before    { border-color:#8c5a38; }
-    .door-col-2 .door-frame-interior   { background:#5c3618; }
-    .door-col-2 .door-panel-face       { background:#a8673a; }
+    .door-col-1 .door-sill             { background:#1f2a47; }
+    /* Door 2: Lofi purple-pink */
+    .door-col-2 .door-frame::before    { border-color:#a6628f; }
+    .door-col-2 .door-frame-interior   { background:#4a2740; }
+    .door-col-2 .door-panel-face       { background:#8a4a6e; }
     .door-col-2 .door-panel-inset      { background:transparent; border-color:rgba(255,248,235,0.4); }
-    .door-col-2 .door-sill             { background:#5c3618; }
+    .door-col-2 .door-sill             { background:#4a2740; }
     /* Door 3: Dusty plum */
     .door-col-3 .door-frame::before    { border-color:#6b5278; }
     .door-col-3 .door-frame-interior   { background:#3e2e52; }
