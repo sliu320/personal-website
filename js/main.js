@@ -3748,7 +3748,19 @@ document.getElementById('community-zoom-back').addEventListener('click', closeCo
 // Vibecoding project links inside community blurb → close community, open monitor at correct tab
 document.getElementById('community-blurb-panel').addEventListener('click', e => {
   const link = e.target.closest('.com-proj-link');
-  if (!link) return;
+  if (!link) {
+    // On touch/mobile: tapping the panel itself (not a link) closes it
+    if (window.innerWidth <= 1024) {
+      e.stopPropagation();
+      const panel = document.getElementById('community-blurb-panel');
+      const pol = _activeCpol ? document.querySelector(`.cpol[data-key="${_activeCpol}"]`) : null;
+      if (pol) pol.classList.remove('active');
+      panel.classList.remove('open');
+      _activeCpol = null;
+      document.body.appendChild(panel);
+    }
+    return;
+  }
   e.preventDefault();
   const projId = link.dataset.proj;
   // Close community overlay first
