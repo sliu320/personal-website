@@ -627,6 +627,11 @@ function _browserProjectsData() {
                 <span class="proj-bucket-link-name">📚 BeaverBid</span>
                 <span class="proj-bucket-link-sub">Course research and bidding tool for MIT Sloan students. Top 5, Hack for Sloan.</span>
               </a>
+            </div>
+          </div>
+          <div class="proj-bucket">
+            <div class="proj-bucket-label">What I'm working on now</div>
+            <div class="proj-bucket-links">
               <a class="proj-bucket-link" data-goto="monitor">
                 <span class="proj-bucket-link-name">🤝 Relationship OS</span>
                 <span class="proj-bucket-link-sub">Fully automated personal CRM built on Notion. V1 live; V2 on the roadmap.</span>
