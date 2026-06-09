@@ -1513,7 +1513,7 @@
       /* 20% narrower (centred): original width was 93%, now 74.4%, each side +9.3% */
       top: 10%; left: 11%; right: 11%; bottom: 10%;
       display:flex; flex-direction:column;
-      overflow:hidden; border-radius:2px;
+      overflow:hidden; border-radius:12px 12px 2px 2px;
     }
     /* Override browser chrome to fit inside the monitor */
     .monitor-screen-inset .browser-chrome {
@@ -2333,22 +2333,39 @@
       overflow-y:auto;
       position:relative; z-index:1;
     }
-    /* ── Cute pink scrollbar for browser content ────────────── */
-    .browser-content::-webkit-scrollbar { width:8px; }
+    /* ── Old-school chunky scrollbar ────────────────────────── */
+    .browser-content::-webkit-scrollbar {
+      width:14px;
+    }
     .browser-content::-webkit-scrollbar-track {
-      background:rgba(240,220,255,0.4);
-      border-radius:99px;
-      margin:6px 0;
+      background:#f0d8f0;
+      border-left:1.5px solid #1a1208;
     }
     .browser-content::-webkit-scrollbar-thumb {
       background:#c4a0d0;
-      border-radius:99px;
-      border:2px solid transparent;
-      background-clip:padding-box;
+      border-radius:2px;
+      border:1.5px solid #1a1208;
+      border-right:none;
     }
     .browser-content::-webkit-scrollbar-thumb:hover {
       background:#a880be;
-      border-color:transparent;
+    }
+    /* Arrow buttons at top and bottom */
+    .browser-content::-webkit-scrollbar-button {
+      display:block;
+      height:14px;
+      background:#c4a0d0;
+      border:1.5px solid #1a1208;
+      border-right:none;
+    }
+    .browser-content::-webkit-scrollbar-button:single-button:vertical:decrement {
+      background:#c4a0d0 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M4 1 L7 5 L1 5 Z' fill='%231a1208'/%3E%3C/svg%3E") center/8px 6px no-repeat;
+    }
+    .browser-content::-webkit-scrollbar-button:single-button:vertical:increment {
+      background:#c4a0d0 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M4 5 L7 1 L1 1 Z' fill='%231a1208'/%3E%3C/svg%3E") center/8px 6px no-repeat;
+    }
+    .browser-content::-webkit-scrollbar-button:hover {
+      background-color:#a880be;
     }
 
     .project-panel { display:none; }
