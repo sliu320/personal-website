@@ -2274,11 +2274,13 @@
 
     /* ---- Browser / Projects ---- */
     .browser-chrome {
-      background:linear-gradient(to bottom,#e8e4e0,#d8d4d0);
+      background:linear-gradient(160deg, #6b4fa8 0%, #8a68c0 55%, #a880c8 100%);
       border-radius:8px 8px 0 0;
       padding:0.5rem 0.6rem 0;
-      box-shadow:0 -1px 0 rgba(0,0,0,0.08);
+      box-shadow:0 2px 8px rgba(80,40,140,0.18);
       margin:-0.5rem -0.5rem 0;
+      border:1px solid #5b3e96;
+      border-bottom:none;
     }
     .browser-bar {
       display:flex; align-items:center; gap:0.4rem; margin-bottom:0.45rem;
@@ -2289,23 +2291,23 @@
     .browser-dot.yellow { background:#febc2e; }
     .browser-dot.green  { background:#28c840; }
     .browser-url {
-      flex:1; background:rgba(255,255,255,0.75); border-radius:4px;
-      font-size:0.62rem; color:#555; padding:0.2rem 0.6rem;
+      flex:1; background:rgba(255,255,255,0.22); border-radius:4px;
+      font-size:0.62rem; color:rgba(255,255,255,0.85); padding:0.2rem 0.6rem;
       font-family:'Courier New',monospace; letter-spacing:0.02em;
+      border:1px solid rgba(255,255,255,0.18);
     }
-    /* ── 1. Outer browser tabs — old folder-tab style (Ref 2) ── */
+    /* ── 1. Outer browser tabs — solid opaque purple palette ─── */
     .browser-tabs {
       display:flex; gap:3px; align-items:flex-end;
-      padding:0; margin:0 0 0 0;
-      flex-wrap:wrap;
+      padding:0; flex-wrap:wrap;
     }
     .browser-tab {
-      background:rgba(188,168,222,0.28);
-      border:1px solid rgba(148,118,198,0.28);
+      background:#c4a8c8;
+      border:1px solid #8a68b8;
       border-bottom:none;
       border-radius:7px 7px 0 0;
       padding:0.3rem 0.8rem;
-      font-size:0.7rem; color:#8878b8;
+      font-size:0.7rem; color:#3a1a52;
       cursor:pointer; white-space:nowrap;
       position:relative; z-index:0;
       transition:background 0.15s, color 0.15s;
@@ -2314,17 +2316,17 @@
       margin-bottom:-1px;
     }
     .browser-tab.active {
-      background:#f3eefb;
-      color:#2e1a52; font-weight:600;
-      border-color:rgba(148,118,198,0.25);
+      background:#f2eafa;
+      color:#2a1040; font-weight:600;
+      border-color:#9070b8;
       z-index:2;
     }
     .browser-tab:hover:not(.active) {
-      background:rgba(188,168,222,0.48); color:#5a4090;
+      background:#b094c0; color:#2a1040;
     }
     .browser-content {
-      background:#f3eefb;
-      border:1px solid rgba(148,118,198,0.22);
+      background:linear-gradient(160deg, #ede4f8 0%, #f4eefb 30%, #faf5ed 100%);
+      border:1px solid #9070b8;
       border-radius:0 8px 8px 8px;
       margin:0 -0.5rem; padding:1.2rem 1.3rem 1.4rem;
       min-height:420px;
@@ -2351,12 +2353,12 @@
     .project-tag   {
       font-size:0.58rem; letter-spacing:0.08em; padding:2px 8px;
       border-radius:3px; background:transparent;
-      color:rgba(120,90,175,0.75); border:1px solid rgba(140,110,190,0.3);
+      color:#7878c0; border:1px solid #9878c0;
       font-family:Georgia,serif; text-transform:uppercase;
     }
     /* Rule sits after tags, before desc */
     .project-title-rule {
-      height:1px; background:rgba(122,92,46,0.15);
+      height:1px; background:#c4a8c8;
       margin:0.5rem 0 0.55rem;
     }
     .project-desc {
@@ -2382,25 +2384,25 @@
     .proj-back-link {
       display:inline-flex; align-items:center; gap:0.25rem;
       font-size:0.6rem; font-family:Georgia,serif; letter-spacing:0.05em;
-      color:#9080b8; text-decoration:none; cursor:pointer;
-      border:1px solid rgba(140,110,190,0.28); border-radius:3px;
+      color:#7878c0; text-decoration:none; cursor:pointer;
+      border:1px solid #9878c0; border-radius:3px;
       padding:2px 9px; margin-bottom:0.8rem;
       transition:background 0.15s, color 0.15s;
       text-transform:uppercase;
     }
-    .proj-back-link:hover { background:rgba(140,110,190,0.1); color:#4a2a80; }
+    .proj-back-link:hover { background:rgba(120,120,192,0.12); color:#3a1a52; }
 
     /* ── Overview bucket layout ───────────────────────────────── */
     .proj-overview { display:flex; flex-direction:column; gap:1.2rem; padding:0.2rem 0 0.5rem; }
-    .proj-bucket-label { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; color:#7060a0; margin-bottom:0.45rem; font-family:Georgia,serif; }
+    .proj-bucket-label { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; color:#5b4a9e; margin-bottom:0.45rem; font-family:Georgia,serif; font-weight:700; }
     .proj-bucket-links { display:flex; flex-direction:column; gap:0.35rem; }
     .proj-bucket-link {
-      font-size:0.9rem; color:#2e1a52; text-decoration:none; cursor:pointer;
+      font-size:0.9rem; color:#2a1040; text-decoration:none; cursor:pointer;
       padding:0.4rem 0.6rem 0.45rem; border-radius:5px;
       transition:background 0.15s, color 0.15s; border:1px solid transparent;
       font-family:Georgia,serif; display:block;
     }
-    .proj-bucket-link:hover { background:rgba(140,110,190,0.1); border-color:rgba(140,110,190,0.22); }
+    .proj-bucket-link:hover { background:rgba(120,120,192,0.12); border-color:#9878c0; }
     .proj-bucket-link-name { display:inline; }
     .proj-bucket-link-sub {
       display:inline; font-size:0.78rem; color:#7a6252;
@@ -2422,15 +2424,15 @@
       font-size:0.7rem; padding:4px 12px 5px;
       border:none; border-bottom:2px solid transparent;
       cursor:pointer; background:transparent;
-      color:#9080b8; font-family:inherit;
+      color:#7878c0; font-family:inherit;
       transition:color 0.15s, border-color 0.15s;
       letter-spacing:0.03em;
     }
     .proj-inner-tab.active {
-      color:#2e1a52; font-weight:600;
-      border-bottom-color:rgba(140,110,190,0.6);
+      color:#2a1040; font-weight:600;
+      border-bottom-color:#5b4a9e;
     }
-    .proj-inner-tab:hover:not(.active) { color:#5a4090; }
+    .proj-inner-tab:hover:not(.active) { color:#5b4a9e; }
     .proj-inner-panel { display:none; }
     .proj-inner-panel.active { display:block; }
 
@@ -2458,11 +2460,11 @@
       grid-template-columns: 1.85fr 1fr;
       gap:1.3rem; margin-top:0.9rem;
     }
-    /* C — Problem as warm callout (full-width anchor) */
+    /* C — Problem as callout (full-width anchor) */
     .proj-section[data-s="problem"] {
       grid-column:1 / -1;
-      border-left:3px solid rgba(140,110,190,0.45);
-      background:rgba(140,110,190,0.06);
+      border-left:3px solid #7878c0;
+      background:rgba(120,120,192,0.07);
       padding:0.65rem 1rem 0.7rem 1rem;
       border-radius:0 4px 4px 0;
     }
@@ -2471,7 +2473,7 @@
     .proj-rhs-stack {
       grid-column:2 / 3; grid-row:2;
       display:flex; flex-direction:column; gap:1.5rem;
-      border-left:2px solid rgba(140,110,190,0.28);
+      border-left:2px solid #9070b8;
       padding-left:1rem;
     }
     .proj-rhs-stack .proj-section {
@@ -2481,7 +2483,7 @@
       border-radius:0;
       padding:0rem 0.9rem 0rem 1rem;
       background:none;
-      border-left:2px solid rgba(140,110,190,0.28);
+      border-left:2px solid #9070b8;
     }
     /* B — Built lead sentence: bold anchor before bullets */
     .proj-built-lead {
@@ -2494,27 +2496,27 @@
     }
     .proj-stat-chip {
       font-size:0.75rem; font-family:Georgia,serif;
-      background:rgba(140,110,190,0.09);
-      border:1px solid rgba(140,110,190,0.25);
+      background:rgba(120,120,192,0.1);
+      border:1px solid #9878c0;
       border-radius:4px; padding:0.18rem 0.55rem;
-      color:#3a2060; white-space:nowrap; line-height:1.5;
+      color:#3a1a5e; white-space:nowrap; line-height:1.5;
     }
     .proj-stat-chip.hi {
-      background:rgba(140,110,190,0.18);
-      border-color:rgba(140,110,190,0.4);
-      font-weight:600; color:#2e1a52;
+      background:#8a5ab8;
+      border-color:#5b4a9e;
+      font-weight:600; color:#fff;
     }
     /* Notion-style label: bold, uppercase, clear */
     .proj-section-label {
       display:flex; align-items:center; gap:0.4rem;
       font-size:0.7rem; font-style:normal; font-weight:700;
       text-transform:uppercase; letter-spacing:0.07em;
-      color:#5a4080; margin-bottom:0.55rem;
+      color:#5b4a9e; margin-bottom:0.55rem;
       font-family:Georgia,serif;
     }
     .proj-section-label::after {
       content:''; flex:1; height:1px;
-      background:rgba(120,90,170,0.18);
+      background:#c4a8c8;
     }
     .proj-section-label::before {
       font-size:0.78rem; font-style:normal; opacity:0.75;
