@@ -2332,13 +2332,20 @@
       position:relative; z-index:1;
     }
     .project-panel { display:none; }
-    .project-panel.active { display:block; }
+    .project-panel.active {
+      display:block;
+      animation: proj-fadein 200ms ease-out both;
+    }
+    @keyframes proj-fadein {
+      from { opacity:0; transform:translateY(6px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
 
     /* ── 2. Project title block ──────────────────────────────── */
     .project-title {
       font-family:Georgia,serif;
-      font-size:1.1rem; color:#2a1f0e; font-weight:700;
-      margin-bottom:0.45rem; line-height:1.25;
+      font-size:1.5rem; color:#2a1f0e; font-weight:700;
+      margin-bottom:0.45rem; line-height:1.2; letter-spacing:-0.01em;
     }
     .project-tags  { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:0.5rem; }
     .project-tag   {
@@ -2435,11 +2442,24 @@
     }
     .proj-prompt-label { font-size:0.6rem; letter-spacing:0.1em; color:rgba(122,92,46,0.8); text-transform:uppercase; margin-bottom:0.4rem; font-weight:700; }
     /* ── 5. Standardized project section cards ───────────────── */
-    .proj-sections { display:flex; flex-direction:column; gap:0.6rem; margin-top:0.65rem; }
+    .proj-sections {
+      display:grid;
+      grid-template-columns: 1.85fr 1fr;
+      gap:0.6rem; margin-top:0.65rem;
+    }
+    .proj-section[data-s="problem"]   { grid-column:1 / -1; }
+    .proj-section[data-s="built"]     { grid-column:1 / 2; }
+    .proj-section[data-s="outcome"]   { grid-column:2 / 3; }
+    .proj-section[data-s="learnings"] { grid-column:1 / -1; }
     .proj-section {
       border-radius:10px;
       padding:0.85rem 1rem 0.9rem;
       border:none;
+      transition:transform 150ms ease-out, box-shadow 150ms ease-out;
+    }
+    .proj-section:hover {
+      transform:translateY(-2px);
+      box-shadow:0 4px 14px rgba(42,31,14,0.09);
     }
     .proj-section[data-s="problem"]   { background:#ede8df; }
     .proj-section[data-s="built"]     { background:#f5f0e8; }
@@ -2448,7 +2468,7 @@
     /* Notebook-header label: icon + text + extending rule */
     .proj-section-label {
       display:flex; align-items:center; gap:0.35rem;
-      font-size:0.68rem; font-style:italic;
+      font-size:0.72rem; font-style:italic;
       color:rgba(74,63,47,0.7); margin-bottom:0.5rem;
       font-family:Georgia,serif;
     }
@@ -2972,6 +2992,12 @@
       .door-role-label { text-align:left; min-height:unset; margin-bottom:0; }
       .hobbies-blurb-inner { flex-direction:column; height:auto; }
       .hobbies-blurb-img { width:100%; height:160px; }
+      /* Collapse project section grid to single column */
+      .proj-sections { grid-template-columns:1fr; }
+      .proj-section[data-s="built"],
+      .proj-section[data-s="outcome"],
+      .proj-section[data-s="problem"],
+      .proj-section[data-s="learnings"] { grid-column:1 / -1; }
     }
 
     /* ── Sticky Notes scatter overlay ─────────────────────────── */
