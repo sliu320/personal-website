@@ -3299,10 +3299,20 @@ function _cfFlip(dir) {
   _updateCfNav();
 }
 
-document.getElementById('cf-prev-arrow').addEventListener('click', () => _cfFlip(-1));
-document.getElementById('cf-next-arrow').addEventListener('click', () => _cfFlip(1));
-document.getElementById('cf-mob-prev').addEventListener('click', () => _cfFlipMobile(-1));
-document.getElementById('cf-mob-next').addEventListener('click', () => _cfFlipMobile(1));
+let _cfNavLock = false;
+function _cfSafe(fn) {
+  return () => {
+    if (_cfNavLock) return;
+    _cfNavLock = true;
+    fn();
+    setTimeout(() => { _cfNavLock = false; }, 350);
+  };
+}
+
+document.getElementById('cf-prev-arrow').addEventListener('click', _cfSafe(() => _cfFlip(-1)));
+document.getElementById('cf-next-arrow').addEventListener('click', _cfSafe(() => _cfFlip(1)));
+document.getElementById('cf-mob-prev').addEventListener('click', _cfSafe(() => _cfFlipMobile(-1)));
+document.getElementById('cf-mob-next').addEventListener('click', _cfSafe(() => _cfFlipMobile(1)));
 
 /* ── Speaker / iPod zoom ─────────────────────────────────── */
 const LOFI_CREDITS = {
