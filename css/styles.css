@@ -1525,6 +1525,7 @@
       flex:1; margin:0; overflow-y:scroll;
       min-height:0; padding:0.9rem 1.1rem 1.1rem;
       background:linear-gradient(to bottom, #f8f6ff 0%, #f4f0fe 55%, #e0d8f4 80%, #c8bce8 100%);
+      background-attachment:local;
     }
     .monitor-screen-inset .browser-tabs {
       margin-bottom:0;
@@ -2369,6 +2370,7 @@
     }
     .browser-content {
       background:linear-gradient(to bottom, #f8f6ff 0%, #f4f0fe 55%, #e0d8f4 80%, #c8bce8 100%);
+      background-attachment:local;
       border:1px solid #1a1208;
       border-bottom:none;
       border-radius:0;
