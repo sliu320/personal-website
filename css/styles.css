@@ -3153,6 +3153,46 @@
       .proj-section[data-s="built"],
       .proj-section[data-s="problem"] { grid-column:1 / -1; grid-row:auto; }
       .proj-rhs-stack { grid-column:1 / -1; grid-row:auto; border-left:2px solid rgba(122,92,46,0.22); }
+
+      /* ── Browser: mobile tab strip ── */
+      .browser-tabs {
+        flex-wrap:nowrap;
+        overflow-x:auto;
+        scrollbar-width:none;
+      }
+      .browser-tabs::-webkit-scrollbar { display:none; }
+      /* All tabs: emoji only */
+      .browser-tab .tab-text { display:none; }
+      .browser-tab { padding:0.32rem 0.5rem; min-width:28px; max-width:none; }
+      /* Overview tab keeps its full label */
+      .browser-tab[data-tab="overview"] .tab-text { display:inline; }
+      .browser-tab[data-tab="overview"] { max-width:110px; }
+
+      /* ── Browser: URL bar single line ── */
+      .browser-url {
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+      }
+
+      /* ── Embeds: make pitch decks & videos responsive ── */
+      .proj-embed-wrap {
+        transform:none !important;
+        margin:0 0 0.5rem;
+        padding:0.3rem;
+      }
+      /* Pitch deck iframes (hardcoded height attr) → aspect-ratio override */
+      .proj-embed-wrap > iframe,
+      .proj-inner-panel > iframe {
+        width:100% !important;
+        height:auto !important;
+        aspect-ratio:16 / 9;
+        display:block;
+      }
+      /* Canva video wrapper already uses padding-top:56.25% — just ensure no overflow */
+      .proj-embed-wrap > div[style*="padding-top"] {
+        overflow:hidden;
+      }
     }
 
     /* ── Sticky Notes scatter overlay ─────────────────────────── */

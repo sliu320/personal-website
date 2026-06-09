@@ -600,7 +600,10 @@ function _browserProjectsData() {
 function _buildBrowserHTML(projects) {
   let tabsHtml = '', panelsHtml = '';
   projects.forEach((p, i) => {
-    tabsHtml += `<div class="browser-tab${i===0?' active':''}" data-tab="${p.id}">${p.tab}</div>`;
+    const spaceIdx = p.tab.indexOf(' ');
+    const tabIcon  = spaceIdx > -1 ? p.tab.slice(0, spaceIdx) : p.tab;
+    const tabLabel = spaceIdx > -1 ? p.tab.slice(spaceIdx) : '';
+    tabsHtml += `<div class="browser-tab${i===0?' active':''}" data-tab="${p.id}"><span class="tab-icon">${tabIcon}</span><span class="tab-text">${tabLabel}</span></div>`;
     const tagsHtml = p.tags.length ? `<div class="project-tags">${p.tags.map(t=>`<span class="project-tag">${t}</span>`).join('')}</div>` : '';
     const backLink = p.id !== 'overview' ? `<a class="proj-back-link" href="javascript:void(0)">↩ all projects</a>` : '';
     const rule = p.id !== 'overview' ? `<div class="project-title-rule"></div>` : '';
