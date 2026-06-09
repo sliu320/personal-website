@@ -3164,6 +3164,16 @@
         margin:0;
       }
 
+      /* ── Browser: full width, bar doesn't overflow ── */
+      .browser-win-btns { flex-shrink:0; }
+      .browser-nav-btns { flex-shrink:0; }
+      .browser-url-wrap { min-width:0; overflow:hidden; }
+      .browser-url      { min-width:0; }
+
+      /* ── DressingRoom journey: stack image above text on mobile ── */
+      .dr-step { flex-direction:column; }
+      .dr-img  { width:100%; height:auto; max-height:220px; object-fit:cover; }
+
       /* ── Browser: mobile tab strip ── */
       .browser-tabs {
         flex-wrap:nowrap;
@@ -3625,13 +3635,13 @@
 
       /* ── Projects / Monitor: vertical phone shape ── */
       .monitor-zoom-card {
-        width: 96vw !important;
+        width: 100vw !important;
         height: auto !important;
-        max-height: 88vh !important;
+        max-height: 92vh !important;
         aspect-ratio: unset !important;
         background: #1a1a2e;
-        border-radius: 28px !important;
-        border: 6px solid #222 !important;
+        border-radius: 16px !important;
+        border: 3px solid #222 !important;
         filter: drop-shadow(0 10px 32px rgba(0,0,0,0.6)) !important;
         overflow: hidden;
       }
@@ -3641,8 +3651,8 @@
         inset: unset !important;
         display: flex !important;
         flex-direction: column !important;
-        height: 76vh !important;
-        border-radius: 22px !important;
+        height: 82vh !important;
+        border-radius: 14px !important;
         overflow: hidden !important;
       }
       .monitor-screen-inset .browser-tab { font-size: 0.6rem !important; padding: 0.22rem 0.5rem !important; max-width: 90px !important; }
