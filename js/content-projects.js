@@ -362,11 +362,51 @@ const PROJECTS_DATA = [
   {
     id: 'whereabout', tab: '📍 WhereAbout',
     title: 'WhereAbout',
-    tags: ['Vibecoding', 'Community', 'Web App'],
-    desc: `A vibecoding project built for the Atlantic Ocean cohort. Coming soon.`,
+    tags: ['Vibecoded', 'Community', 'Web App'],
+    desc: 'A social GeoGuessr for my MBA cohort — built to keep us connected while scattered across the globe for the summer.',
     customContent: `
-      <div style="display:flex;align-items:center;justify-content:center;height:200px;color:rgba(100,70,30,0.5);font-family:Georgia,serif;font-style:italic;font-size:1rem;">
-        🚧 Coming soon
+      <div class="proj-sections">
+        <div class="proj-section" data-s="problem">
+          <div class="proj-section-label">Problem</div>
+          <div class="proj-section-body">During the summer, my cohort was scattered across the globe — different cities, time zones, internships. I wanted a way for us to stay in touch and share what our lives actually looked like, not just check-ins.</div>
+        </div>
+        <div class="proj-section" data-s="built">
+          <div class="proj-section-label">What I Built</div>
+          <div class="proj-section-body"><span class="proj-built-lead">A social GeoGuessr: post a photo of your day, your cohort guesses where in the world you are.</span>
+          <ul>
+            <li>Photo uploads with optional hints and captions; poster sets a guessing window (e.g. 24 hrs or after 30 guesses)</li>
+            <li>Others drop a pin on a map and leave comments or reactions — guesses hidden until the reveal</li>
+            <li>After the window closes, everyone sees all guesses on the map and who got closest</li>
+            <li>Group stats page: a pin-drop heat map and a leaderboard ranked by proximity accuracy across all rounds</li>
+          </ul></div>
+        </div>
+        <div class="proj-rhs-stack">
+          <div class="proj-section" data-s="outcome">
+            <div class="proj-section-label">Outcome</div>
+            <div class="proj-section-body"><div class="proj-stat-chips">
+              <span class="proj-stat-chip hi">Half the cohort joined day 1</span>
+              <span class="proj-stat-chip">Active participation</span>
+              <span class="proj-stat-chip">Vibecoded</span>
+            </div></div>
+          </div>
+        </div>
+        <div class="proj-section proj-section--demo" data-s="demo">
+          <div class="proj-section-label">Demo</div>
+          <div class="proj-demo-strip">
+            <figure class="proj-demo-item">
+              <img src="assets/images/Projects/WhereAbout/Wherabout 1.png" alt="Upload a photo" class="proj-demo-img proj-demo-img--tall" loading="lazy">
+              <figcaption>Upload a photo of your day and others guess where you are. Add hints or a caption for context, and set a guessing window — e.g. 24 hours or after 30 guesses.</figcaption>
+            </figure>
+            <figure class="proj-demo-item">
+              <img src="assets/images/Projects/WhereAbout/WhereAbout 2.png" alt="Drop a pin and guess" class="proj-demo-img proj-demo-img--tall" loading="lazy">
+              <figcaption>Others drop a pin on the map and leave comments or reactions. Guesses stay hidden until the reveal — then everyone sees where everyone guessed and who got closest.</figcaption>
+            </figure>
+            <figure class="proj-demo-item">
+              <img src="assets/images/Projects/WhereAbout/Wherabout 3.png" alt="Group stats and leaderboard" class="proj-demo-img proj-demo-img--tall" loading="lazy">
+              <figcaption>The group page shows a heat map of all pin drops and a leaderboard ranked by how close each person's guesses have been across all rounds.</figcaption>
+            </figure>
+          </div>
+        </div>
       </div>`,
   },
 
