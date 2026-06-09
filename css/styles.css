@@ -2291,11 +2291,30 @@
     .browser-dot.red    { background:#ff5f57; }
     .browser-dot.yellow { background:#febc2e; }
     .browser-dot.green  { background:#28c840; }
+    .browser-url-wrap {
+      flex:1; display:flex; align-items:stretch;
+      border-top:2px solid #5a3a7a;
+      border-left:2px solid #5a3a7a;
+      border-bottom:2px solid #f0e0f8;
+      border-right:2px solid #f0e0f8;
+      background:#f8f6ff;
+    }
     .browser-url {
-      flex:1; background:rgba(255,255,255,0.22); border-radius:20px;
-      font-size:0.62rem; color:#3a1a6e; padding:0.2rem 0.7rem;
+      flex:1; background:transparent; border:none; border-radius:0;
+      font-size:0.62rem; color:#3a1a6e; padding:0.15rem 0.5rem;
       font-family:'Courier New',monospace; letter-spacing:0.02em;
-      border:1px solid #7858a8;
+      outline:none;
+    }
+    .browser-url-arrow {
+      width:18px; flex-shrink:0;
+      background:#d0b4dc;
+      border-top:2px solid #f0e0f8;
+      border-left:2px solid #5a3a7a;
+      border-bottom:2px solid #5a3a7a;
+      border-right:2px solid #f0e0f8;
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.5rem; color:#1a0830; cursor:default;
+      user-select:none;
     }
     /* ── Windows 95-style title bar buttons (top-right) ── */
     .browser-win-btns {
