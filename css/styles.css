@@ -4073,21 +4073,21 @@
       object-position: right center !important;
     }
     .casefiles-zoom-card {
-      width: 92vw !important;
-      height: 78vh !important; /* portrait-tall */
+      width: 100vw !important;
+      height: 90vh !important;
       min-height: 0 !important;
       flex: 0 0 auto !important;
       aspect-ratio: unset !important;
-      filter: drop-shadow(0 8px 28px rgba(0,0,0,0.5)) !important;
+      filter: none !important;
       position: relative !important;
       overflow: hidden !important;
-      border-radius: 4px !important;
+      border-radius: 0 !important;
     }
     /* Page content area fills the visible right-page crop */
     .casefiles-pages {
       position: absolute !important;
       top: 4% !important; bottom: 5% !important;
-      left: 5% !important; right: 5% !important;
+      left: 1% !important; right: 1% !important;
       background: transparent !important;
       border: none !important;
     }
@@ -4113,7 +4113,7 @@
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
-      width: 92vw !important;
+      width: 100vw !important;
       height: 3.2rem !important;
       padding: 0 1rem !important;
       flex-shrink: 0 !important;
