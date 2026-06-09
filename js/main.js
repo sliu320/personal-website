@@ -666,6 +666,68 @@ function _wireBrowserTabs(root, projects) {
   });
 }
 
+function _wireCustomScrollbar(root) {
+  const content  = root.querySelector('#browser-content');
+  const thumb    = root.querySelector('.bs-thumb');
+  const track    = root.querySelector('.bs-track');
+  const btnUp    = root.querySelector('.bs-btn-up');
+  const btnDown  = root.querySelector('.bs-btn-down');
+  if (!content || !thumb || !track) return;
+
+  function updateThumb() {
+    const { scrollTop, scrollHeight, clientHeight } = content;
+    const trackH  = track.clientHeight;
+    const ratio   = clientHeight / scrollHeight;
+    const thumbH  = Math.max(24, trackH * ratio);
+    const maxScroll = scrollHeight - clientHeight;
+    const pos = maxScroll > 0 ? (scrollTop / maxScroll) * (trackH - thumbH) : 0;
+    thumb.style.height = thumbH + 'px';
+    thumb.style.top    = pos + 'px';
+    // hide thumb when no overflow
+    thumb.style.display = scrollHeight <= clientHeight ? 'none' : 'block';
+  }
+
+  content.addEventListener('scroll', updateThumb);
+  // Update on tab switch (content changes height)
+  root.querySelectorAll('.browser-tab').forEach(t =>
+    t.addEventListener('click', () => setTimeout(updateThumb, 50))
+  );
+  // Initial
+  setTimeout(updateThumb, 50);
+
+  // Drag thumb
+  let dragging = false, dragStartY = 0, dragStartScroll = 0;
+  thumb.addEventListener('mousedown', e => {
+    dragging = true;
+    dragStartY = e.clientY;
+    dragStartScroll = content.scrollTop;
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const trackH   = track.clientHeight;
+    const thumbH   = thumb.offsetHeight;
+    const maxThumb = trackH - thumbH;
+    const maxScroll = content.scrollHeight - content.clientHeight;
+    const dy   = e.clientY - dragStartY;
+    const ratio = maxThumb > 0 ? dy / maxThumb : 0;
+    content.scrollTop = dragStartScroll + ratio * maxScroll;
+  });
+  document.addEventListener('mouseup', () => { dragging = false; });
+
+  // Click track to page-scroll
+  track.addEventListener('click', e => {
+    if (e.target === thumb) return;
+    const rect = track.getBoundingClientRect();
+    const clickPos = (e.clientY - rect.top) / rect.height;
+    content.scrollTop = clickPos * (content.scrollHeight - content.clientHeight);
+  });
+
+  // Arrow buttons
+  btnUp.addEventListener('click',   () => { content.scrollTop -= 40; });
+  btnDown.addEventListener('click', () => { content.scrollTop += 40; });
+}
+
 function renderBrowserInMonitor() {
   const projects = _browserProjectsData();
   const { tabsHtml, panelsHtml, firstId } = _buildBrowserHTML(projects);
@@ -682,9 +744,17 @@ function renderBrowserInMonitor() {
       </div>
       <div class="browser-tabs">${tabsHtml}</div>
     </div>
-    <div class="browser-content" id="browser-content">${panelsHtml}</div>
+    <div class="browser-scroll-row">
+      <div class="browser-content" id="browser-content">${panelsHtml}</div>
+      <div class="browser-scrollbar">
+        <button class="bs-btn bs-btn-up" aria-label="scroll up">▲</button>
+        <div class="bs-track"><div class="bs-thumb"></div></div>
+        <button class="bs-btn bs-btn-down" aria-label="scroll down">▼</button>
+      </div>
+    </div>
     <div class="browser-status" id="browser-status">● susyliu.com — secure connection</div>`;
   _wireBrowserTabs(screen, projects);
+  _wireCustomScrollbar(screen);
 }
 
 function renderBrowser() {
