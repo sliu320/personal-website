@@ -2370,11 +2370,26 @@
     }
     .proj-prompt-label { font-size:0.6rem; letter-spacing:0.1em; color:rgba(122,92,46,0.8); text-transform:uppercase; margin-bottom:0.4rem; font-weight:700; }
     /* Standardized project sections */
-    .proj-sections { display:flex; flex-direction:column; gap:1rem; margin-top:0.7rem; }
-    .proj-section-label {
-      font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
-      color:rgba(122,92,46,0.7); margin-bottom:0.35rem;
+    .proj-sections { display:flex; flex-direction:column; gap:0.65rem; margin-top:0.7rem; }
+    .proj-section {
+      border-radius:8px;
+      padding:0.7rem 0.9rem 0.75rem;
     }
+    .proj-section[data-s="problem"]   { background:#ede8df; }
+    .proj-section[data-s="built"]     { background:#f5f0e8; border:1px solid rgba(122,92,46,0.13); }
+    .proj-section[data-s="outcome"]   { background:#faf3e2; }
+    .proj-section[data-s="learnings"] { background:#edeae4; }
+    .proj-section-label {
+      font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+      color:rgba(74,63,47,0.65); margin-bottom:0.35rem; display:flex; align-items:center; gap:0.3rem;
+    }
+    .proj-section-label::before {
+      font-size:0.75rem; letter-spacing:0; text-transform:none; opacity:0.8;
+    }
+    .proj-section[data-s="problem"]   .proj-section-label::before { content:"⚠"; }
+    .proj-section[data-s="built"]     .proj-section-label::before { content:"🔨"; }
+    .proj-section[data-s="outcome"]   .proj-section-label::before { content:"✦"; }
+    .proj-section[data-s="learnings"] .proj-section-label::before { content:"💡"; }
     .proj-section-body {
       font-size:0.8125rem; color:#3a2f1e; line-height:1.8; margin:0;
     }
@@ -2382,7 +2397,6 @@
     .proj-section-body ul { margin:0.35rem 0 0; padding-left:1.1rem; }
     .proj-section-body li { margin-bottom:0.4rem; }
     .proj-section-body li:last-child { margin-bottom:0; }
-    .proj-section { border-left:2px solid rgba(122,92,46,0.15); padding-left:0.8rem; }
     /* DressingRoom timeline */
     .dr-timeline { display:flex; flex-direction:column; gap:1.2rem; padding:0.4rem 0; }
     .dr-step { display:flex; gap:1rem; align-items:flex-start; }

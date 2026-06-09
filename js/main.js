@@ -634,11 +634,11 @@ function _browserProjectsData() {
       desc: 'Automated a high-stakes engineering workflow for a regulated Australian water utility. 30 minutes → 45 seconds, with human oversight built in by design.',
       customContent: `
         <div class="proj-sections">
-          <div class="proj-section">
+          <div class="proj-section" data-s="problem">
             <div class="proj-section-label">Problem</div>
             <div class="proj-section-body">Hunter Water (NSW, Australia) issues ~600 Statements of Available Pressure per year — technical packets developers need to plan water connections. Each took ~1 hour across two engineers: find the right hydrant in GIS, calculate pressure in Excel, generate a Word doc. 600+ hours of repetitive work annually, with no standardized QA, in a regulated environment where accuracy is non-negotiable.</div>
           </div>
-          <div class="proj-section">
+          <div class="proj-section" data-s="built">
             <div class="proj-section-label">What I Built</div>
             <div class="proj-section-body"><ul>
               <li><strong>Vision-LLM pipeline:</strong> Gemini 2.5 Flash reads unstructured PDF site plans → structured JSON. Chose Flash over Pro after testing — no accuracy gain, and its native multimodal skipped an OCR pipeline entirely</li>
@@ -647,11 +647,11 @@ function _browserProjectsData() {
               <li><strong>Human-in-the-loop:</strong> Low-confidence cases flagged; top-5 shown; one-click override. No silent hallucinations</li>
             </ul></div>
           </div>
-          <div class="proj-section">
+          <div class="proj-section" data-s="outcome">
             <div class="proj-section-label">Outcome</div>
             <div class="proj-section-body">30 min → 45 sec · 93.3% accuracy (15-case test set) · ~$1.30/run · ~600 hrs/yr saved · <strong>Best Project, MIT GenAI Lab</strong></div>
           </div>
-          <div class="proj-section">
+          <div class="proj-section" data-s="learnings">
             <div class="proj-section-label">Learnings</div>
             <div class="proj-section-body">In regulated industries, the goal isn't to replace the engineer — it's to eliminate the parts that don't require judgment. Keeping logic deterministic made results trustworthy to the client.</div>
           </div>
@@ -790,11 +790,11 @@ function _browserProjectsData() {
       desc: 'Course research and bidding tool for MIT Sloan students. Top 5 at Hack for Sloan, a Lovable-sponsored hackathon for builds that improve life at Sloan.',
       customContent: `
         <div class="proj-sections">
-          <div class="proj-section">
+          <div class="proj-section" data-s="problem">
             <div class="proj-section-label">Problem</div>
             <div class="proj-section-body">Sloan students bid on courses with points — but the information needed to bid well is scattered: class descriptions in one place, teaching awards in another, bidding history across student org spreadsheets, real intel from asking second-years. No one knows how much to bid. The result is hype-driven scrambles for classes students would pass on with better information.</div>
           </div>
-          <div class="proj-section">
+          <div class="proj-section" data-s="built">
             <div class="proj-section-label">What I Built</div>
             <div class="proj-section-body"><ul>
               <li><strong>Unified course cards:</strong> class description + professor reputation (awards, research, network) + round-by-round bid history, with point estimates</li>
@@ -804,11 +804,11 @@ function _browserProjectsData() {
               <li><strong>Key decision:</strong> treated student org spreadsheets as first-class data — that's where the real signal lives</li>
             </ul></div>
           </div>
-          <div class="proj-section">
+          <div class="proj-section" data-s="outcome">
             <div class="proj-section-label">Outcome</div>
             <div class="proj-section-body"><strong>Top 5, Hack for Sloan</strong> (Lovable-sponsored). Used personally for bidding; shared with classmates. Made bid decisions feel grounded rather than anxiety-driven.</div>
           </div>
-          <div class="proj-section">
+          <div class="proj-section" data-s="learnings">
             <div class="proj-section-label">Learnings</div>
             <div class="proj-section-body">Data sourcing was the hardest part — peer notes and bidding history live in unstructured Google Sheets, not any official system. The LLM chat turned out to be the sleeper feature; people used it more than anything else once they discovered it.</div>
           </div>
@@ -821,11 +821,11 @@ function _browserProjectsData() {
       desc: 'A personal CRM that turns meeting notes into a living record of your relationships.',
       customContent: `
         <div class="proj-sections">
-          <div class="proj-section">
+          <div class="proj-section" data-s="problem">
             <div class="proj-section-label">Problem</div>
             <div class="proj-section-body">I take detailed notes in every meeting via Granola, but they sit in silos — no way to see the arc of a relationship across conversations, recall what someone cared about three months ago, or know who you've been neglecting. Relationship-building is high-leverage and almost entirely dependent on memory and intentionality most tools don't support.</div>
           </div>
-          <div class="proj-section">
+          <div class="proj-section" data-s="built">
             <div class="proj-section-label">What I Built</div>
             <div class="proj-section-body"><ul>
               <li><strong>Ingestion pipeline:</strong> Granola notes → Notion with structured metadata per person</li>
@@ -835,11 +835,11 @@ function _browserProjectsData() {
               <li><strong>Built on Notion:</strong> data stays portable and human-readable — no black box</li>
             </ul></div>
           </div>
-          <div class="proj-section">
+          <div class="proj-section" data-s="outcome">
             <div class="proj-section-label">Outcome</div>
             <div class="proj-section-body">In active personal use. Surfaced reconnection prompts I wouldn't have thought of, and made follow-ups feel less effortful.</div>
           </div>
-          <div class="proj-section">
+          <div class="proj-section" data-s="learnings">
             <div class="proj-section-label">Learnings</div>
             <div class="proj-section-body">The hardest part wasn't the pipeline — it was calibrating summarization depth. Too sparse misses nuance; too detailed and you never read it. Sweet spot: one paragraph narrative + a short list of open threads per person.</div>
           </div>
