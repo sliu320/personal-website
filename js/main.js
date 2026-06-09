@@ -611,18 +611,39 @@ function _browserProjectsData() {
           <div class="proj-bucket">
             <div class="proj-bucket-label">Featured</div>
             <div class="proj-bucket-links">
-              <a class="proj-bucket-link" data-goto="genai">🤖 GenAI Lab</a>
-              <a class="proj-bucket-link" data-goto="dressingroom">👗 DressingRoom</a>
-              <a class="proj-bucket-link" data-goto="foodgroups">🥗 FoodGroups</a>
-              <a class="proj-bucket-link" data-goto="bidding">📚 BeaverBid</a>
-              <a class="proj-bucket-link" data-goto="monitor">🤝 Relationship OS</a>
+              <a class="proj-bucket-link" data-goto="genai">
+                <span class="proj-bucket-link-name">🤖 GenAI Lab</span>
+                <span class="proj-bucket-link-sub">Automated a regulated water utility's engineering workflow — 30 min → 45 sec. Best Project, MIT GenAI Lab.</span>
+              </a>
+              <a class="proj-bucket-link" data-goto="dressingroom">
+                <span class="proj-bucket-link-name">👗 DressingRoom</span>
+                <span class="proj-bucket-link-sub">AI-powered visual commerce startup. MIT FUSE accelerator, IIA AI Summit. Sunset after 4 months — a lot learned.</span>
+              </a>
+              <a class="proj-bucket-link" data-goto="foodgroups">
+                <span class="proj-bucket-link-name">🥗 FoodGroups</span>
+                <span class="proj-bucket-link-sub">Personalized gut-health companion built in one week. Semi-finalist, Google PM Hackathon.</span>
+              </a>
+              <a class="proj-bucket-link" data-goto="bidding">
+                <span class="proj-bucket-link-name">📚 BeaverBid</span>
+                <span class="proj-bucket-link-sub">Course research and bidding tool for MIT Sloan students. Top 5, Hack for Sloan.</span>
+              </a>
+              <a class="proj-bucket-link" data-goto="monitor">
+                <span class="proj-bucket-link-name">🤝 Relationship OS</span>
+                <span class="proj-bucket-link-sub">Fully automated personal CRM built on Notion. V1 live; V2 on the roadmap.</span>
+              </a>
             </div>
           </div>
           <div class="proj-bucket">
             <div class="proj-bucket-label">Things I built for my community</div>
             <div class="proj-bucket-links">
-              <a class="proj-bucket-link" data-goto="whereabout">📍 WhereAbout</a>
-              <a class="proj-bucket-link" data-goto="friendsgiving">🦃 Friendsgiving</a>
+              <a class="proj-bucket-link" data-goto="whereabout">
+                <span class="proj-bucket-link-name">📍 WhereAbout</span>
+                <span class="proj-bucket-link-sub">Location-sharing app for the Atlantic Ocean cohort.</span>
+              </a>
+              <a class="proj-bucket-link" data-goto="friendsgiving">
+                <span class="proj-bucket-link-name">🦃 Friendsgiving</span>
+                <span class="proj-bucket-link-sub">Event site for the Atlantic Ocean Friendsgiving.</span>
+              </a>
             </div>
           </div>
         </div>`,
@@ -649,7 +670,12 @@ function _browserProjectsData() {
           </div>
           <div class="proj-section" data-s="outcome">
             <div class="proj-section-label">Outcome</div>
-            <div class="proj-section-body">30 min → 45 sec · 93.3% accuracy (15-case test set) · ~$1.30/run · ~600 hrs/yr saved · <strong>Best Project, MIT GenAI Lab</strong></div>
+            <div class="proj-section-body"><ul>
+              <li><strong>Best Project, MIT GenAI Lab</strong></li>
+              <li>30 min → 45 sec end-to-end runtime</li>
+              <li>93.3% accuracy on 15-case test set</li>
+              <li>~$1.30/run · ~600 hrs/yr saved</li>
+            </ul></div>
           </div>
           <div class="proj-section" data-s="learnings">
             <div class="proj-section-label">Learnings</div>
@@ -768,7 +794,10 @@ function _browserProjectsData() {
             </div>
             <div class="proj-section" data-s="outcome">
               <div class="proj-section-label">Outcome</div>
-              <div class="proj-section-body"><strong>Semi-finalist</strong>, Google PM Hackathon (~25 teams). I led problem framing, market research, and the pitch deck.</div>
+              <div class="proj-section-body"><ul>
+                <li><strong>Semi-finalist</strong>, Google PM Hackathon (~25 teams)</li>
+                <li>Led problem framing, market research, and the pitch deck</li>
+              </ul></div>
             </div>
             <div class="proj-section" data-s="learnings">
               <div class="proj-section-label">Learnings</div>
@@ -814,7 +843,11 @@ function _browserProjectsData() {
           </div>
           <div class="proj-section" data-s="outcome">
             <div class="proj-section-label">Outcome</div>
-            <div class="proj-section-body"><strong>Top 5, Hack for Sloan</strong> (Lovable-sponsored). Used personally for bidding; shared with classmates. Made bid decisions feel grounded rather than anxiety-driven.</div>
+            <div class="proj-section-body"><ul>
+              <li><strong>Top 5, Hack for Sloan</strong> (Lovable-sponsored)</li>
+              <li>Used personally for bidding; shared with classmates</li>
+              <li>Made bid decisions feel grounded rather than anxiety-driven</li>
+            </ul></div>
           </div>
           <div class="proj-section" data-s="learnings">
             <div class="proj-section-label">Learnings</div>

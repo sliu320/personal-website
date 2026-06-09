@@ -2394,8 +2394,18 @@
     .proj-overview { display:flex; flex-direction:column; gap:1.2rem; padding:0.2rem 0 0.5rem; }
     .proj-bucket-label { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; color:#6b5a3e; margin-bottom:0.45rem; font-family:Georgia,serif; }
     .proj-bucket-links { display:flex; flex-direction:column; gap:0.35rem; }
-    .proj-bucket-link { font-size:0.9rem; color:#2a1f0e; text-decoration:none; cursor:pointer; padding:0.35rem 0.6rem; border-radius:5px; transition:background 0.15s, color 0.15s; border:1px solid transparent; font-family:Georgia,serif; }
-    .proj-bucket-link:hover { background:rgba(122,92,46,0.08); border-color:rgba(122,92,46,0.2); color:#2a1f0e; }
+    .proj-bucket-link {
+      font-size:0.9rem; color:#2a1f0e; text-decoration:none; cursor:pointer;
+      padding:0.4rem 0.6rem 0.45rem; border-radius:5px;
+      transition:background 0.15s, color 0.15s; border:1px solid transparent;
+      font-family:Georgia,serif; display:block;
+    }
+    .proj-bucket-link:hover { background:rgba(122,92,46,0.08); border-color:rgba(122,92,46,0.2); }
+    .proj-bucket-link-name { display:block; }
+    .proj-bucket-link-sub {
+      display:block; font-size:0.76rem; color:#7a6252; margin-top:0.1rem;
+      font-style:italic; font-weight:400; line-height:1.4;
+    }
 
     /* ── 3. Section cards — no borders, more padding, r:10px ─── */
     /* (tints + icons stay, just refining the card shell) */
@@ -2445,7 +2455,7 @@
     .proj-sections {
       display:grid;
       grid-template-columns: 1.85fr 1fr;
-      gap:0.6rem; margin-top:0.65rem;
+      gap:1.3rem; margin-top:0.9rem;
     }
     .proj-section[data-s="problem"]   { grid-column:1 / -1; }
     .proj-section[data-s="built"]     { grid-column:1 / 2; }
@@ -2453,26 +2463,25 @@
     .proj-section[data-s="learnings"] { grid-column:1 / -1; }
     .proj-section {
       border-radius:0;
-      padding:0.75rem 0.9rem 0.85rem 1rem;
+      padding:0rem 0.9rem 0rem 1rem;
       background:none;
       border-left:2px solid rgba(122,92,46,0.22);
-      transition:transform 150ms ease-out, border-color 150ms ease-out;
+      transition:border-color 150ms ease-out;
     }
     .proj-section:hover {
-      transform:translateY(-1px);
       border-left-color:rgba(122,92,46,0.5);
-      background:rgba(122,92,46,0.03);
     }
-    /* Notebook-header label: icon + text + extending rule */
+    /* Notion-style label: bold, uppercase, clear */
     .proj-section-label {
-      display:flex; align-items:center; gap:0.35rem;
-      font-size:0.76rem; font-style:italic;
-      color:#5a4a32; margin-bottom:0.5rem;
+      display:flex; align-items:center; gap:0.4rem;
+      font-size:0.7rem; font-style:normal; font-weight:700;
+      text-transform:uppercase; letter-spacing:0.07em;
+      color:#5a4a32; margin-bottom:0.55rem;
       font-family:Georgia,serif;
     }
     .proj-section-label::after {
       content:''; flex:1; height:1px;
-      background:rgba(74,63,47,0.15);
+      background:rgba(74,63,47,0.18);
     }
     .proj-section-label::before {
       font-size:0.78rem; font-style:normal; opacity:0.75;
