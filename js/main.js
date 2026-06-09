@@ -735,12 +735,12 @@ function renderBrowserInMonitor() {
   screen.innerHTML = `
     <div class="browser-chrome">
       <div class="browser-bar">
-        <div class="browser-dots">
-          <div class="browser-dot red"></div>
-          <div class="browser-dot yellow"></div>
-          <div class="browser-dot green"></div>
-        </div>
         <div class="browser-url" id="browser-url">susyliu.com/projects/${firstId}</div>
+        <div class="browser-win-btns">
+          <button class="browser-win-btn" title="Minimise">&#x2013;</button>
+          <button class="browser-win-btn" title="Maximise">&#x25A1;</button>
+          <button class="browser-win-btn browser-win-btn-close" title="Close">&#x2715;</button>
+        </div>
       </div>
       <div class="browser-tabs">${tabsHtml}</div>
     </div>

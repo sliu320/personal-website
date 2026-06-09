@@ -2292,11 +2292,34 @@
     .browser-dot.yellow { background:#febc2e; }
     .browser-dot.green  { background:#28c840; }
     .browser-url {
-      flex:1; background:rgba(255,255,255,0.18); border-radius:20px;
-      font-size:0.62rem; color:rgba(255,255,255,0.95); padding:0.2rem 0.7rem;
+      flex:1; background:rgba(255,255,255,0.22); border-radius:20px;
+      font-size:0.62rem; color:#3a1a6e; padding:0.2rem 0.7rem;
       font-family:'Courier New',monospace; letter-spacing:0.02em;
-      border:1.5px solid rgba(255,255,255,0.35);
+      border:1px solid #7858a8;
     }
+    /* ── Windows 95-style title bar buttons (top-right) ── */
+    .browser-win-btns {
+      display:flex; gap:2px; flex-shrink:0; align-items:center;
+    }
+    .browser-win-btn {
+      width:18px; height:16px;
+      background:#d0b4dc;
+      border-top:2px solid #f0e0f8;
+      border-left:2px solid #f0e0f8;
+      border-bottom:2px solid #5a3a7a;
+      border-right:2px solid #5a3a7a;
+      font-size:0.6rem; line-height:1; color:#1a0830;
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      padding:0; font-family:Georgia,serif;
+    }
+    .browser-win-btn:active {
+      border-top:2px solid #5a3a7a;
+      border-left:2px solid #5a3a7a;
+      border-bottom:2px solid #f0e0f8;
+      border-right:2px solid #f0e0f8;
+    }
+    .browser-win-btn-close { background:#e8a0b8; }
+    .browser-win-btn-close:hover { background:#d07090; }
     /* ── 1. Outer browser tabs — solid, opaque, folder-tab style ── */
     .browser-tabs {
       display:flex; gap:3px; align-items:flex-end;
