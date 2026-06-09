@@ -2333,6 +2333,24 @@
       overflow-y:auto;
       position:relative; z-index:1;
     }
+    /* ── Cute pink scrollbar for browser content ────────────── */
+    .browser-content::-webkit-scrollbar { width:8px; }
+    .browser-content::-webkit-scrollbar-track {
+      background:rgba(240,220,255,0.4);
+      border-radius:99px;
+      margin:6px 0;
+    }
+    .browser-content::-webkit-scrollbar-thumb {
+      background:#e8a8c8;
+      border-radius:99px;
+      border:2px solid transparent;
+      background-clip:padding-box;
+    }
+    .browser-content::-webkit-scrollbar-thumb:hover {
+      background:#d888b0;
+      border-color:transparent;
+    }
+
     .project-panel { display:none; }
     .project-panel.active {
       display:block;
