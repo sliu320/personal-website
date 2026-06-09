@@ -2369,6 +2369,18 @@
       border-left:3px solid rgba(122,92,46,0.3);
     }
     .proj-prompt-label { font-size:0.6rem; letter-spacing:0.1em; color:rgba(122,92,46,0.8); text-transform:uppercase; margin-bottom:0.4rem; font-weight:700; }
+    /* Standardized project sections */
+    .proj-sections { display:flex; flex-direction:column; gap:0.9rem; margin-top:0.6rem; }
+    .proj-section-label {
+      font-size:0.6rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
+      color:rgba(122,92,46,0.75); margin-bottom:0.3rem;
+    }
+    .proj-section-body {
+      font-size:0.82rem; color:#4a3f2f; line-height:1.75; margin:0;
+    }
+    .proj-section-body ul { margin:0.3rem 0 0; padding-left:1.2rem; }
+    .proj-section-body li { margin-bottom:0.3rem; }
+    .proj-section { border-left:2px solid rgba(122,92,46,0.18); padding-left:0.75rem; }
     /* DressingRoom timeline */
     .dr-timeline { display:flex; flex-direction:column; gap:1.2rem; padding:0.4rem 0; }
     .dr-step { display:flex; gap:1rem; align-items:flex-start; }

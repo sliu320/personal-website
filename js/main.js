@@ -630,39 +630,142 @@ function _browserProjectsData() {
     {
       id: 'monitor', tab: '🤝 Relationship OS',
       title: 'Relationship OS',
-      tags: ['Python', 'NLP', 'Dashboard', 'Real-time'],
-      desc: 'A tool that tracks brand sentiment and topic trends across social platforms in real time. Built a custom NLP pipeline for signal extraction, with a dashboard that surfaces emerging narratives before they break.',
-      demo: '📊', demoLabel: 'demo · live dashboard', link: '#',
+      tags: ['Python', 'Notion API', 'LLM', 'Personal Tools'],
+      desc: 'A personal CRM that turns meeting notes into a living record of your relationships.',
+      customContent: `
+        <div class="proj-sections">
+          <div class="proj-section">
+            <div class="proj-section-label">Problem</div>
+            <div class="proj-section-body">I take detailed notes in every meeting using Granola, but those notes sit in silos — there's no way to see the arc of a relationship across conversations, remember what someone cared about three months ago, or know who you've been neglecting. Relationship-building is one of the highest-leverage things you can do, and it almost entirely depends on memory and intentionality that most tools don't support.</div>
+          </div>
+          <div class="proj-section">
+            <div class="proj-section-label">What I Built</div>
+            <div class="proj-section-body"><ul>
+              <li>Pipeline that ingests Granola meeting notes and syncs them into Notion with structured metadata per person</li>
+              <li>LLM layer that summarizes the relationship arc across all meetings with a given person — what you've talked about, what they care about, open threads</li>
+              <li>Reconnect surface: flags people you haven't spoken to in a while and surfaces context so reaching back out feels natural, not cold</li>
+              <li>Article matching: cross-references your reading vault against people's interests to suggest "you should send this to X"</li>
+              <li>Key design decision: built on Notion so the data stays portable and human-readable — no black box</li>
+            </ul></div>
+          </div>
+          <div class="proj-section">
+            <div class="proj-section-label">Outcome</div>
+            <div class="proj-section-body">In active personal use. Surfaced reconnection prompts I wouldn't have thought of on my own, and made follow-ups feel less effortful.</div>
+          </div>
+          <div class="proj-section">
+            <div class="proj-section-label">Learnings</div>
+            <div class="proj-section-body">The hardest part wasn't the pipeline — it was deciding what level of summarization was actually useful. Too sparse and it misses nuance; too detailed and you never read it. The sweet spot is a single-paragraph narrative per person plus a short list of open threads.</div>
+          </div>
+        </div>`,
     },
     {
-      id: 'bidding', tab: '📚 Course Bidder',
-      title: 'MIT Course Bidding Optimizer',
-      tags: ['TypeScript', 'Optimization', 'MIT', 'Chrome Extension'],
-      desc: 'Sloan students bid on courses with points — a complex allocation problem. Built a tool that models bid dynamics and recommends an optimal portfolio of bids to maximize schedule quality.',
-      demo: '📚', demoLabel: 'demo · browser extension', link: '#',
+      id: 'bidding', tab: '📚 BeaverBid',
+      title: 'BeaverBid',
+      tags: ['Vibecoded', 'LLM', 'MIT Sloan', 'Education'],
+      desc: 'A course research and bidding tool for MIT Sloan students — consolidating everything you need to make good bidding decisions in one place.',
+      customContent: `
+        <div class="proj-sections">
+          <div class="proj-section">
+            <div class="proj-section-label">Problem</div>
+            <div class="proj-section-body">MIT Sloan students bid on courses using points — a system that sounds simple but is genuinely hard to navigate. The information you need to make a good decision is scattered: class descriptions live in one place, professor teaching awards in another, peer notes and bidding history in various student-maintained spreadsheets, and real intel comes from asking second-years. No one knows how much to bid. The result is hype-driven scrambles for popular classes, students overbidding on courses they'd have passed on with better information, and schedules that don't actually reflect their interests or goals.</div>
+          </div>
+          <div class="proj-section">
+            <div class="proj-section-label">What I Built</div>
+            <div class="proj-section-body"><ul>
+              <li>Unified course cards pulling together class descriptions, professor reputation (teaching awards, research, network), and round-by-round bidding history from student spreadsheets — estimating how many points a course typically requires</li>
+              <li>Onboarding profile with interest tag selection and free-text input, used to proactively recommend courses aligned with your goals</li>
+              <li>Filter by certificate track and topic so you can scope the catalog to what actually matters to your plan of study</li>
+              <li>Course review system that ingests peer notes from student org spreadsheets alongside your own past reviews — recommendations factor in what you've already taken</li>
+              <li>Built-in LLM chat trained on all course content for more specific questions: "which electives go deep on GTM for B2B?", "how does this professor's class compare to the other strategy options?"</li>
+              <li>Key design decision: treated the spreadsheets and peer notes as a first-class data source alongside official course info — that's where the real signal lives</li>
+            </ul></div>
+          </div>
+          <div class="proj-section">
+            <div class="proj-section-label">Outcome</div>
+            <div class="proj-section-body">Used personally for bidding and shared with classmates. Reduced the time spent cross-referencing sources and made bid point decisions feel grounded in data rather than anxiety.</div>
+          </div>
+          <div class="proj-section">
+            <div class="proj-section-label">Learnings</div>
+            <div class="proj-section-body">The hardest part was data sourcing — the most valuable information (peer notes, bidding history) lives in unstructured Google Sheets maintained by student orgs, not in any official system. Ingesting and normalizing that data cleanly was more work than the product itself. Also confirmed that the LLM chat was the sleeper feature — people used it more than any other part once they discovered it.</div>
+          </div>
+        </div>`,
     },
     {
       id: 'genai', tab: '🤖 GenAI Lab',
-      title: 'GenAI Lab — Award-Winning Project',
-      tags: ['LLM', 'Product', 'MIT Sloan', 'Best Project 🏆'],
-      desc: 'Winner of the class competition. Built with a small team over a semester.',
+      title: 'GenAI Lab — Hunter Water × SAP',
+      tags: ['LLM', 'Computer Vision', 'FastAPI', 'React', 'MIT Sloan', 'Best Project 🏆'],
+      desc: 'Automated a high-stakes engineering workflow for a regulated Australian water utility — cutting a 30-minute manual process to 45 seconds, with human oversight built in by design.',
       customContent: `
-        <div style="display:flex;align-items:center;justify-content:center;height:200px;color:rgba(100,70,30,0.5);font-family:Georgia,serif;font-style:italic;font-size:1rem;">
-          🚧 Details coming soon
+        <div class="proj-sections">
+          <div class="proj-section">
+            <div class="proj-section-label">Problem</div>
+            <div class="proj-section-body">Hunter Water, a government-owned utility serving 600,000 people in NSW, Australia, issues ~600 Statements of Available Pressure (SAPs) per year — technical packets developers need to plan water connections. Each SAP took ~1 hour of engineer time across two reviewers, totaling 600+ hours of repetitive annual work. The process was manual and judgment-heavy: identify the right hydrant in GIS, calculate a pressure curve in Excel, generate a Word doc from PDFs, with no standardized QA. As a regulated utility, accuracy and human oversight were non-negotiable.</div>
+          </div>
+          <div class="proj-section">
+            <div class="proj-section-label">What I Built</div>
+            <div class="proj-section-body"><ul>
+              <li>Vision-LLM pipeline using Gemini 2.5 Flash to read unstructured PDF site plans → extract structured JSON (target marker, water main size, landmark streets). Chose Flash over Pro after testing — no accuracy gain from Pro, and Flash's native multimodal avoided an OCR pipeline entirely</li>
+              <li>3-tier geocoding fallback chain (triangulation → address match → direct geocode), then multi-factor hydrant scoring on distance + pipe diameter + street — replicating the judgment an engineer applies, not just proximity</li>
+              <li>Deterministic hydraulics layer: Excel pressure calculations → chart generation → Word template render, keeping engineering logic outside the LLM</li>
+              <li>Human-in-the-loop by design: low-confidence cases flagged for review, engineers can override any selection in one click, top-5 results shown (reflecting how engineers actually decide)</li>
+              <li>Built the React front-end and FastAPI backend; handled edge cases including hand-drawn maps, address/map disagreements, and inputs where the closest hydrant wasn't the correct one</li>
+            </ul></div>
+          </div>
+          <div class="proj-section">
+            <div class="proj-section-label">Outcome</div>
+            <div class="proj-section-body">30 minutes → 45 seconds end-to-end. 93.3% accuracy on a 15-case test set (14/15 handled correctly). ~$1.30 total token spend per run. ~600 hours of engineering time saved annually. Won Best Project in the MIT GenAI Lab course.</div>
+          </div>
+          <div class="proj-section">
+            <div class="proj-section-label">Learnings</div>
+            <div class="proj-section-body">In regulated industries, the goal isn't to replace the engineer — it's to eliminate the parts that don't require judgment, so the engineer can focus on what does. Keeping the engineering logic deterministic (outside the LLM) was the right call: it made the system auditable and the results trustworthy to the client.</div>
+          </div>
         </div>`,
     },
     {
       id: 'dressingroom', tab: '👗 DressingRoom',
       title: 'DressingRoom',
       tags: ['Startup', 'Entrepreneurship', 'Consumer', 'MIT FUSE', 'Fashion Tech'],
-      desc: 'A startup I co-founded with a fellow Sloan MBA, exploring how AI could help people get dressed with more confidence and intention. We went through MIT\'s FUSE accelerator and pitched at Imagination in Action\'s AI summit. After ~4 months, we decided to let the idea go — but we found great thought partners in each other and learned a lot along the way.',
+      desc: 'An AI-powered visual commerce startup I co-founded with a fellow Sloan MBA. We went through MIT\'s FUSE accelerator and pitched at the Imagination in Action AI Summit. After ~4 months, we decided to let it go — but we found great thought partners in each other and learned a lot along the way.',
       customContent: `
         <div class="proj-inner-tabs">
-          <button class="proj-inner-tab active" data-inner="dr-video">🎬 Video</button>
+          <button class="proj-inner-tab active" data-inner="dr-content">📋 Overview</button>
+          <button class="proj-inner-tab" data-inner="dr-video">🎬 Video</button>
           <button class="proj-inner-tab" data-inner="dr-pitch">📊 Pitch Deck</button>
           <button class="proj-inner-tab" data-inner="dr-story">📍 Journey</button>
         </div>
-        <div class="proj-inner-panel active" id="inner-dr-video">
+        <div class="proj-inner-panel active" id="inner-dr-content">
+          <div class="proj-sections">
+            <div class="proj-section">
+              <div class="proj-section-label">Problem</div>
+              <div class="proj-section-body">Shopping for clothes is a manual research project. Our target customers were young professionals with disposable income but no time — struggling across three distinct friction points: they lack the style knowledge to feel confident in their choices, they can't articulate what they want in a way that maps to actual products, and even when they have a look in mind, finding it across hundreds of brands is overwhelming. Virtual try-on existed but required expensive 3D modeling and produced uncanny results that destroyed trust.</div>
+            </div>
+            <div class="proj-section">
+              <div class="proj-section-label">What I Built</div>
+              <div class="proj-section-body"><ul>
+                <li>Visual discovery engine that decodes a user's "Style DNA" from their Instagram follows and photos — inferring aesthetics, color preferences, and body profile without requiring them to articulate it</li>
+                <li>Generative AI virtual try-on using diffusion models — chose this approach because falling compute costs made it viable for the first time, and it eliminated inventory risk entirely</li>
+                <li>Affiliate integration closing the loop from inspiration to purchase — every item on the platform linked to live inventory, solving the "dead link" problem on Pinterest</li>
+                <li>"Style Twin" social layer: users connected with others who share body type and taste, creating community and a switching cost that retailer tools can't replicate</li>
+                <li>Style Graph: proprietary identity data linking Instagram behavior to items, outfits, and sizing — designed to improve with every keep/return signal</li>
+                <li>Key tradeoff: chose passive Instagram input over active quiz/text input to reduce friction, at the cost of needing Instagram access (cold start constraint we managed through viral loops)</li>
+              </ul></div>
+            </div>
+            <div class="proj-section">
+              <div class="proj-section-label">Outcome</div>
+              <div class="proj-section-body">100+ customer discovery interviews. Functional prototype built. Won Top Banana Award (Best PMR) among 50+ MIT teams. Accepted into MIT FUSE accelerator and awarded $1.5K MIT Sandbox grant. Pitched at Imagination in Action AI Summit to investors, founders, and technologists.</div>
+            </div>
+            <div class="proj-section">
+              <div class="proj-section-label">Learnings</div>
+              <div class="proj-section-body"><ul>
+                <li>Passion is a prerequisite — when it came time to run product experiments, we realized we couldn't give it 100%, and that's a bad foundation for a startup</li>
+                <li>An unfair advantage matters. GenAI can get you to average-domain understanding fast, but as two MBAs with overlapping skillsets, we lacked a technical or domain expert who could push past the surface</li>
+                <li>Consumer CAC is brutal — every advisor pushed us toward B2B. We weren't wrong to push back, but it's a real constraint that compounds quickly</li>
+                <li>At a certain point, interviews stop being the most efficient learning loop — running experiments is faster and forces real decisions</li>
+              </ul></div>
+            </div>
+          </div>
+        </div>
+        <div class="proj-inner-panel" id="inner-dr-video">
           <div style="position:relative;width:100%;height:0;padding-top:56.25%;border-radius:8px;overflow:hidden;margin-bottom:0.5rem;">
             <iframe loading="lazy" style="position:absolute;width:100%;height:100%;top:0;left:0;border:none;"
               src="https://www.canva.com/design/DAHFeOG-ESU/xeE9q3Fw0cl7DxgtiatpeA/watch?embed"
@@ -695,15 +798,6 @@ function _browserProjectsData() {
                 <p>We pitched in front of seasoned investors, entrepreneurs, and technologists at IIA's AI summit.</p>
               </div>
             </div>
-            <div class="dr-step dr-step-learnings">
-              <div class="dr-step-label">Key Takeaways</div>
-              <ul>
-                <li>I need to be truly passionate about the idea to start a company — when it came to launching product experiments, we felt we couldn't give it our 100%</li>
-                <li>Building for consumer is tough — many mentors suggested B2B instead due to high CAC, but we were passionate about solving problems for people directly</li>
-                <li>Having an unfair advantage matters even if GenAI can get you to an average understanding of a domain — as two MBAs with overlapping skillsets, we lacked a domain or technical expert on the team</li>
-                <li>There's a balance between prototyping and PMR — at a certain point, running experiments provides more learning than interviews</li>
-              </ul>
-            </div>
           </div>
         </div>`,
     },
@@ -711,21 +805,48 @@ function _browserProjectsData() {
       id: 'foodgroups', tab: '🥗 FoodGroups',
       title: 'FoodGroups',
       tags: ['AI', 'Health', 'Product', 'Google PM Hackathon', 'Semi-finalist 🏅'],
-      desc: 'Teamed up with 3 classmates from engineering backgrounds as part of the Google PM hackathon, where ~25 teams had a week to pitch and demo a response to the prompt below. Many of our personal friends and family struggle with GI issues — so we built FoodGroups, a personalized gut-health companion that made it to the semi-finals.<br><br>I helped frame the problem and storytelling in the video script, conducted market research, and delivered the pitch deck.',
+      desc: 'A personalized gut-health companion built with 3 classmates for the Google PM Hackathon (~25 teams, one week). Made it to the semi-finals.',
       customContent: `
         <div class="proj-inner-tabs">
-          <button class="proj-inner-tab active" data-inner="prompt">📋 Prompt</button>
-          <button class="proj-inner-tab" data-inner="pitch">📊 Pitch Deck</button>
-          <button class="proj-inner-tab" data-inner="video">🎬 Video</button>
+          <button class="proj-inner-tab active" data-inner="fg-content">📋 Overview</button>
+          <button class="proj-inner-tab" data-inner="fg-prompt">📋 Prompt</button>
+          <button class="proj-inner-tab" data-inner="fg-pitch">📊 Pitch Deck</button>
+          <button class="proj-inner-tab" data-inner="fg-video">🎬 Video</button>
         </div>
-        <div class="proj-inner-panel active" id="inner-prompt">
+        <div class="proj-inner-panel active" id="inner-fg-content">
+          <div class="proj-sections">
+            <div class="proj-section">
+              <div class="proj-section-label">Problem</div>
+              <div class="proj-section-body">1 in 4 Americans has a functional GI disorder, costing $140B annually in direct healthcare — more than heart disease. GI practitioners commonly prescribe dietary interventions like the low-FODMAP diet, but half of them rarely or never provide guidance on meal planning, label reading, or grocery shopping, and 56% of patients find prescribed diets difficult to follow. The gap isn't the diagnosis — it's everything between the doctor's note and the dinner plate.</div>
+            </div>
+            <div class="proj-section">
+              <div class="proj-section-label">What I Built</div>
+              <div class="proj-section-body"><ul>
+                <li>AI-powered recipe search and generation tailored to individual dietary restrictions, with natural language prompting for refinements by cuisine, substitutions, or dislikes</li>
+                <li>Seamless onboarding that builds a dietary profile from day one — including the ability to scan in doctor's notes and prescriptions directly</li>
+                <li>Social feed and community groups where users share grocery finds, restaurant experiences, and progress; streak tracking and group challenges for accountability</li>
+                <li>Meal and symptom logging via photo snap, with AI insights drawn from past meals, symptoms, and GI research — shareable as reports for provider visits</li>
+                <li>Key tradeoff: balanced the clinical utility (condition management, provider reporting) with the social layer — the social piece was the hook for daily habit formation, while the tracking built the longitudinal data that made insights meaningful</li>
+              </ul></div>
+            </div>
+            <div class="proj-section">
+              <div class="proj-section-label">Outcome</div>
+              <div class="proj-section-body">Semi-finalist among ~25 teams in the Google PM Hackathon. I led problem framing and storytelling, conducted market research, and delivered the pitch deck.</div>
+            </div>
+            <div class="proj-section">
+              <div class="proj-section-label">Learnings</div>
+              <div class="proj-section-body">The social accountability layer was the most differentiated part of the concept — most health apps treat the social component as a nice-to-have, but for chronic condition management, community is often the strongest driver of adherence. We would have pushed that further in a second iteration.</div>
+            </div>
+          </div>
+        </div>
+        <div class="proj-inner-panel" id="inner-fg-prompt">
           <div class="proj-prompt-label">Hackathon prompt</div>
           <div class="proj-prompt-text"><strong>The Problem:</strong> Healthcare and personal wellness remain two of the most critical and complex areas of life. Traditional systems are often reactive, expensive, and follow a one-size-fits-all model that fails to address individual needs.<br><br><strong>The Challenge:</strong> Leveraging the power of AI, develop a product or service that provides personalized, proactive, and accessible support for an individual's well-being. Consider how your solution might shift healthcare from reactive to preventive approaches, offer tailored health guidance, ensure accessibility for people with disabilities or elderly users, connect patients with appropriate care resources, or make quality healthcare more affordable regardless of geography or socioeconomic status.</div>
         </div>
-        <div class="proj-inner-panel" id="inner-pitch">
+        <div class="proj-inner-panel" id="inner-fg-pitch">
           <iframe src="https://1drv.ms/p/c/a0428aea2d954231/IQT80LIy4v0UQKaiUQj3SPt2AQ8IA6aPsRXPRy5OI-cxqF8?em=2&wdAr=1.7777777777777777" height="480" frameborder="0" allowfullscreen title="FoodGroups Pitch Deck"></iframe>
         </div>
-        <div class="proj-inner-panel" id="inner-video">
+        <div class="proj-inner-panel" id="inner-fg-video">
           <iframe src="https://drive.google.com/file/d/1UvpVvsi709s7xxtChGDPO_jEjtcEpXaV/preview" height="500" allow="autoplay" title="FoodGroups Video"></iframe>
         </div>`,
     },
