@@ -298,6 +298,23 @@ const PROJECTS_DATA = [
             <div class="proj-section-body">The LLM chat was the sleeper feature — people reached for it more than anything once they discovered it. Data sourcing was the hardest part: peer bidding history lives in unstructured Google Sheets, not any official system.</div>
           </div>
         </div>
+        <div class="proj-section proj-section--demo" data-s="demo">
+          <div class="proj-section-label">Demo</div>
+          <div class="proj-demo-strip">
+            <figure class="proj-demo-item">
+              <img src="assets/images/Projects/BeaverBid/bb-ai-advisor.png" alt="AI Advisor filtering courses" class="proj-demo-img proj-demo-img--wide" loading="lazy">
+              <figcaption>AI Advisor filters courses and surfaces recommended classes. Award-winning professors are tagged; student intel and bid history are shown inline.</figcaption>
+            </figure>
+            <figure class="proj-demo-item">
+              <img src="assets/images/Projects/BeaverBid/bb-bid-simulator.png" alt="Bid Simulator" class="proj-demo-img proj-demo-img--tall" loading="lazy">
+              <figcaption>Build a bidding scenario with pre-filled point recommendations based on fill rates and round history. Auto-balance allocates your full 1,000 pts; time conflicts are flagged automatically.</figcaption>
+            </figure>
+            <figure class="proj-demo-item">
+              <img src="assets/images/Projects/BeaverBid/bb-degree-progress.png" alt="Degree and Certificate Progress" class="proj-demo-img proj-demo-img--wide" loading="lazy">
+              <figcaption>Upload your transcript to track graduation progress, including towards each Sloan certificate.</figcaption>
+            </figure>
+          </div>
+        </div>
       </div>`,
   },
 
