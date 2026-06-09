@@ -999,6 +999,9 @@ function renderWorldMap() {
       marker.on('mouseover', function() { this.openPopup(); });
       marker.on('mouseout',  function() { this.closePopup(); });
     });
+    // After CSS has settled (especially on mobile where height may change),
+    // force Leaflet to recalculate its container size
+    setTimeout(() => { if (_wmMap) _wmMap.invalidateSize(); }, 120);
   });
 }
 
