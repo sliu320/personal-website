@@ -430,11 +430,58 @@ const PROJECTS_DATA = [
   {
     id: 'friendsgiving', tab: '🦃 Friendsgiving',
     title: 'Friendsgiving',
-    tags: ['Vibecoding', 'Community', 'Web App'],
-    desc: `A vibecoding project built for the Atlantic Ocean Friendsgiving event. Coming soon.`,
+    tags: ['Vibecoded', 'Community', 'Web App'],
+    desc: 'A gratitude jar built for our 60+ person Friendsgiving — my very first vibecoding project.',
     customContent: `
-      <div style="display:flex;align-items:center;justify-content:center;height:200px;color:rgba(100,70,30,0.5);font-family:Georgia,serif;font-style:italic;font-size:1rem;">
-        🚧 Coming soon
+      <div class="proj-inner-tabs">
+        <button class="proj-inner-tab active" data-inner="fg-content">📋 Overview</button>
+        <button class="proj-inner-tab" data-inner="fg-demo">🎬 Demo</button>
+      </div>
+      <div class="proj-inner-panel active" id="inner-fg-content">
+        <div class="proj-sections">
+          <div class="proj-section" data-s="problem">
+            <div class="proj-section-label">Problem</div>
+            <div class="proj-section-body">We were hosting a Friendsgiving for 60+ classmates — a great chance to bring the cohort together, but with a group that big it's easy for people to slip through without feeling truly appreciated.</div>
+          </div>
+          <div class="proj-section" data-s="built">
+            <div class="proj-section-label">What I Built</div>
+            <div class="proj-section-body"><span class="proj-built-lead">A gratitude jar: pick a classmate and leave them a private note of thanks.</span>
+            <ul>
+              <li>A Friendsgiving-themed directory of classmates to browse and pick from</li>
+              <li>A simple form to write a gratitude note, with a history of notes you've sent</li>
+              <li>A personal "jar" where everyone can read the notes others have left for them</li>
+            </ul></div>
+          </div>
+          <div class="proj-rhs-stack">
+            <div class="proj-section" data-s="outcome">
+              <div class="proj-section-label">Outcome</div>
+              <div class="proj-section-body"><div class="proj-stat-chips">
+                <span class="proj-stat-chip hi">~50 notes sent</span>
+                <span class="proj-stat-chip">Half the cohort participated</span>
+                <span class="proj-stat-chip">My first vibecoding project</span>
+              </div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="proj-inner-panel" id="inner-fg-demo">
+        <div class="proj-section proj-section--demo" data-s="demo">
+          <div class="proj-section-label">Demo &nbsp;<span style="font-style:italic; opacity:0.65; font-size:0.85em;">(shown with mock data)</span></div>
+          <div class="proj-demo-strip">
+            <figure class="proj-demo-item">
+              <p class="proj-demo-caption"><span class="proj-demo-num">1.</span> A warm, Friendsgiving-themed grid of classmates' names and dish avatars — pick someone to send a private gratitude note to.</p>
+              <img src="assets/images/Projects/Friendsgiving/Friendsgiving1.png" alt="Classmate directory" class="proj-demo-img proj-demo-img--tall" loading="lazy">
+            </figure>
+            <figure class="proj-demo-item">
+              <p class="proj-demo-caption"><span class="proj-demo-num">2.</span> Write a heartfelt note of thanks, with a history of past notes you've sent them.</p>
+              <img src="assets/images/Projects/Friendsgiving/Friendsgiving2.png" alt="Send a gratitude note" class="proj-demo-img proj-demo-img--tall" loading="lazy">
+            </figure>
+            <figure class="proj-demo-item">
+              <p class="proj-demo-caption"><span class="proj-demo-num">3.</span> Your gratitude jar: all the appreciation notes classmates have sent you, as warm, readable cards.</p>
+              <img src="assets/images/Projects/Friendsgiving/Friendsgiving3.png" alt="My gratitude jar" class="proj-demo-img proj-demo-img--tall" loading="lazy">
+            </figure>
+          </div>
+        </div>
       </div>`,
   },
 ];
