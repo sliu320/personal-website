@@ -666,7 +666,7 @@ function _browserProjectsData() {
           </div>
           <div class="proj-section" data-s="built">
             <div class="proj-section-label">What I Built</div>
-            <div class="proj-section-body">End-to-end automation pipeline: vision LLM reads site plans, scoring algorithm selects the right hydrant, deterministic hydraulic logic generates the final output.
+            <div class="proj-section-body"><span class="proj-built-lead">End-to-end automation pipeline: vision LLM reads site plans, scoring algorithm selects the right hydrant, deterministic hydraulic logic generates the output.</span>
             <ul>
               <li>Benchmarked Gemini Flash vs. Pro — no accuracy gain; Flash's native multimodal eliminated a separate OCR step entirely</li>
               <li>Built hydrant scoring: 3-tier geocoding fallback + multi-factor scoring on distance, pipe diameter, and street alignment — replicating engineer judgment, not just proximity</li>
@@ -677,11 +677,13 @@ function _browserProjectsData() {
           <div class="proj-rhs-stack">
             <div class="proj-section" data-s="outcome">
               <div class="proj-section-label">Outcome</div>
-              <div class="proj-section-body"><ul>
-                <li><strong>Best Project, MIT GenAI Lab</strong></li>
-                <li>30 min → 45 sec · 93.3% accuracy · ~$1.30/run</li>
-                <li>~600 engineer-hours saved per year</li>
-              </ul></div>
+              <div class="proj-section-body"><div class="proj-stat-chips">
+                <span class="proj-stat-chip hi">🏆 Best Project, MIT GenAI Lab</span>
+                <span class="proj-stat-chip">30 min → 45 sec</span>
+                <span class="proj-stat-chip">93.3% accuracy</span>
+                <span class="proj-stat-chip">~$1.30/run</span>
+                <span class="proj-stat-chip">~600 hrs/yr saved</span>
+              </div></div>
             </div>
             <div class="proj-section" data-s="learnings">
               <div class="proj-section-label">Learnings</div>
@@ -710,23 +712,24 @@ function _browserProjectsData() {
             </div>
             <div class="proj-section" data-s="built">
               <div class="proj-section-label">What I Built</div>
-              <div class="proj-section-body">Co-built a product that decodes personal style from Instagram and generates AI try-ons linked to live inventory — no manual quiz, no dead links.
+              <div class="proj-section-body"><span class="proj-built-lead">Co-built a product that decodes personal style from Instagram and generates AI try-ons linked to live inventory — no manual quiz, no dead links.</span>
               <ul>
                 <li>Led 100+ customer discovery interviews through MIT FUSE; won <strong>Top Banana</strong> (most PMR in a cohort of 50+ teams)</li>
                 <li>Designed the Style DNA engine concept: infer aesthetic + body profile from Instagram follows — passive input, zero friction</li>
-                <li>Framed affiliate close-loop as the core differentiation from Pinterest: every try-on links to live inventory, not dead product pages</li>
+                <li>Framed affiliate close-loop as core differentiation from Pinterest: every try-on links to live inventory, not dead product pages</li>
                 <li>Led pitch materials and investor presentation at IIA AI Summit; secured MIT Sandbox grant</li>
               </ul></div>
             </div>
             <div class="proj-rhs-stack">
               <div class="proj-section" data-s="outcome">
                 <div class="proj-section-label">Outcome</div>
-                <div class="proj-section-body"><ul>
-                  <li>100+ interviews · functional prototype</li>
-                  <li>MIT FUSE accelerator · $1.5K Sandbox grant</li>
-                  <li>Pitched at IIA AI Summit</li>
-                  <li>Sunset after 4 months — intentional decision</li>
-                </ul></div>
+                <div class="proj-section-body"><div class="proj-stat-chips">
+                  <span class="proj-stat-chip">100+ interviews</span>
+                  <span class="proj-stat-chip">MIT FUSE accelerator</span>
+                  <span class="proj-stat-chip">$1.5K Sandbox grant</span>
+                  <span class="proj-stat-chip">IIA AI Summit</span>
+                  <span class="proj-stat-chip hi">Sunset after 4 months</span>
+                </div></div>
               </div>
               <div class="proj-section" data-s="learnings">
                 <div class="proj-section-label">Learnings</div>
@@ -799,7 +802,7 @@ function _browserProjectsData() {
             </div>
             <div class="proj-section" data-s="built">
               <div class="proj-section-label">What I Built</div>
-              <div class="proj-section-body">AI-powered gut-health companion combining personalized meal planning, photo-snap food logging, and a social accountability layer — built in one week with three classmates.
+              <div class="proj-section-body"><span class="proj-built-lead">AI-powered gut-health companion combining personalized meal planning, photo-snap food logging, and a social accountability layer — built in one week with three classmates.</span>
               <ul>
                 <li>Led problem framing and market sizing</li>
                 <li>Identified social accountability as the core differentiator — for chronic conditions, community is often the strongest adherence driver</li>
@@ -809,9 +812,10 @@ function _browserProjectsData() {
             <div class="proj-rhs-stack">
               <div class="proj-section" data-s="outcome">
                 <div class="proj-section-label">Outcome</div>
-                <div class="proj-section-body"><ul>
-                  <li><strong>Semi-finalist</strong>, Google PM Hackathon (~25 teams)</li>
-                </ul></div>
+                <div class="proj-section-body"><div class="proj-stat-chips">
+                  <span class="proj-stat-chip hi">🏅 Semi-finalist, Google PM Hackathon</span>
+                  <span class="proj-stat-chip">~25 teams</span>
+                </div></div>
               </div>
               <div class="proj-section" data-s="learnings">
                 <div class="proj-section-label">Learnings</div>
@@ -848,7 +852,7 @@ function _browserProjectsData() {
           </div>
           <div class="proj-section" data-s="built">
             <div class="proj-section-label">What I Built</div>
-            <div class="proj-section-body">Vibecoded a course research tool that consolidates everything — class info, professor reputation, and historical bid data — into one place.
+            <div class="proj-section-body"><span class="proj-built-lead">Vibecoded a course research tool that consolidates everything — class info, professor reputation, and historical bid data — into one place.</span>
             <ul>
               <li>Identified student org bidding spreadsheets as first-class data — where real signal lives, not the official catalog</li>
               <li>Designed the unified course card: description + teaching awards + round-by-round bid history with point estimates</li>
@@ -858,10 +862,11 @@ function _browserProjectsData() {
           <div class="proj-rhs-stack">
             <div class="proj-section" data-s="outcome">
               <div class="proj-section-label">Outcome</div>
-              <div class="proj-section-body"><ul>
-                <li><strong>Top 5, Hack for Sloan</strong> (Lovable-sponsored)</li>
-                <li>Used personally; shared with classmates</li>
-              </ul></div>
+              <div class="proj-section-body"><div class="proj-stat-chips">
+                <span class="proj-stat-chip hi">🏅 Top 5, Hack for Sloan</span>
+                <span class="proj-stat-chip">Lovable-sponsored</span>
+                <span class="proj-stat-chip">Used personally + shared</span>
+              </div></div>
             </div>
             <div class="proj-section" data-s="learnings">
               <div class="proj-section-label">Learnings</div>
@@ -883,7 +888,7 @@ function _browserProjectsData() {
           </div>
           <div class="proj-section" data-s="built">
             <div class="proj-section-label">What I Built</div>
-            <div class="proj-section-body">Fully automated personal CRM on Notion — meeting notes and emails sync automatically, zero manual entry. V1 live; V2 in progress.
+            <div class="proj-section-body"><span class="proj-built-lead">Fully automated personal CRM on Notion — meeting notes and emails sync automatically, zero manual entry. V1 live; V2 in progress.</span>
             <ul>
               <li>Built <code>auto_linker.py</code>: parses Granola notes every 15 min, finds or creates People rows in Notion, links meetings automatically</li>
               <li>Built <code>email_linker.py</code>: runs every 30 min on Gmail, detects contact direction, logs history</li>
@@ -895,11 +900,11 @@ function _browserProjectsData() {
           <div class="proj-rhs-stack">
             <div class="proj-section" data-s="outcome">
               <div class="proj-section-label">Outcome</div>
-              <div class="proj-section-body"><ul>
-                <li>Zero manual entry across all contacts</li>
-                <li>Relationship health scoring surfaces neglected connections unprompted</li>
-                <li>Active daily — used throughout MBA networking season</li>
-              </ul></div>
+              <div class="proj-section-body"><div class="proj-stat-chips">
+                <span class="proj-stat-chip hi">V1 live 🚧</span>
+                <span class="proj-stat-chip">Zero manual entry</span>
+                <span class="proj-stat-chip">Active daily</span>
+              </div></div>
             </div>
             <div class="proj-section" data-s="learnings">
               <div class="proj-section-label">Learnings</div>

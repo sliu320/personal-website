@@ -2458,7 +2458,14 @@
       grid-template-columns: 1.85fr 1fr;
       gap:1.3rem; margin-top:0.9rem;
     }
-    .proj-section[data-s="problem"]   { grid-column:1 / -1; }
+    /* C — Problem as warm callout (full-width anchor) */
+    .proj-section[data-s="problem"] {
+      grid-column:1 / -1;
+      border-left:3px solid rgba(122,92,46,0.38);
+      background:rgba(122,92,46,0.04);
+      padding:0.65rem 1rem 0.7rem 1rem;
+      border-radius:0 4px 4px 0;
+    }
     .proj-section[data-s="built"]     { grid-column:1 / 2; grid-row:2; }
     /* RHS stack: outcome + learnings share one continuous border */
     .proj-rhs-stack {
@@ -2475,6 +2482,27 @@
       padding:0rem 0.9rem 0rem 1rem;
       background:none;
       border-left:2px solid rgba(122,92,46,0.22);
+    }
+    /* B — Built lead sentence: bold anchor before bullets */
+    .proj-built-lead {
+      font-size:0.9rem; font-weight:600; color:#1a1208;
+      line-height:1.5; margin:0 0 0.65rem; display:block;
+    }
+    /* A — Outcome stat chips */
+    .proj-stat-chips {
+      display:flex; flex-wrap:wrap; gap:0.35rem; margin-top:0.15rem;
+    }
+    .proj-stat-chip {
+      font-size:0.75rem; font-family:Georgia,serif;
+      background:rgba(122,92,46,0.07);
+      border:1px solid rgba(122,92,46,0.2);
+      border-radius:4px; padding:0.18rem 0.55rem;
+      color:#3a2510; white-space:nowrap; line-height:1.5;
+    }
+    .proj-stat-chip.hi {
+      background:rgba(122,92,46,0.14);
+      border-color:rgba(122,92,46,0.32);
+      font-weight:600; color:#1a1208;
     }
     /* Notion-style label: bold, uppercase, clear */
     .proj-section-label {
