@@ -4022,7 +4022,8 @@
 
     /* ── Projects / Monitor: centered, no black gap ── */
     #monitor-zoom-back,
-    #community-zoom-back {
+    #community-zoom-back,
+    #consulting-zoom-back {
       top: auto !important;
       bottom: 1rem !important;
       right: 50% !important;
@@ -4056,30 +4057,37 @@
       overflow: hidden !important;
     }
 
-    /* ── Case files: book visual intact, full-width right page, nav below ── */
+    /* ── Case files: portrait crop of right-half, tall card, centered ── */
     #consulting-zoom-overlay {
-      padding: 0.8rem 0 0 !important;
+      padding: 0 !important;
       align-items: center !important;
-      justify-content: flex-start !important;
+      justify-content: center !important;
       flex-direction: column !important;
-      overflow-y: auto !important;
-      overflow-x: hidden !important;
+      overflow: hidden !important;
       gap: 0 !important;
     }
-    .casefiles-bg { display: block !important; } /* restore folder graphic */
+    /* Crop book image: show only right-page half via cover+right */
+    .casefiles-bg {
+      display: block !important;
+      object-fit: cover !important;
+      object-position: right center !important;
+    }
     .casefiles-zoom-card {
-      width: 96vw !important;
-      height: calc(96vw / 1.4288) !important; /* maintain aspect ratio */
+      width: 92vw !important;
+      height: 78vh !important; /* portrait-tall */
       min-height: 0 !important;
       flex: 0 0 auto !important;
-      aspect-ratio: 1.4288 !important;
-      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.45)) !important;
+      aspect-ratio: unset !important;
+      filter: drop-shadow(0 8px 28px rgba(0,0,0,0.5)) !important;
       position: relative !important;
+      overflow: hidden !important;
+      border-radius: 4px !important;
     }
+    /* Page content area fills the visible right-page crop */
     .casefiles-pages {
       position: absolute !important;
-      top: 8% !important; bottom: 9% !important;
-      left: 6% !important; right: 4% !important;
+      top: 4% !important; bottom: 5% !important;
+      left: 5% !important; right: 5% !important;
       background: transparent !important;
       border: none !important;
     }
@@ -4087,15 +4095,15 @@
     .cf-right-page {
       position: absolute !important;
       top: 0 !important; bottom: 0 !important;
-      left: 0 !important; right: 0 !important; /* full width of pages area */
-      padding: 0.55rem 0.65rem 0.5rem !important;
+      left: 0 !important; right: 0 !important;
+      padding: 0.75rem 0.85rem !important;
       overflow-y: auto !important;
       overflow-x: hidden !important;
-      background: rgba(253,252,246,0.97) !important;
+      background: rgba(253,252,246,0.96) !important;
       border: none !important;
       border-radius: 0 !important;
       box-shadow: none !important;
-      font-size: 0.7rem !important;
+      font-size: 0.72rem !important;
       transition: opacity 0.18s ease !important;
     }
     .cf-right-page.cf-fade { opacity: 0 !important; }
@@ -4105,13 +4113,12 @@
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
-      width: 96vw !important;
+      width: 92vw !important;
       height: 3.2rem !important;
       padding: 0 1rem !important;
       flex-shrink: 0 !important;
       background: rgba(0,0,0,0.35) !important;
       border-radius: 0 0 6px 6px !important;
-      margin-bottom: 0.5rem !important;
     }
     .cf-mob-btn {
       background: rgba(255,255,255,0.15) !important;
