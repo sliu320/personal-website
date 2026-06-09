@@ -1530,7 +1530,7 @@
     }
     .monitor-screen-inset .browser-dot { width:10px; height:10px; }
     .monitor-screen-inset .browser-url { font-size:0.65rem; }
-    .monitor-screen-inset .browser-tab { font-size:0.62rem; padding:0.22rem 0.7rem; max-width:130px; }
+    .monitor-screen-inset .browser-tab { font-size:0.6rem; padding:0.25rem 0.65rem; max-width:120px; }
     .monitor-screen-inset .browser-status {
       margin:0; font-size:0.58rem; padding:0.18rem 0.6rem; flex-shrink:0;
     }
@@ -2293,69 +2293,76 @@
       font-size:0.62rem; color:#555; padding:0.2rem 0.6rem;
       font-family:'Courier New',monospace; letter-spacing:0.02em;
     }
-    /* ── A. Outer browser tabs — warm pill style ──────────────── */
+    /* ── 1. Outer browser tabs — old folder-tab style (Ref 2) ── */
     .browser-tabs {
-      display:flex; gap:5px; align-items:center;
-      padding:0 0 0.65rem;
+      display:flex; gap:3px; align-items:flex-end;
+      padding:0; margin:0 0 0 0;
       flex-wrap:wrap;
     }
     .browser-tab {
-      background:transparent;
-      border:1px solid rgba(122,92,46,0.22);
-      border-radius:20px;
-      padding:0.28rem 0.85rem;
-      font-size:0.65rem; color:#9e8e72;
+      background:rgba(245,240,232,0.55);
+      border:1px solid rgba(122,92,46,0.2);
+      border-bottom:none;
+      border-radius:7px 7px 0 0;
+      padding:0.3rem 0.8rem;
+      font-size:0.63rem; color:#9e8e72;
       cursor:pointer; white-space:nowrap;
-      transition:background 0.15s, color 0.15s, border-color 0.15s;
-      max-width:140px; overflow:hidden; text-overflow:ellipsis;
+      position:relative; z-index:0;
+      transition:background 0.15s, color 0.15s;
+      max-width:130px; overflow:hidden; text-overflow:ellipsis;
       font-family:Georgia,serif; letter-spacing:0.02em;
+      margin-bottom:-1px;
     }
     .browser-tab.active {
-      background:#2a1f0e; color:#faf5ed;
-      border-color:#2a1f0e; font-weight:600;
+      background:#faf5ed;
+      color:#2a1f0e; font-weight:600;
+      border-color:rgba(122,92,46,0.18);
+      z-index:2;
     }
     .browser-tab:hover:not(.active) {
-      background:rgba(122,92,46,0.08); color:#4a3f2f;
-      border-color:rgba(122,92,46,0.4);
+      background:rgba(245,240,232,0.85); color:#4a3f2f;
     }
     .browser-content {
       background:#faf5ed;
-      border:1px solid rgba(122,92,46,0.12);
-      border-radius:10px;
+      border:1px solid rgba(122,92,46,0.18);
+      border-radius:0 8px 8px 8px;
       margin:0 -0.5rem; padding:1.2rem 1.3rem 1.4rem;
       min-height:420px;
       overflow-y:auto;
+      position:relative; z-index:1;
     }
     .project-panel { display:none; }
     .project-panel.active { display:block; }
 
-    /* ── B. Project title block ───────────────────────────────── */
+    /* ── 2. Project title block ──────────────────────────────── */
     .project-title {
       font-family:Georgia,serif;
       font-size:1.1rem; color:#2a1f0e; font-weight:700;
-      margin-bottom:0.5rem; line-height:1.25;
+      margin-bottom:0.45rem; line-height:1.25;
     }
-    .project-title-rule {
-      height:1px; background:rgba(122,92,46,0.18);
-      margin:0.5rem 0 0.6rem;
-    }
-    .project-tags  { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:0.75rem; }
+    .project-tags  { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:0.5rem; }
     .project-tag   {
-      font-size:0.58rem; letter-spacing:0.1em; padding:2px 9px;
-      border-radius:3px;
-      background:transparent;
-      color:rgba(122,92,46,0.75); border:1px solid rgba(122,92,46,0.3);
+      font-size:0.58rem; letter-spacing:0.08em; padding:2px 8px;
+      border-radius:3px; background:transparent;
+      color:rgba(122,92,46,0.7); border:1px solid rgba(122,92,46,0.28);
       font-family:Georgia,serif; text-transform:uppercase;
     }
-    .project-desc  { font-size:0.8125rem; color:#3a2f1e; line-height:1.75; margin-bottom:0.9rem; font-style:italic; }
+    /* Rule sits after tags, before desc */
+    .project-title-rule {
+      height:1px; background:rgba(122,92,46,0.15);
+      margin:0.5rem 0 0.55rem;
+    }
+    .project-desc {
+      font-size:0.8125rem; color:#6b5240; line-height:1.7;
+      margin-bottom:0.9rem; font-style:italic;
+    }
     .project-demo  {
       background:linear-gradient(135deg,#1a1208,#0e0904);
       border-radius:6px; height:120px;
       display:flex; align-items:center; justify-content:center;
       font-size:2rem; cursor:pointer;
       box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06);
-      position:relative; overflow:hidden;
-      transition:opacity 0.2s;
+      position:relative; overflow:hidden; transition:opacity 0.2s;
     }
     .project-demo:hover { opacity:0.85; }
     .project-demo-label {
@@ -2364,20 +2371,17 @@
     }
     .project-link { font-size:0.75rem; color:#7a5c2e; text-decoration:underline; cursor:pointer; margin-top:0.5rem; display:inline-block; }
 
-    /* ── Back-to-overview — stamp chip ───────────────────────── */
+    /* ── Back-to-overview chip ───────────────────────────────── */
     .proj-back-link {
-      display:inline-flex; align-items:center; gap:0.3rem;
-      font-size:0.62rem; font-family:Georgia,serif; letter-spacing:0.06em;
+      display:inline-flex; align-items:center; gap:0.25rem;
+      font-size:0.6rem; font-family:Georgia,serif; letter-spacing:0.05em;
       color:#9e8e72; text-decoration:none; cursor:pointer;
-      border:1px solid rgba(122,92,46,0.2); border-radius:20px;
-      padding:2px 10px; margin-bottom:0.75rem;
-      transition:background 0.15s, color 0.15s, border-color 0.15s;
+      border:1px solid rgba(122,92,46,0.18); border-radius:3px;
+      padding:2px 9px; margin-bottom:0.8rem;
+      transition:background 0.15s, color 0.15s;
       text-transform:uppercase;
     }
-    .proj-back-link:hover {
-      background:rgba(122,92,46,0.08); color:#4a3f2f;
-      border-color:rgba(122,92,46,0.4);
-    }
+    .proj-back-link:hover { background:rgba(122,92,46,0.07); color:#4a3f2f; }
 
     /* ── Overview bucket layout ───────────────────────────────── */
     .proj-overview { display:flex; flex-direction:column; gap:1.2rem; padding:0.2rem 0 0.5rem; }
@@ -2386,25 +2390,29 @@
     .proj-bucket-link { font-size:0.82rem; color:#4a3f2f; text-decoration:none; cursor:pointer; padding:0.35rem 0.6rem; border-radius:5px; transition:background 0.15s, color 0.15s; border:1px solid transparent; font-family:Georgia,serif; }
     .proj-bucket-link:hover { background:rgba(122,92,46,0.08); border-color:rgba(122,92,46,0.2); color:#2a1f0e; }
 
-    /* ── C. Inner asset tabs — smaller, visually distinct ────── */
+    /* ── 3. Section cards — no borders, more padding, r:10px ─── */
+    /* (tints + icons stay, just refining the card shell) */
+
+    /* ── 4. Inner asset tabs — underline-only, subordinate ───── */
     .proj-inner-tabs {
-      display:flex; gap:4px; margin:0.8rem 0 0.7rem;
-      padding-top:0.7rem;
-      border-top:1px solid rgba(122,92,46,0.12);
+      display:flex; gap:0; margin:0.75rem 0 0.65rem;
+      padding-top:0.65rem;
+      border-top:1px solid rgba(122,92,46,0.1);
       flex-wrap:wrap;
     }
     .proj-inner-tab {
-      font-size:0.62rem; padding:3px 10px; border-radius:4px;
-      border:1px solid rgba(122,92,46,0.2); cursor:pointer;
-      background:rgba(255,255,255,0.5); color:#9e8e72; font-family:inherit;
-      transition:background 0.15s, border-color 0.15s, color 0.15s;
+      font-size:0.62rem; padding:4px 12px 5px;
+      border:none; border-bottom:2px solid transparent;
+      cursor:pointer; background:transparent;
+      color:#b0a090; font-family:inherit;
+      transition:color 0.15s, border-color 0.15s;
       letter-spacing:0.03em;
     }
     .proj-inner-tab.active {
-      background:#f5f0e8; border-color:rgba(122,92,46,0.45);
       color:#4a3f2f; font-weight:600;
+      border-bottom-color:rgba(122,92,46,0.55);
     }
-    .proj-inner-tab:hover:not(.active) { background:rgba(122,92,46,0.06); color:#6b5240; }
+    .proj-inner-tab:hover:not(.active) { color:#7a6a52; }
     .proj-inner-panel { display:none; }
     .proj-inner-panel.active { display:block; }
 
@@ -2426,22 +2434,30 @@
       border-left:3px solid rgba(122,92,46,0.3);
     }
     .proj-prompt-label { font-size:0.6rem; letter-spacing:0.1em; color:rgba(122,92,46,0.8); text-transform:uppercase; margin-bottom:0.4rem; font-weight:700; }
-    /* Standardized project sections */
-    .proj-sections { display:flex; flex-direction:column; gap:0.65rem; margin-top:0.7rem; }
+    /* ── 5. Standardized project section cards ───────────────── */
+    .proj-sections { display:flex; flex-direction:column; gap:0.6rem; margin-top:0.65rem; }
     .proj-section {
-      border-radius:8px;
-      padding:0.7rem 0.9rem 0.75rem;
+      border-radius:10px;
+      padding:0.85rem 1rem 0.9rem;
+      border:none;
     }
     .proj-section[data-s="problem"]   { background:#ede8df; }
-    .proj-section[data-s="built"]     { background:#f5f0e8; border:1px solid rgba(122,92,46,0.13); }
+    .proj-section[data-s="built"]     { background:#f5f0e8; }
     .proj-section[data-s="outcome"]   { background:#faf3e2; }
     .proj-section[data-s="learnings"] { background:#edeae4; }
+    /* Notebook-header label: icon + text + extending rule */
     .proj-section-label {
-      font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
-      color:rgba(74,63,47,0.65); margin-bottom:0.35rem; display:flex; align-items:center; gap:0.3rem;
+      display:flex; align-items:center; gap:0.35rem;
+      font-size:0.68rem; font-style:italic;
+      color:rgba(74,63,47,0.7); margin-bottom:0.5rem;
+      font-family:Georgia,serif;
+    }
+    .proj-section-label::after {
+      content:''; flex:1; height:1px;
+      background:rgba(74,63,47,0.15);
     }
     .proj-section-label::before {
-      font-size:0.75rem; letter-spacing:0; text-transform:none; opacity:0.8;
+      font-size:0.78rem; font-style:normal; opacity:0.75;
     }
     .proj-section[data-s="problem"]   .proj-section-label::before { content:"⚠"; }
     .proj-section[data-s="built"]     .proj-section-label::before { content:"🔨"; }
@@ -2451,7 +2467,7 @@
       font-size:0.8125rem; color:#3a2f1e; line-height:1.8; margin:0;
     }
     .proj-section-body strong { color:#2a1f0e; font-weight:600; }
-    .proj-section-body ul { margin:0.35rem 0 0; padding-left:1.1rem; }
+    .proj-section-body ul { margin:0.3rem 0 0; padding-left:1.1rem; }
     .proj-section-body li { margin-bottom:0.4rem; }
     .proj-section-body li:last-child { margin-bottom:0; }
     /* DressingRoom timeline */
