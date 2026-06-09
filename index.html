@@ -486,14 +486,12 @@
       </div>
     </div>
     <div class="about-body">
-      <p>I believe that people, ideas, and communities can become greater than the sum of their parts, and I strive to create the conditions that make this possible.</p>
+      <p><strong>I believe that people, ideas, and communities can become greater than the sum of their parts, and I strive to create the conditions that make this possible.</strong></p>
       <p>I develop deep understanding, bring clarity to ambiguity, and mobilize people and systems towards a shared vision. Guided by curiosity and creativity, I'm energized by pushing the boundaries of what people can achieve together.</p>
       <div class="about-links">
         <a href="https://linkedin.com/in/susyliu" target="_blank">LinkedIn</a>
         |
         <a href="assets/Susy Liu Resume.pdf" download="Susy Liu Resume.pdf">Resume</a>
-        |
-        <a href="https://github.com/sliu320" target="_blank">Github</a>
       </div>
     </div>
   </div>
@@ -515,9 +513,9 @@
     <div class="door-zoom-intro">I'm looking for roles where I can be close to the action — high ownership, high ambiguity. I thrive exploring unmarked territory, where there's always a new challenge.</div>
     <div class="door-row">
 
-      <!-- Door 1: Founder Partner -->
+      <!-- Door 1: Product / Early-Stage Operator -->
       <div class="door-col door-col-1" data-door="1">
-        <div class="door-role-label">Founder Partner<br>(Chief of Staff)</div>
+        <div class="door-role-label">Product /<br>Early-Stage Operator</div>
         <div class="door-scene">
           <div style="display:flex;flex-direction:column;align-items:center;">
             <div class="door-frame">
@@ -536,9 +534,9 @@
         <div class="door-info-panel door-inline-panel" id="door-inline-1"><div class="door-info-panel-inner"></div></div>
       </div>
 
-      <!-- Door 2: Startup Operator -->
+      <!-- Door 2: Chief of Staff / Founder Associate -->
       <div class="door-col door-col-2" data-door="2">
-        <div class="door-role-label">Startup Operator<br>(Product, GTM, Biz Ops)</div>
+        <div class="door-role-label">Chief of Staff /<br>Founder Associate</div>
         <div class="door-scene">
           <div style="display:flex;flex-direction:column;align-items:center;">
             <div class="door-frame">
@@ -557,9 +555,9 @@
         <div class="door-info-panel door-inline-panel" id="door-inline-2"><div class="door-info-panel-inner"></div></div>
       </div>
 
-      <!-- Door 3: Venture Builder -->
+      <!-- Door 3: Venture -->
       <div class="door-col door-col-3" data-door="3">
-        <div class="door-role-label">Venture Builder</div>
+        <div class="door-role-label">Venture</div>
         <div class="door-scene">
           <div style="display:flex;flex-direction:column;align-items:center;">
             <div class="door-frame">
@@ -847,7 +845,26 @@
   <span class="ob-hint"><span class="ob-icon">🥚</span> find all 5 easter eggs</span>
   <div class="ob-divider"></div>
   <span class="ob-desktop-note">For best experience, view on desktop</span>
-  <button id="ob-got-it">got it</button>
+  <div class="ob-actions">
+    <button id="ob-tour">✦ guided tour</button>
+    <button id="ob-explore">explore on my own</button>
+  </div>
+</div>
+
+<!-- Guided tour bar — persistent during tour -->
+<div id="tour-bar">
+  <button id="tour-exit-btn">✕ exit tour</button>
+  <span id="tour-step-indicator"></span>
+  <button id="tour-next-btn"></button>
+</div>
+
+<!-- Tour end prompt -->
+<div id="tour-end">
+  <div id="tour-end-card">
+    <div id="tour-end-title">that's the tour — but there's more ✦</div>
+    <div id="tour-end-body">There are still hotspots hiding in the room. Scroll around, click the rings, and see what you find.</div>
+    <button id="tour-end-close">continue exploring</button>
+  </div>
 </div>
 
 <!-- Hidden Spotify embed container — keeps the iframe alive between modal opens -->
