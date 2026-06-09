@@ -3664,7 +3664,8 @@
       }
       .cf-cmp-row .cf-body { -webkit-line-clamp: unset !important; overflow: visible !important; }
       .cf-cmp-row .cf-ul   { max-height: none !important; overflow: visible !important; }
-      .cf-toc-page, .cf-page-wrap { height: auto !important; overflow: visible !important; }
+      .cf-toc-page { height: 100% !important; overflow: visible !important; }
+    .cf-page-wrap { height: auto !important; overflow: visible !important; }
       .cf-turner-face, .cf-turner-back {
         overflow-y: auto !important; padding: 1rem 0.9rem !important;
         background: #fefcf5 !important; border: 1px solid #c8b48a !important;
@@ -3995,7 +3996,8 @@
     }
     .cf-cmp-row .cf-body { -webkit-line-clamp: unset !important; overflow: visible !important; }
     .cf-cmp-row .cf-ul   { max-height: none !important; overflow: visible !important; }
-    .cf-toc-page, .cf-page-wrap { height: auto !important; overflow: visible !important; }
+    .cf-toc-page { height: 100% !important; overflow: visible !important; }
+    .cf-page-wrap { height: auto !important; overflow: visible !important; }
     .cf-turner-face, .cf-turner-back {
       overflow-y: auto !important; padding: 1rem 0.9rem !important;
       background: #fefcf5 !important; border: 1px solid #c8b48a !important;
@@ -4106,7 +4108,8 @@
     }
     .casefiles-zoom-card {
       width: 100vw !important;
-      height: 90vh !important;
+      height: 85vh !important;
+      margin-top: 5vh !important;
       min-height: 0 !important;
       flex: 0 0 auto !important;
       aspect-ratio: unset !important;

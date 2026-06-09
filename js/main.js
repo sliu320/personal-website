@@ -3279,15 +3279,29 @@ function _cfFlipMobile(dir) {
   if (target < 0 || target >= _CF_PAGES.length) return;
   _cfFlipping = true;
   const rp = document.getElementById('cf-right-page');
-  rp.classList.add('cf-fade');
+
+  // Cross-fade: new page fades IN on top — background stays cream, never transparent
+  const overlay = document.createElement('div');
+  overlay.style.cssText = [
+    'position:absolute', 'inset:0', 'z-index:2',
+    'background:#fefcf5', 'overflow-y:auto', 'overflow-x:hidden',
+    'padding:0.75rem 0.85rem', 'box-sizing:border-box',
+    'opacity:0', 'transition:opacity 0.2s ease',
+  ].join(';');
+  overlay.innerHTML = _cfPageHTML(target);
+  rp.appendChild(overlay);
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    overlay.style.opacity = '1';
+  }));
+
   setTimeout(() => {
     _cfPhysPage = target;
     rp.innerHTML = _cfPageHTML(_cfPhysPage);
     rp.scrollTop = 0;
-    rp.classList.remove('cf-fade');
     _updateCfNav();
     _cfFlipping = false;
-  }, 180);
+  }, 220);
 }
 
 function _cfFlip(dir) {
