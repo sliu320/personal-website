@@ -2303,7 +2303,7 @@
       padding:0; flex-wrap:wrap;
     }
     .browser-tab {
-      background:#d0b4dc;
+      background:#eed8e8;
       border:1px solid #1a1208;
       border-bottom:none;
       border-radius:10px 10px 0 0;
@@ -2323,7 +2323,7 @@
       z-index:2;
     }
     .browser-tab:hover:not(.active) {
-      background:#c0a0cc; color:#1a0830;
+      background:#e0c8d8; color:#1a0830;
     }
     .browser-content {
       background:linear-gradient(to bottom, #f0ece0 0%, #f0ece0 70%, #d8cfc0 100%);
