@@ -3526,67 +3526,71 @@
         height: auto !important;
       }
 
-      /* ── BCG Case files: folder as portrait border, document scrolls inside ── */
+      /* ── BCG Case files: full-screen document, no folder image ── */
       #consulting-zoom-overlay {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
-        justify-content: center !important;
-        overflow-x: hidden !important;  /* clips L/R bleed of folder */
-        overflow-y: hidden !important;
+        justify-content: flex-start !important;
+        overflow: hidden !important;
         padding: 0 !important;
         gap: 0 !important;
       }
-      .casefiles-bg { display: block !important; object-fit: fill !important; }
-      /* Folder card: wider than screen (L/R bleed) but short enough to show top+bottom border */
+      .casefiles-bg { display: none !important; }
       .casefiles-zoom-card {
-        width: 140vw !important;
-        height: 82vh !important;
+        width: 100vw !important;
+        height: calc(100% - 3.5rem) !important; /* leave room for nav bar */
         aspect-ratio: unset !important;
         filter: none !important;
         flex-shrink: 0 !important;
       }
-      /* Pages fill the inner document area of the mobile folder image */
       .casefiles-pages {
-        top: 6% !important; bottom: 6% !important;
-        left: 16% !important; right: 16% !important;
-        background: transparent !important;
+        top: 0 !important; bottom: 0 !important;
+        left: 0 !important; right: 0 !important;
+        background: #fefcf5 !important;
         border: none !important; border-radius: 0 !important; box-shadow: none !important;
       }
       .cf-left-page { display: none !important; }
       .cf-right-page {
         left: 0 !important; right: 0 !important;
-        padding: 1rem 0.9rem 0.5rem !important;
+        padding: 1.2rem 1.1rem 1rem !important;
         overflow-y: auto !important;
         overflow-x: hidden !important;
         background: #fefcf5 !important;
-        border: 1px solid #c8b48a !important;
-        border-radius: 2px !important;
-        box-shadow: inset 0 0 0 3px rgba(200,180,140,0.12), 0 2px 10px rgba(0,0,0,0.15) !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
       }
       /* Existing desktop arrows: hide on mobile */
       #cf-prev-arrow, #cf-next-arrow { display: none !important; }
       .cf-nav { display: none !important; }
-      /* Mobile nav bar below the folder */
+      /* Mobile nav bar below the document */
       .cf-mobile-nav {
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
-        width: 88vw !important;
-        padding: 0.5rem 0 !important;
+        width: 100vw !important;
+        height: 3.5rem !important;
+        padding: 0 1.2rem !important;
         flex-shrink: 0 !important;
+        background: rgba(0,0,0,0.35) !important;
       }
       .cf-mob-btn {
-        background: rgba(255,255,255,0.18) !important;
+        background: rgba(255,255,255,0.15) !important;
         border: 1px solid rgba(255,255,255,0.3) !important;
-        border-radius: 8px !important;
+        border-radius: 6px !important;
         color: rgba(255,255,255,0.9) !important;
-        font-size: 0.9rem !important;
-        padding: 0.4rem 1rem !important;
+        font-size: 0.85rem !important;
+        font-family: Georgia, serif !important;
+        padding: 0.35rem 1rem !important;
         cursor: pointer !important;
       }
       .cf-mob-btn:disabled { opacity: 0.3 !important; }
-      #cf-mob-pagenum { color: rgba(255,255,255,0.7) !important; font-size: 0.75rem !important; font-family: 'Courier New', monospace !important; }
+      #cf-mob-pagenum {
+        color: rgba(255,255,255,0.7) !important;
+        font-size: 0.75rem !important;
+        font-family: Georgia, serif !important;
+      }
       /* Let inline height/overflow constraints expand */
       .cf-right-page > div, .cf-turner-face > div, .cf-turner-back > div {
         height: auto !important; overflow: visible !important; flex-shrink: 0 !important;
@@ -3882,13 +3886,14 @@
       width: 72vw !important; padding: 0.5rem 0 !important; flex-shrink: 0 !important;
     }
     .cf-mob-btn {
-      background: rgba(255,255,255,0.18) !important;
+      background: rgba(255,255,255,0.15) !important;
       border: 1px solid rgba(255,255,255,0.3) !important;
-      border-radius: 8px !important; color: rgba(255,255,255,0.9) !important;
-      font-size: 0.9rem !important; padding: 0.4rem 1.2rem !important; cursor: pointer !important;
+      border-radius: 6px !important; color: rgba(255,255,255,0.9) !important;
+      font-size: 0.85rem !important; font-family: Georgia, serif !important;
+      padding: 0.35rem 1rem !important; cursor: pointer !important;
     }
     .cf-mob-btn:disabled { opacity: 0.3 !important; }
-    #cf-mob-pagenum { color: rgba(255,255,255,0.7) !important; font-size: 0.75rem !important; font-family: 'Courier New', monospace !important; }
+    #cf-mob-pagenum { color: rgba(255,255,255,0.7) !important; font-size: 0.75rem !important; font-family: Georgia, serif !important; }
     .cf-right-page > div, .cf-turner-face > div, .cf-turner-back > div {
       height: auto !important; overflow: visible !important; flex-shrink: 0 !important;
     }
