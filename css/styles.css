@@ -2458,9 +2458,9 @@
       gap:1.3rem; margin-top:0.9rem;
     }
     .proj-section[data-s="problem"]   { grid-column:1 / -1; }
-    .proj-section[data-s="built"]     { grid-column:1 / 2; }
-    .proj-section[data-s="outcome"]   { grid-column:2 / 3; }
-    .proj-section[data-s="learnings"] { grid-column:1 / -1; }
+    .proj-section[data-s="built"]     { grid-column:1 / 2; grid-row:2 / 4; }
+    .proj-section[data-s="outcome"]   { grid-column:2 / 3; grid-row:2; }
+    .proj-section[data-s="learnings"] { grid-column:2 / 3; grid-row:3; }
     .proj-section {
       border-radius:0;
       padding:0rem 0.9rem 0rem 1rem;
@@ -3004,7 +3004,7 @@
       .proj-section[data-s="built"],
       .proj-section[data-s="outcome"],
       .proj-section[data-s="problem"],
-      .proj-section[data-s="learnings"] { grid-column:1 / -1; }
+      .proj-section[data-s="learnings"] { grid-column:1 / -1; grid-row:auto; }
     }
 
     /* ── Sticky Notes scatter overlay ─────────────────────────── */
