@@ -3471,16 +3471,25 @@ function closeMusicZoom() {
 document.getElementById('music-zoom-back').addEventListener('click', closeMusicZoom);
 
 // Circular navigation — wraps infinitely
-document.getElementById('music-prev').addEventListener('click', () => {
+let _musicNavLock = false;
+function _musicSafe(fn) {
+  return () => {
+    if (_musicNavLock) return;
+    _musicNavLock = true;
+    fn();
+    setTimeout(() => { _musicNavLock = false; }, 350);
+  };
+}
+document.getElementById('music-prev').addEventListener('click', _musicSafe(() => {
   _musicCenter = (_musicCenter - 1 + N_RECORDS) % N_RECORDS;
   document.querySelectorAll('.record-card').forEach(c => c.classList.remove('flipped'));
   _setCoverflowPositions();
-});
-document.getElementById('music-next').addEventListener('click', () => {
+}));
+document.getElementById('music-next').addEventListener('click', _musicSafe(() => {
   _musicCenter = (_musicCenter + 1) % N_RECORDS;
   document.querySelectorAll('.record-card').forEach(c => c.classList.remove('flipped'));
   _setCoverflowPositions();
-});
+}));
 
 // Click center record → flip front/back
 document.querySelectorAll('.record-slot').forEach(slot => {
