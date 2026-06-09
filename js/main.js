@@ -134,30 +134,56 @@ function renderManila() {
 
       <div class="manila-doc">
         <div class="manila-paperclip"></div>
-        <div class="manila-case-title">GenAI Use Case Assessment &amp; Proposal</div>
+        <div class="manila-case-title">GenAI Use Case Assessment</div>
         <span class="manila-client">Global biopharma company</span>
         <div class="manila-chips">
           <span class="manila-chip">Healthcare</span><span class="manila-chip">AI/Digital</span><span class="manila-chip">Strategy</span><span class="manila-chip">Value Creation</span>
         </div>
-        <div class="manila-skills-line"><strong>Skills:</strong> Stakeholder alignment · Design thinking · Financial modeling · Executive communication · Cross-functional collaboration · Business development · Web dev</div>
+        <div class="manila-skills-line"><strong>Skills:</strong> Stakeholder alignment · Design thinking · Financial modeling · Executive communication · Cross-functional collaboration</div>
         <div class="manila-section-hdr">Executive Summary</div>
-        <div class="manila-body">Assessed 100+ GenAI use cases across 11 business units for a global biopharma company, prioritizing 10 high-impact use cases projected to save $40M annually. As a follow-on, co-developed a $15M joint proposal — one of the first of its kind at BCG — including a microsite and CEO video message.</div>
+        <div class="manila-body">Assessed 100+ GenAI use cases across 11 business units, prioritizing 10 high-impact use cases projected to save $40M annually.</div>
         <div class="manila-section-hdr">Key Context</div>
-        <div class="manila-body">IT department exploring AI/GenAI as part of a global Value Creation Initiative. Case team developed a comprehensive strategy including tech and org readiness roadmap. The follow-on RFP kicked off a two-week sprint to respond to the build phase.</div>
+        <div class="manila-body">IT department exploring AI/GenAI as part of a global Value Creation Initiative. Case team developed a comprehensive AI/GenAI strategy including tech and org readiness roadmap and set of inaugural use cases.</div>
         <div class="manila-section-hdr">Contribution</div>
         <ul class="manila-ul">
           <li>Designed value-feasibility-risk framework for use case assessment</li>
           <li>Conducted top-down industry evaluation of GenAI use cases across BCG</li>
-          <li>Modeled financial impact of top 10 use cases with BU leaders and BCG X data scientists</li>
-          <li>Prepared exec presentation materials to align CTO and key stakeholders</li>
-          <li>Directed a team of ~3 to build a microsite showcasing case studies and a video message from BCG's CEO</li>
+          <li>Co-developed workshops with client design arm to prioritize use cases</li>
+          <li>Modeled financial impact of top 10 use cases through meetings with BU leaders and BCG X data scientists</li>
+          <li>Prepared exec presentation materials to align key stakeholders incl. CTO</li>
         </ul>
         <div class="manila-outcome-box">
           <div class="manila-section-hdr">Outcome</div>
-          Client moved forward with phased plan, first 5 use cases projected to save $40M annually. Full buy-in from BUs, Finance, and IT. Proposal: client chose another firm on price — key learnings elevated to senior BCG partner discussions on AI/GenAI strategy.
+          Client moved forward with phased plan; first 5 use cases projected to save $40M annually. Full buy-in from BUs, Finance, and IT.
         </div>
         <div class="manila-section-hdr">Learnings</div>
-        <div class="manila-body">Early tech adoption at large companies prioritizes quick wins over top-line growth. Misaligned incentives across BUs underscore the importance of org readiness — not just implementation — when adopting new technology.</div>
+        <div class="manila-body">Early tech adoption at large companies prioritizes quick wins and safe bets. Pushback from BUs due to mistrust of centralized initiatives underscores the importance of aligned incentives.</div>
+      </div>
+
+      <div class="manila-doc">
+        <div class="manila-case-title">Self-Service BI Tool Design</div>
+        <span class="manila-client">Global biopharma company</span>
+        <div class="manila-chips">
+          <span class="manila-chip">Data/Digital</span><span class="manila-chip">Product</span><span class="manila-chip">UX</span>
+        </div>
+        <div class="manila-skills-line"><strong>Skills:</strong> UX and product design · Co-creation · Initiative · Operating under ambiguity</div>
+        <div class="manila-section-hdr">Executive Summary</div>
+        <div class="manila-body">Unstalled a two-month deadlock on a BI tool vision — designed product mockups from scratch that re-energized client engagement and got the workstream across the finish line.</div>
+        <div class="manila-section-hdr">Key Context</div>
+        <div class="manila-body">BI team needed a north star vision for a self-service analytics tool for non-technical audiences. The workstream had stalled for two months due to vague objectives and unproductive client sessions.</div>
+        <div class="manila-section-hdr">Contribution</div>
+        <ul class="manila-ul">
+          <li>Took ownership of the stalled workstream without being asked — proactively drove the design direction</li>
+          <li>Created product mockups from scratch, drawing on best practices across BCG and leading data tools: dashboards, AI-driven insights, social-media-inspired interface</li>
+          <li>Facilitated sessions that re-energized client discussions and unblocked the team</li>
+          <li>Enabled the workstream to finalize vision and strategy on time</li>
+        </ul>
+        <div class="manila-outcome-box">
+          <div class="manila-section-hdr">Outcome</div>
+          Workstream delivered on time. Manager specifically noted the result would not have been possible without my initiative.
+        </div>
+        <div class="manila-section-hdr">Learnings</div>
+        <div class="manila-body">Sometimes a stalled workstream just needs someone to put something concrete on the table. A clear visual provocation moves discussions faster than another working session.</div>
       </div>
 
       <div class="manila-doc">
@@ -184,50 +210,29 @@ function renderManila() {
       </div>
 
       <div class="manila-doc">
-        <div class="manila-case-title">Project Management for Healthcare Commission</div>
-        <span class="manila-client">State Governor's healthcare commission</span>
-        <div class="manila-chips">
-          <span class="manila-chip">Public Sector</span><span class="manila-chip">Healthcare</span>
-        </div>
-        <div class="manila-skills-line"><strong>Skills:</strong> Project management · Stakeholder alignment · Mentorship</div>
-        <div class="manila-section-hdr">Executive Summary</div>
-        <div class="manila-body">Led project management across a BCG team of 15 and client team of 15 to develop healthcare policy recommendations for a state government's annual Commission report. Commission members include blue-ribbon, nationally recognized leaders across New York's healthcare ecosystem.</div>
-        <div class="manila-section-hdr">Contribution</div>
-        <ul class="manila-ul">
-          <li>Served as Acting Project Leader within the PMO, partnering with BCG partners and the Deputy Secretary of Health</li>
-          <li>Defined work plan priorities, recommendation frameworks, and report structure; managed integrated timelines across 3 case teams</li>
-          <li>Developed materials to socialize recommendations with the state Governor and health system stakeholders</li>
-          <li>Mentored and managed a junior team member</li>
-        </ul>
-        <div class="manila-outcome-box">
-          <div class="manila-section-hdr">Outcome</div>
-          Report draft completed, with recommendations socialized across key leaders within state government and across the health system.
-        </div>
-        <div class="manila-section-hdr">Learnings</div>
-        <div class="manila-body">Recommendations had to move through a large stakeholder set with frequent bottlenecks — flexible planning and proactive expectation-setting were essential.</div>
-      </div>
-
-      <div class="manila-doc">
         <div class="manila-case-title">Investment Playbook &amp; Executive Workshop</div>
         <span class="manila-client">Environmental services family office</span>
         <div class="manila-chips">
           <span class="manila-chip">Climate &amp; Sustainability</span><span class="manila-chip">Industrial Goods</span><span class="manila-chip">Strategy</span>
         </div>
-        <div class="manila-skills-line"><strong>Skills:</strong> Process mapping · Cross-functional collaboration · Creative workshop design · Operating under ambiguity</div>
+        <div class="manila-skills-line"><strong>Skills:</strong> Workshop design · Operating under ambiguity · Cross-functional coordination · Sprint execution</div>
         <div class="manila-section-hdr">Executive Summary</div>
-        <div class="manila-body">Designed and co-facilitated a 6-hour workshop for a CEO's direct reports to devise an investment playbook directing up to $1B in control investments over the next decade.</div>
+        <div class="manila-body">Took a vague brief and a blank page — designed a 6-hour interactive workshop from scratch in a three-week sprint, turning years of organizational deadlock into a live, aligned decision-making process.</div>
+        <div class="manila-section-hdr">Key Context</div>
+        <div class="manila-body">The CEO had capital to deploy and nearly a decade of organizational deadlock on where to put it. BCG was brought in with high-level goals and no defined scope — both the problem definition and success criteria had to be built from the ground up.</div>
         <div class="manila-section-hdr">Contribution</div>
         <ul class="manila-ul">
-          <li>Partnered with a BCG advisor (ex-EPA) to develop a backgrounder on environmental chemicals cleanup as an investment opportunity</li>
-          <li>Designed interactive 6-hour workshop simulating the investment playbook live with the executive team</li>
-          <li>Coordinated across two other workstreams in a rapid three-week sprint</li>
+          <li>Translated an ambiguous brief into concrete workshop design from scratch — agenda, facilitation materials, and simulation mechanics</li>
+          <li>Partnered with a BCG advisor (ex-EPA) to develop a backgrounder grounding the executive team in chemicals cleanup as a live investment opportunity</li>
+          <li>Coordinated across two parallel workstreams in a rapid three-week sprint</li>
+          <li>Designed the workshop itself as the forcing function — structured so the executive team had to make real investment decisions in the room</li>
         </ul>
         <div class="manila-outcome-box">
           <div class="manila-section-hdr">Outcome</div>
-          Workshop and playbook earned a direct shout-out from the client. Helped break down organizational silos by rallying people around a common problem.
+          Workshop broke years of organizational deadlock and earned a direct client shout-out. The live simulation made the investment playbook feel real before it was finished.
         </div>
         <div class="manila-section-hdr">Learnings</div>
-        <div class="manila-body">Project started with only high-level goals. Both the problem definition and success criteria were living concepts — defined through deep collaboration with the client throughout.</div>
+        <div class="manila-body">Starting without a defined problem is the hardest kind of work — and the most useful. Clarity emerged through the making, not before it.</div>
       </div>
 
       <div class="manila-group-label">Additional Casework</div>
@@ -243,33 +248,33 @@ function renderManila() {
       </div>
 
       <div class="manila-doc">
-        <div class="manila-case-title">Due Diligence — Specialty Pharma Company</div>
-        <span class="manila-client">Global biopharma company</span>
+        <div class="manila-case-title">Non-Profit Alumni Engagement Program</div>
+        <span class="manila-client">Regional branch of national non-profit</span>
         <div class="manila-chips">
-          <span class="manila-chip">Healthcare</span><span class="manila-chip">Due Diligence</span>
+          <span class="manila-chip">User Research</span><span class="manila-chip">Growth</span><span class="manila-chip">Program Design</span>
         </div>
-        <div class="manila-skills-line"><strong>Skills:</strong> Financial modeling · Competitor analysis · Mentorship · Upwards management</div>
-        <div class="manila-body" style="margin-top:0.4rem;">Due diligence on a rare disease pharma acquisition target. With BCG partners pulled to a complex adjacent workstream, independently ran our module — modeled 10-year operating costs and mentored a junior teammate through detailed competitor analyses, delivering output that required minimal client iteration.</div>
+        <div class="manila-skills-line"><strong>Skills:</strong> Data analysis · Persona development · Customer journey mapping · Program design</div>
+        <div class="manila-body" style="margin-top:0.4rem;">Designed an alumni engagement program from scratch for a ~32K-alumni base with no existing engagement infrastructure. Led segmentation into nine demographic and psychographic personas, mapped the full user journey, designed targeted engagement approaches per persona, and built the implementation roadmap from objectives through channels and metrics.</div>
       </div>
 
       <div class="manila-doc">
-        <div class="manila-case-title">Self-Service Business Intelligence Tool Design</div>
-        <span class="manila-client">Global biopharma company</span>
+        <div class="manila-case-title">Project Management for Healthcare Commission</div>
+        <span class="manila-client">State Governor's healthcare commission</span>
         <div class="manila-chips">
-          <span class="manila-chip">Data/Digital</span><span class="manila-chip">Product</span>
+          <span class="manila-chip">Public Sector</span><span class="manila-chip">Healthcare</span><span class="manila-chip">PMO</span>
         </div>
-        <div class="manila-skills-line"><strong>Skills:</strong> UX and product design · Co-creation · Operating under uncertainty</div>
-        <div class="manila-body" style="margin-top:0.4rem;">BI team needed a vision for a tool communicating data insights to non-technical audiences — workstream had stalled for two months. Created design mockups (dashboards, AI-driven insights, social-media-inspired interface) that re-energized client discussions and enabled the team to finalize vision on time. Manager noted the success wouldn't have happened without my initiative.</div>
+        <div class="manila-skills-line"><strong>Skills:</strong> Program management · Cross-functional coordination · Operating without formal authority</div>
+        <div class="manila-body" style="margin-top:0.4rem;">Held together a 30-person cross-functional team across 3 concurrent workstreams with frequent stakeholder bottlenecks and no formal reporting authority. Served as de facto PMO lead — set priorities, built integrated tracking systems, kept momentum by escalating blockers and proactively resetting timelines. Report delivered on time.</div>
       </div>
 
       <div class="manila-doc">
-        <div class="manila-case-title">Insourcing Roles to Global Capabilities Center</div>
+        <div class="manila-case-title">GenAI Use Case Proposal</div>
         <span class="manila-client">Global biopharma company</span>
         <div class="manila-chips">
-          <span class="manila-chip">Data/Digital</span><span class="manila-chip">People &amp; Org</span><span class="manila-chip">Talent &amp; Skills</span>
+          <span class="manila-chip">Healthcare</span><span class="manila-chip">AI/Digital</span><span class="manila-chip">Sprint</span>
         </div>
-        <div class="manila-skills-line"><strong>Skills:</strong> Org and role design · Stakeholder alignment · Execution planning</div>
-        <div class="manila-body" style="margin-top:0.4rem;">Analytics team standing up a Global Capabilities Center (GCC) in India — hired BCG to identify 400 contractor roles to move, phase the transition, and design new role definitions and org. Designed GCC org structure, defined job family/skill hierarchies, created a hiring timeline, and drafted job descriptions for key senior roles.</div>
+        <div class="manila-skills-line"><strong>Skills:</strong> Sprint execution · Co-creation · Directing cross-functional team · Storytelling</div>
+        <div class="manila-body" style="margin-top:0.4rem;">Two-week sprint to respond to a client RFP for the AI build phase. Directed a team of ~3 to build a microsite and CEO video message, co-developed proposal slides with external partners, and synthesized complex AI content into a cohesive narrative under tight time pressure. Format elevated to senior BCG partners as a new approach for AI proposals.</div>
       </div>
 
       <div class="manila-group-label">Social Impact &amp; IP Development</div>
@@ -282,16 +287,6 @@ function renderManila() {
         </div>
         <div class="manila-skills-line"><strong>Skills:</strong> Process mapping · Stakeholder alignment · Expert interviews</div>
         <div class="manila-body" style="margin-top:0.4rem;">BCG engaged to develop a state-wide homelessness response after critical emergency shelters closed down. Authored the playbook for creating new shelter capacity (permitting, vendor selection) — directly influenced the purchase of a facility to house 41 families. Developed comparative case studies across states.</div>
-      </div>
-
-      <div class="manila-doc">
-        <div class="manila-case-title">Non-Profit Alumni Engagement Program</div>
-        <span class="manila-client">Regional branch of national non-profit (pro-bono)</span>
-        <div class="manila-chips">
-          <span class="manila-chip">Pro-bono</span><span class="manila-chip">Social Impact</span>
-        </div>
-        <div class="manila-skills-line"><strong>Skills:</strong> Data analysis · Program design · Customer journey mapping · Co-creation</div>
-        <div class="manila-body" style="margin-top:0.4rem;">Developed an alumni engagement program from scratch to bolster fundraising and recruiting. Led analysis and segmentation of ~32K alumni into nine personas (demographic + psychographic). Defined program objectives, proposed targeted engagements per persona, mapped the user journey, and built the implementation roadmap.</div>
       </div>
 
       <div class="manila-doc">
@@ -2996,7 +2991,7 @@ document.querySelectorAll('.trophy-btn').forEach(btn => {
 let _cfZoomed = false, _cfPhysPage = 0, _cfFlipping = false;
 
 function _cfIsMobile() { return window.innerWidth <= 700; }
-function _cfNumPages() { return _cfIsMobile() ? CF_CASES.length : Math.ceil(CF_CASES.length / 2); }
+function _cfNumPages() { return _cfIsMobile() ? _CF_PAGES.length : Math.ceil(_CF_PAGES.length / 2); }
 function _cfFrontIdx(p) { return p * 2; }
 function _cfBackIdx(p)  { return p * 2 + 1; }
 
@@ -3053,23 +3048,19 @@ function _cfTocHTML() {
     <div class="cf-toc-right">
       <div class="cf-toc-section">
         <div class="cf-toc-hdr">Featured</div>
-        ${item('GenAI use case assessment and proposal','Healthcare · AI/Digital · Strategy','2–3',1,1)}
-        ${item('Sales coverage model redesign','Tech · GTM · Sales · People &amp; Org','4',2,3)}
-        ${item('Project management for healthcare commission','Public Sector · Healthcare','5',2,4)}
-        ${item('Investment playbook and executive workshop development','Climate · Industrial Goods · Strategy','6',3,5)}
+        ${item('GenAI use case assessment','Healthcare · AI/Digital · Strategy','2',0,1)}
+        ${item('Self-service BI tool design','Data/Digital · Product · UX','3',1,2)}
+        ${item('Sales coverage model redesign','Tech · GTM · Sales · People &amp; Org','4',1,3)}
+        ${item('Investment playbook &amp; executive workshop','Climate · Industrial Goods · Strategy','5',2,4)}
       </div>
       <div class="cf-toc-section">
         <div class="cf-toc-hdr">Additional Casework</div>
-        ${item('Post M&amp;A GTM strategy','Industrial Goods · GTM · Product','7',3,6)}
-        ${item('Due diligence of a rare disease biopharma company','Healthcare · Due Diligence','7',3,6)}
-        ${item('Service business intelligence tool design','Data/Digital · Product','8',4,7)}
-        ${item('Insourcing roles to global capabilities center','Data/Digital · People &amp; Org','8',4,7)}
+        ${item('Post M&amp;A GTM strategy · Alumni engagement program','Industrial Goods · GTM · User Research','6',2,5)}
+        ${item('Healthcare commission PMO · GenAI use case proposal','Public Sector · AI/Digital · Sprint','7',3,6)}
       </div>
       <div class="cf-toc-section">
         <div class="cf-toc-hdr">Social Impact &amp; IP Development</div>
-        ${item('State housing &amp; homelessness strategy','Public Sector · Social Impact','9',4,8)}
-        ${item('Non-profit alumni engagement program','Pro-bono · Social Impact','9',4,8)}
-        ${item('Talent and skills IP development','Future of Work · Thought Leadership','9',4,8)}
+        ${item('State housing &amp; homelessness strategy · Talent &amp; skills IP','Public Sector · Future of Work','8',3,7)}
       </div>
     </div>
   </div>`;
@@ -3150,9 +3141,12 @@ function _cfSocialHTML(cases) {
   return `<div style="height:100%;display:flex;flex-direction:column;gap:0;font-size:0.82em;justify-content:space-around;">${joined}</div>`;
 }
 
+// Filtered page list — hidden entries are preserved in CF_CASES but never rendered
+const _CF_PAGES = CF_CASES.filter(c => !c.hidden);
+
 function _cfPageHTML(idx) {
-  if (idx === undefined || idx < 0 || idx >= CF_CASES.length) return '';
-  const c = CF_CASES[idx];
+  if (idx === undefined || idx < 0 || idx >= _CF_PAGES.length) return '';
+  const c = _CF_PAGES[idx];
   if (c.type === 'toc')      return _cfTocHTML();
   if (c.type === 'featured') return _cfFeaturedHTML(c);
   if (c.type === 'compact')  return _cfCompactHTML(c.cases);
@@ -3204,7 +3198,7 @@ function _updateCfNav() {
 
 function _cfFlipMobile(dir) {
   const target = _cfPhysPage + dir;
-  if (target < 0 || target >= CF_CASES.length) return;
+  if (target < 0 || target >= _CF_PAGES.length) return;
   _cfFlipping = true;
   const rp = document.getElementById('cf-right-page');
   rp.classList.add('cf-fade');

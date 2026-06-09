@@ -2,7 +2,8 @@
 const CF_CASES = [
   /* 0 – TOC */
   { type:'toc' },
-  /* 1 – GenAI Assessment */
+
+  /* 1 – GenAI Assessment (featured, unchanged) */
   { type:'featured',
     title:'GENAI USE CASE ASSESSMENT',
     client:'Global biopharma company',
@@ -14,19 +15,21 @@ const CF_CASES = [
     outcome:'Client moved forward with phased plan; first 5 use cases projected to save $40M annually. Full buy-in from BUs, Finance, and IT.',
     learnings:'Early tech adoption at large companies prioritizes quick wins and safe bets. Pushback from BUs due to mistrust of centralized initiatives underscores the importance of aligned incentives.',
   },
-  /* 2 – GenAI Proposal */
+
+  /* 2 – Self-Service BI Tool (promoted to featured) */
   { type:'featured',
-    title:'GENAI USE CASE PROPOSAL',
+    title:'SELF-SERVICE BI TOOL DESIGN',
     client:'Global biopharma company',
-    tags:['Healthcare','AI/Digital','Strategy','Value Creation'],
-    skills:'Business development · Partnership development · Web dev · Storytelling & synthesis · Co-creation · Presentation design',
-    summary:'Developed materials supporting a $15M joint proposal with an external partner to implement key use cases — one of the first of its kind at BCG.',
-    context:'As a follow-on to the assessment, the client released an RFP for the build phase. The case team kicked off a two-week sprint to respond.',
-    contribution:['Collaborated with external partners to co-develop highly designed proposal slides','Consulted BCG X colleagues and North America AI node to create case studies','Directed a team of ~3 to build a microsite showcasing case studies and a video message from BCG\'s CEO'],
-    outcome:'Client selected another firm on price. Key learnings elevated to senior BCG partner discussions on AI/GenAI strategy moving forward.',
-    learnings:'Client chose implementation over stakeholder and change management. We may not have articulated clearly enough the necessity of buy-in and org readiness to realize the value of new technology.',
+    tags:['Data/Digital','Product','UX'],
+    skills:'UX and product design · Co-creation · Initiative · Operating under ambiguity',
+    summary:'Unstalled a two-month deadlock on a BI tool vision — designed product mockups from scratch that re-energized client engagement and got the workstream across the finish line.',
+    context:'BI team needed a north star vision for a self-service analytics tool for non-technical audiences. The workstream had stalled for two months due to vague objectives and unproductive client sessions.',
+    contribution:['Took ownership of the stalled workstream without being asked — proactively drove the design direction','Created product mockups from scratch, drawing on best practices across BCG and leading data tools: dashboards, AI-driven insights, social-media-inspired interface','Facilitated sessions that re-energized client discussions and unblocked the team','Enabled the workstream to finalize vision and strategy on time'],
+    outcome:'Workstream delivered on time. Manager specifically noted the result would not have been possible without my initiative.',
+    learnings:'Sometimes a stalled workstream just needs someone to put something concrete on the table. A clear visual provocation moves discussions faster than another working session.',
   },
-  /* 3 – Sales Coverage */
+
+  /* 3 – Sales Coverage (featured, unchanged) */
   { type:'featured',
     title:'SALES COVERAGE MODEL REDESIGN',
     client:'Fortune 500 engineering software company',
@@ -38,31 +41,21 @@ const CF_CASES = [
     outcome:'CRO and worldwide sales leaders aligned on RACI, coverage model, and ratios per customer segment. Case team extended for next phase.',
     learnings:'New CRO challenged the Sales org budget, dwarfed by Customer Success. Outside perspective shifted the org from an incumbent "farming" mindset to a "hunter" mindset where Sales takes priority.',
   },
-  /* 4 – Healthcare Commission */
-  { type:'featured',
-    title:'PROJECT MANAGEMENT FOR HEALTHCARE COMMISSION',
-    client:"State Governor's healthcare commission",
-    tags:['Public Sector','Healthcare'],
-    skills:'Project management · Stakeholder alignment · Mentorship',
-    summary:"Led project management across a BCG team of 15 and client team of 15 to develop healthcare policy recommendations for a state government's annual Commission report.",
-    context:"State governor created the commission post-Covid to develop long-term, system-wide recommendations. Members include blue-ribbon, nationally recognized leaders across New York's healthcare ecosystem.",
-    contribution:['Served as Acting Project Leader in the PMO, partnering with BCG partners and the Deputy Secretary of Health','Defined and aligned work plan priorities, recommendation frameworks, and report structure','Established integrated timelines and tracking systems across 3 case teams and senior stakeholders','Developed materials to socialize recommendations with the Governor and health system leaders','Mentored and managed a junior team member'],
-    outcome:'Report draft completed with recommendations socialized across key leaders in state government and across the health system.',
-    learnings:'Recommendations had to move through a large stakeholder set with frequent bottlenecks — flexible planning and proactive expectation-setting were essential.',
-  },
-  /* 5 – Investment Playbook */
+
+  /* 4 – Investment Playbook (featured, reframed) */
   { type:'featured',
     title:'INVESTMENT PLAYBOOK & EXECUTIVE WORKSHOP',
     client:'Environmental services family office',
     tags:['Climate & Sustainability','Industrial Goods','Strategy'],
-    skills:'Process mapping · Cross-functional collaboration · Stakeholder alignment · Creative workshop design · Operating under ambiguity',
-    summary:"Designed and co-facilitated a 6-hour workshop for a CEO's direct reports to devise an investment playbook directing up to $1B in control investments over the next decade.",
-    context:"Given capital inflow from a recent portfolio sale, the CEO hired BCG to develop a strategic investment playbook. The org had considered chemicals cleanup for nearly a decade with no action, due in part to its siloed nature.",
-    contribution:['Partnered with BCG advisor (ex-EPA) to develop a detailed backgrounder on environmental chemicals cleanup as an investment opportunity','Designed a 6-hour interactive workshop simulating the investment playbook live with the CEO\'s direct reports, using chemicals cleanup as a live example','Coordinated across two other workstreams in a rapid three-week sprint'],
-    outcome:'Workshop and playbook earned a direct shout-out from the client. Helped break down silos by rallying people around a common problem and systems.',
-    learnings:'Project started with only high-level goals. Both the problem and success criteria were living concepts — defined through deep understanding and collaboration with the client.',
+    skills:'Workshop design · Operating under ambiguity · Cross-functional coordination · Stakeholder alignment · Sprint execution',
+    summary:'Took a vague brief and a blank page — designed a 6-hour interactive workshop from scratch in a three-week sprint, turning years of organizational deadlock into a live, aligned decision-making process.',
+    context:'The CEO had capital to deploy and nearly a decade of organizational deadlock on where to put it. BCG was brought in with high-level goals and no defined scope — both the problem definition and success criteria had to be built from the ground up.',
+    contribution:['Translated an ambiguous brief into concrete workshop design from scratch — agenda, facilitation materials, and simulation mechanics','Partnered with a BCG advisor (ex-EPA) to develop a backgrounder grounding the executive team in chemicals cleanup as a live investment opportunity','Coordinated across two parallel workstreams in a rapid three-week sprint','Designed the workshop itself as the forcing function — structured so the executive team had to make real investment decisions in the room'],
+    outcome:'Workshop broke years of organizational deadlock and earned a direct client shout-out. The live simulation made the investment playbook feel real before it was finished.',
+    learnings:'Starting without a defined problem is the hardest kind of work — and the most useful. Clarity emerged through the making, not before it.',
   },
-  /* 6 – Post M&A + Due Diligence (compact, 2 cases) */
+
+  /* 5 – Post M&A GTM + Alumni Engagement (compact pair) */
   { type:'compact', cases:[
     { title:'POST M&A GTM STRATEGY',
       client:'Americas division of global industrial goods company',
@@ -72,6 +65,39 @@ const CF_CASES = [
       contribution:['Delivered executive workshops enabling key decisions around new product portfolio, incl. cross-selling & rebranding','Shaped regional sales strategy through quantitative and qualitative market analyses','Proposed channel incentive programs given market best practices'],
       outcome:'Efforts enabled BCG to win the second phase of implementation work.',
     },
+    { title:'NON-PROFIT ALUMNI ENGAGEMENT PROGRAM',
+      client:'Regional branch of national non-profit',
+      tags:['User Research','Growth','Program Design'],
+      skills:'Data analysis · Persona development · Customer journey mapping · Program design · Co-creation',
+      context:'Non-profit needed an alumni engagement program to drive fundraising and recruiting — with a heterogeneous ~32K alumni base, no existing engagement infrastructure, and no clear picture of who the alumni were or what they wanted.',
+      contribution:['Led analysis and segmentation of ~32K alumni into nine demographic and psychographic personas','Mapped the full user journey and designed targeted engagement approaches per persona','Built the implementation roadmap from objectives through channels and metrics'],
+      outcome:'Program design delivered from scratch — nine personas, full journey map, and implementation roadmap ready for execution.',
+    },
+  ]},
+
+  /* 6 – Healthcare PMO + GenAI Proposal (compact pair, demoted + reframed) */
+  { type:'compact', cases:[
+    { title:'PROJECT MANAGEMENT FOR HEALTHCARE COMMISSION',
+      client:"State Governor's healthcare commission",
+      tags:['Public Sector','Healthcare','PMO'],
+      skills:'Program management · Cross-functional coordination · Operating without formal authority',
+      context:'Held together a 30-person cross-functional team — BCG and client — across 3 concurrent workstreams with frequent stakeholder bottlenecks and no formal reporting authority.',
+      contribution:['Served as de facto PMO lead across 3 case teams — set priorities, defined frameworks, built integrated tracking systems','Kept momentum despite recurring bottlenecks: escalated blockers, reset expectations, restructured timelines proactively','Developed materials to socialize recommendations up to the Governor'],
+      outcome:'Report completed and recommendations socialized across state government and health system leaders.',
+    },
+    { title:'GENAI USE CASE PROPOSAL',
+      client:'Global biopharma company',
+      tags:['Healthcare','AI/Digital','Sprint'],
+      skills:'Sprint execution · Co-creation · Directing cross-functional team · Storytelling',
+      context:'Two-week sprint to respond to a client RFP for the build phase of a prior AI/GenAI assessment. The challenge: build compelling, differentiated materials fast — in close collaboration with external partners.',
+      contribution:['Directed a team of ~3 to build a microsite showcasing BCG case studies and a CEO video message','Co-developed proposal slides with external partners, integrating BCG X expertise and North America AI node','Synthesized complex AI implementation content into a cohesive narrative under tight time pressure'],
+      outcome:'Client selected another firm on price. Microsite and CEO video format elevated to senior BCG partners as a new approach for AI proposals.',
+    },
+  ]},
+
+  /* 7 – Due Diligence (hidden — preserved, not rendered) */
+  { hidden:true,
+    type:'compact', cases:[
     { title:'DUE DILIGENCE — SPECIALTY PHARMA',
       client:'Global biopharma company',
       tags:['Healthcare','Due Diligence'],
@@ -81,16 +107,10 @@ const CF_CASES = [
       outcome:'Module delivered on time — senior team noted the quality of the financial model and competitor analyses.',
     },
   ]},
-  /* 7 – BI Tool + Insourcing (compact, 2 cases) */
-  { type:'compact', cases:[
-    { title:'SELF-SERVICE BI TOOL DESIGN',
-      client:'Global biopharma company',
-      tags:['Data/Digital','Product'],
-      skills:'UX and product design · Co-creation · Operating under uncertainty',
-      context:'BI team needed a vision for a tool communicating data insights to non-technical audiences. The workstream had stalled for 2 months due to vague objectives and unproductive client engagement.',
-      contribution:['Created design mockups drawing from BCG and best-practice data tools: dashboards, AI-driven insights, and a social-media-inspired interface','Designs re-energized client discussions and enabled the team to finalize vision and strategy on time'],
-      outcome:"Manager later noted that our success wouldn't have been possible without my initiative.",
-    },
+
+  /* 8 – Insourcing to GCC (hidden — preserved, not rendered) */
+  { hidden:true,
+    type:'compact', cases:[
     { title:'INSOURCING TO GLOBAL CAPABILITIES CENTER',
       client:'Global biopharma company',
       tags:['Data/Digital','People & Org','Talent & Skills'],
@@ -100,19 +120,14 @@ const CF_CASES = [
       outcome:'Org design and role framework delivered on time, enabling the team to begin hiring against the new structure.',
     },
   ]},
-  /* 8 – Social Impact (3 cases) */
+
+  /* 9 – Social Impact (Housing + Talent & Skills; Alumni moved to compact above) */
   { type:'social', cases:[
     { title:'HOUSING & HOMELESSNESS STRATEGY',
       client:'Rhode Island Housing Department',
       tags:['Public Sector','Social Impact'],
       skills:'Process mapping · Stakeholder alignment · Expert interviews',
       summary:'BCG engaged to develop a state-wide homelessness response after critical emergency shelters closed — read the full report <a href="https://www.bostonglobe.com/2023/04/24/metro/something-is-going-break-8-things-know-about-startling-new-report-detailing-housing-crisis-rhode-island/" target="_blank" rel="noopener">here</a>. Authored playbook for creating new shelter capacity — permitting and vendor selection — directly influencing the <a href="https://turnto10.com/news/local/department-of-housing-approved-purchase-charlesgate-facility-house-homeless-families-shelter-winter-amos-house-rhode-island-service-nursing-center-providence-october-31-2023" target="_blank" rel="noopener">purchase of a facility</a> to house 41 families. Developed comparative case studies across states.',
-    },
-    { title:'NON-PROFIT ALUMNI ENGAGEMENT PROGRAM',
-      client:'Regional branch of national non-profit (pro-bono)',
-      tags:['Pro-bono','Social Impact'],
-      skills:'Data analysis · Program design · Customer journey mapping · Co-creation',
-      summary:"Developed alumni engagement program from scratch to bolster fundraising & recruiting. Led analysis and segmentation of ~32K alumni into nine personas (demographic + psychographic). Defined program objectives, proposed targeted engagements per persona, mapped the user journey, and built the implementation roadmap.",
     },
     { title:'TALENT & SKILLS IP DEVELOPMENT',
       client:'BCG Bruce Henderson Institute',
@@ -122,4 +137,3 @@ const CF_CASES = [
     },
   ]},
 ];
-
