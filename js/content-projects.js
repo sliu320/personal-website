@@ -270,48 +270,56 @@ const PROJECTS_DATA = [
     tags: ['Vibecoded', 'LLM', 'MIT Sloan', 'Education', 'Top 5 — Hack for Sloan 🏅'],
     desc: 'Course research and bidding tool for MIT Sloan students. Top 5 at Hack for Sloan, a Lovable-sponsored hackathon for builds that improve life at Sloan.',
     customContent: `
-      <div class="proj-sections">
-        <div class="proj-section" data-s="problem">
-          <div class="proj-section-label">Problem</div>
-          <div class="proj-section-body">Sloan students bid on courses with points — but the information needed to bid well is scattered across class catalogs, student org spreadsheets, and second-year word-of-mouth. No one knows how much to bid. The result is hype-driven scrambles for classes students might pass on with better information.</div>
-        </div>
-        <div class="proj-section" data-s="built">
-          <div class="proj-section-label">What I Built</div>
-          <div class="proj-section-body"><span class="proj-built-lead">Vibecoded a course research tool that consolidates everything — class info, professor reputation, and historical bid data — into one place.</span>
-          <ul>
-            <li>Identified student org bidding spreadsheets as first-class data — where real signal lives, not the official catalog</li>
-            <li>Designed the unified course card: description + teaching awards + round-by-round bid history with point estimates</li>
-            <li>Built and iterated on an LLM chat trained on all course content — turned out to be the sleeper feature, used more than browse/filter once discovered</li>
-          </ul></div>
-        </div>
-        <div class="proj-rhs-stack">
-          <div class="proj-section" data-s="outcome">
-            <div class="proj-section-label">Outcome</div>
-            <div class="proj-section-body"><div class="proj-stat-chips">
-              <span class="proj-stat-chip hi">🏅 Top 5, Hack for Sloan</span>
-              <span class="proj-stat-chip">Lovable-sponsored</span>
-              <span class="proj-stat-chip">Used personally + shared</span>
-            </div></div>
+      <div class="proj-inner-tabs">
+        <button class="proj-inner-tab active" data-inner="bb-content">📋 Overview</button>
+        <button class="proj-inner-tab" data-inner="bb-demo">🎬 Demo</button>
+      </div>
+      <div class="proj-inner-panel active" id="inner-bb-content">
+        <div class="proj-sections">
+          <div class="proj-section" data-s="problem">
+            <div class="proj-section-label">Problem</div>
+            <div class="proj-section-body">Sloan students bid on courses with points — but the information needed to bid well is scattered across class catalogs, student org spreadsheets, and second-year word-of-mouth. No one knows how much to bid. The result is hype-driven scrambles for classes students might pass on with better information.</div>
           </div>
-          <div class="proj-section" data-s="learnings">
-            <div class="proj-section-label">Learnings</div>
-            <div class="proj-section-body">The LLM chat was the sleeper feature — people reached for it more than anything once they discovered it. Data sourcing was the hardest part: peer bidding history lives in unstructured Google Sheets, not any official system.</div>
+          <div class="proj-section" data-s="built">
+            <div class="proj-section-label">What I Built</div>
+            <div class="proj-section-body"><span class="proj-built-lead">Vibecoded a course research tool that consolidates everything — class info, professor reputation, and historical bid data — into one place.</span>
+            <ul>
+              <li>Identified student org bidding spreadsheets as first-class data — where real signal lives, not the official catalog</li>
+              <li>Designed the unified course card: description + teaching awards + round-by-round bid history with point estimates</li>
+              <li>Built and iterated on an LLM chat trained on all course content — turned out to be the sleeper feature, used more than browse/filter once discovered</li>
+            </ul></div>
+          </div>
+          <div class="proj-rhs-stack">
+            <div class="proj-section" data-s="outcome">
+              <div class="proj-section-label">Outcome</div>
+              <div class="proj-section-body"><div class="proj-stat-chips">
+                <span class="proj-stat-chip hi">🏅 Top 5, Hack for Sloan</span>
+                <span class="proj-stat-chip">Lovable-sponsored</span>
+                <span class="proj-stat-chip">Used personally + shared</span>
+              </div></div>
+            </div>
+            <div class="proj-section" data-s="learnings">
+              <div class="proj-section-label">Learnings</div>
+              <div class="proj-section-body">The LLM chat was the sleeper feature — people reached for it more than anything once they discovered it. Data sourcing was the hardest part: peer bidding history lives in unstructured Google Sheets, not any official system.</div>
+            </div>
           </div>
         </div>
+      </div>
+      <div class="proj-inner-panel" id="inner-bb-demo">
         <div class="proj-section proj-section--demo" data-s="demo">
           <div class="proj-section-label">Demo &nbsp;<a href="https://beaver-bid.lovable.app/" target="_blank" rel="noopener" class="proj-demo-live-link">↗ beaver-bid.lovable.app</a></div>
           <div class="proj-demo-strip">
             <figure class="proj-demo-item">
+              <p class="proj-demo-caption"><span class="proj-demo-num">1.</span> AI Advisor filters courses and surfaces recommended classes. Award-winning professors are tagged; student intel and bid history are shown inline.</p>
               <img src="assets/images/Projects/BeaverBid/beaver bid 1.png" alt="AI Advisor filtering courses" class="proj-demo-img proj-demo-img--wide" loading="lazy">
-              <figcaption>AI Advisor filters courses and surfaces recommended classes. Award-winning professors are tagged; student intel and bid history are shown inline.</figcaption>
             </figure>
             <figure class="proj-demo-item">
+              <p class="proj-demo-caption"><span class="proj-demo-num">2.</span> Build a bidding scenario with pre-filled point recommendations based on fill rates and round history. Auto-balance allocates your full 1,000 pts; time conflicts are flagged automatically.</p>
               <img src="assets/images/Projects/BeaverBid/beaver bid 2.png" alt="Bid Simulator" class="proj-demo-img proj-demo-img--tall" loading="lazy">
-              <figcaption>Build a bidding scenario with pre-filled point recommendations based on fill rates and round history. Auto-balance allocates your full 1,000 pts; time conflicts are flagged automatically.</figcaption>
             </figure>
             <figure class="proj-demo-item">
+              <p class="proj-demo-caption"><span class="proj-demo-num">3.</span> Upload your transcript to track graduation progress, including towards each Sloan certificate.</p>
               <img src="assets/images/Projects/BeaverBid/beaver bid 3.png" alt="Degree and Certificate Progress" class="proj-demo-img proj-demo-img--wide" loading="lazy">
-              <figcaption>Upload your transcript to track graduation progress, including towards each Sloan certificate.</figcaption>
             </figure>
           </div>
         </div>
@@ -365,45 +373,53 @@ const PROJECTS_DATA = [
     tags: ['Vibecoded', 'Community', 'Web App'],
     desc: 'A social GeoGuessr for my MBA cohort — built to keep us connected while scattered across the globe for the summer.',
     customContent: `
-      <div class="proj-sections">
-        <div class="proj-section" data-s="problem">
-          <div class="proj-section-label">Problem</div>
-          <div class="proj-section-body">During the summer, my cohort was scattered across the globe — different cities, time zones, internships. I wanted a way for us to stay in touch and share what our lives actually looked like, not just check-ins.</div>
-        </div>
-        <div class="proj-section" data-s="built">
-          <div class="proj-section-label">What I Built</div>
-          <div class="proj-section-body"><span class="proj-built-lead">A social GeoGuessr: post a photo of your day, your cohort guesses where in the world you are.</span>
-          <ul>
-            <li>Photo uploads with optional hints and captions; poster sets a guessing window (e.g. 24 hrs or after 30 guesses)</li>
-            <li>Others drop a pin on a map and leave comments or reactions — guesses hidden until the reveal</li>
-            <li>After the window closes, everyone sees all guesses on the map and who got closest</li>
-            <li>Group stats page: a pin-drop heat map and a leaderboard ranked by proximity accuracy across all rounds</li>
-          </ul></div>
-        </div>
-        <div class="proj-rhs-stack">
-          <div class="proj-section" data-s="outcome">
-            <div class="proj-section-label">Outcome</div>
-            <div class="proj-section-body"><div class="proj-stat-chips">
-              <span class="proj-stat-chip hi">Half the cohort joined day 1</span>
-              <span class="proj-stat-chip">Active participation</span>
-              <span class="proj-stat-chip">Vibecoded</span>
-            </div></div>
+      <div class="proj-inner-tabs">
+        <button class="proj-inner-tab active" data-inner="wa-content">📋 Overview</button>
+        <button class="proj-inner-tab" data-inner="wa-demo">🎬 Demo</button>
+      </div>
+      <div class="proj-inner-panel active" id="inner-wa-content">
+        <div class="proj-sections">
+          <div class="proj-section" data-s="problem">
+            <div class="proj-section-label">Problem</div>
+            <div class="proj-section-body">During the summer, my cohort was scattered across the globe — different cities, time zones, internships. I wanted a way for us to stay in touch and share what our lives actually looked like, not just check-ins.</div>
+          </div>
+          <div class="proj-section" data-s="built">
+            <div class="proj-section-label">What I Built</div>
+            <div class="proj-section-body"><span class="proj-built-lead">A social GeoGuessr: post a photo of your day, your cohort guesses where in the world you are.</span>
+            <ul>
+              <li>Photo uploads with optional hints and captions; poster sets a guessing window (e.g. 24 hrs or after 30 guesses)</li>
+              <li>Others drop a pin on a map and leave comments or reactions — guesses hidden until the reveal</li>
+              <li>After the window closes, everyone sees all guesses on the map and who got closest</li>
+              <li>Group stats page: a pin-drop heat map and a leaderboard ranked by proximity accuracy across all rounds</li>
+            </ul></div>
+          </div>
+          <div class="proj-rhs-stack">
+            <div class="proj-section" data-s="outcome">
+              <div class="proj-section-label">Outcome</div>
+              <div class="proj-section-body"><div class="proj-stat-chips">
+                <span class="proj-stat-chip hi">Half the cohort joined day 1</span>
+                <span class="proj-stat-chip">Active participation</span>
+                <span class="proj-stat-chip">Vibecoded</span>
+              </div></div>
+            </div>
           </div>
         </div>
+      </div>
+      <div class="proj-inner-panel" id="inner-wa-demo">
         <div class="proj-section proj-section--demo" data-s="demo">
           <div class="proj-section-label">Demo</div>
           <div class="proj-demo-strip">
             <figure class="proj-demo-item">
+              <p class="proj-demo-caption"><span class="proj-demo-num">1.</span> Upload a photo, set a guessing window.</p>
               <img src="assets/images/Projects/WhereAbout/Wherabout 1.png" alt="Upload a photo" class="proj-demo-img proj-demo-img--tall" loading="lazy">
-              <figcaption>Upload a photo of your day and others guess where you are. Add hints or a caption for context, and set a guessing window — e.g. 24 hours or after 30 guesses.</figcaption>
             </figure>
             <figure class="proj-demo-item">
+              <p class="proj-demo-caption"><span class="proj-demo-num">2.</span> Drop a pin, react — guesses hidden until reveal.</p>
               <img src="assets/images/Projects/WhereAbout/WhereAbout 2.png" alt="Drop a pin and guess" class="proj-demo-img proj-demo-img--tall" loading="lazy">
-              <figcaption>Others drop a pin on the map and leave comments or reactions. Guesses stay hidden until the reveal — then everyone sees where everyone guessed and who got closest.</figcaption>
             </figure>
             <figure class="proj-demo-item">
+              <p class="proj-demo-caption"><span class="proj-demo-num">3.</span> Heat map and leaderboard by accuracy.</p>
               <img src="assets/images/Projects/WhereAbout/Wherabout 3.png" alt="Group stats and leaderboard" class="proj-demo-img proj-demo-img--tall" loading="lazy">
-              <figcaption>The group page shows a heat map of all pin drops and a leaderboard ranked by how close each person's guesses have been across all rounds.</figcaption>
             </figure>
           </div>
         </div>

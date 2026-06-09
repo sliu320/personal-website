@@ -3068,7 +3068,7 @@ document.querySelectorAll('.trophy-btn').forEach(btn => {
 /* Pages map: CF_CASES[0]=TOC(right, initial), [1]=GenAI Assess(left p1), [2]=GenAI Prop(right p1),
    [3]=Sales(left p2), [4]=Healthcare(right p2), [5]=Investment(left p3),
    [6]=PostM&A+DD(right p3), [7]=BI+Insourcing(left p4), [8]=Social(right p4) */
-let _cfZoomed = false, _cfPhysPage = 0, _cfFlipping = false;
+let _cfZoomed = false, _cfPhysPage = 0;
 
 function _cfIsMobile() { return window.innerWidth <= 700; }
 // Desktop shows two content pages per spread (right = p*2, left = p*2−1).
@@ -3253,7 +3253,6 @@ function _cfBuildScene() {
 
 /* Jump directly to a page — desktopPhys for book spread, mobileIdx for single-page */
 function cfJumpTo(desktopPhys, mobileIdx) {
-  if (_cfFlipping) return;
   const target = _cfIsMobile() ? (mobileIdx ?? desktopPhys) : desktopPhys;
   _cfPhysPage = Math.max(0, Math.min(target, _cfNumPages() - 1));
   _cfBuildScene();
@@ -3277,94 +3276,27 @@ function _updateCfNav() {
 function _cfFlipMobile(dir) {
   const target = _cfPhysPage + dir;
   if (target < 0 || target >= _CF_PAGES.length) return;
-  _cfFlipping = true;
+  _cfPhysPage = target;
   const rp = document.getElementById('cf-right-page');
-
-  // Cross-fade: new page fades IN on top — background stays cream, never transparent
-  const overlay = document.createElement('div');
-  overlay.style.cssText = [
-    'position:absolute', 'inset:0', 'z-index:2',
-    'background:#fefcf5', 'overflow-y:auto', 'overflow-x:hidden',
-    'padding:0.75rem 0.85rem', 'box-sizing:border-box',
-    'opacity:0', 'transition:opacity 0.2s ease',
-  ].join(';');
-  overlay.innerHTML = _cfPageHTML(target);
-  rp.appendChild(overlay);
-
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    overlay.style.opacity = '1';
-  }));
-
-  setTimeout(() => {
-    _cfPhysPage = target;
-    rp.innerHTML = _cfPageHTML(_cfPhysPage);
-    rp.scrollTop = 0;
-    _updateCfNav();
-    _cfFlipping = false;
-  }, 220);
+  rp.innerHTML = _cfPageHTML(_cfPhysPage);
+  rp.scrollTop = 0;
+  _updateCfNav();
 }
 
 function _cfFlip(dir) {
-  if (_cfFlipping) return;
   if (_cfIsMobile()) { _cfFlipMobile(dir); return; }
 
   const targetPhys = _cfPhysPage + dir;
   if (targetPhys < 0 || targetPhys >= _cfNumPages()) return;
-  _cfFlipping = true;
 
-  const wrap = document.getElementById('cf-pages');
-  const lp   = document.getElementById('cf-left-page');
-  const rp   = document.getElementById('cf-right-page');
+  _cfPhysPage = targetPhys;
 
-  if (dir > 0) {
-    // ── Forward flip ─────────────────────────────────────────
-    rp.innerHTML = _cfPageHTML(_cfFrontIdx(targetPhys));
+  const lp = document.getElementById('cf-left-page');
+  const rp = document.getElementById('cf-right-page');
 
-    const turner = document.createElement('div');
-    turner.className = 'cf-turner';
-    turner.innerHTML = `
-      <div class="cf-turner-face">${_cfPageHTML(_cfFrontIdx(_cfPhysPage))}</div>
-      <div class="cf-turner-back">${_cfPageHTML(_cfBackIdx(_cfPhysPage))}</div>`;
-    wrap.appendChild(turner);
-
-    requestAnimationFrame(() => requestAnimationFrame(() => turner.classList.add('flip-fwd')));
-
-    setTimeout(() => {
-      _cfPhysPage = targetPhys;
-      lp.innerHTML = _cfPageHTML(_cfBackIdx(_cfPhysPage - 1));
-      _updateCfNav();
-      turner.remove();
-      _cfFlipping = false;
-    }, 510);
-
-  } else {
-    // ── Back flip: reverse of forward ─────────────────────────
-    // Turner starts at -180° (visually on the LEFT side, back face = old left page
-    // content), then sweeps rightward to 0° where its FACE (destination right page)
-    // lands on the right. rp is NOT updated until the turner reaches 0° and covers
-    // it — updating rp at the start would cause the right page to snap to new content
-    // before the animation begins (the turner can't cover rp from the left).
-    lp.innerHTML = targetPhys > 0 ? _cfPageHTML(_cfBackIdx(targetPhys - 1)) : '';
-    // rp intentionally left showing current content until the turner covers it
-
-    const turner = document.createElement('div');
-    turner.className = 'cf-turner cf-turner-rev';
-    turner.innerHTML = `
-      <div class="cf-turner-face">${_cfPageHTML(_cfFrontIdx(targetPhys))}</div>
-      <div class="cf-turner-back">${_cfPageHTML(_cfBackIdx(targetPhys))}</div>`;
-    wrap.appendChild(turner);
-
-    requestAnimationFrame(() => requestAnimationFrame(() => turner.classList.add('flip-rev')));
-
-    setTimeout(() => {
-      _cfPhysPage = targetPhys;
-      // Swap rp under the cover of the turner face (now at 0°, same content) — invisible to user
-      rp.innerHTML = _cfPageHTML(_cfFrontIdx(targetPhys));
-      _updateCfNav();
-      turner.remove();
-      _cfFlipping = false;
-    }, 510);
-  }
+  lp.innerHTML = _cfPhysPage > 0 ? _cfPageHTML(_cfBackIdx(_cfPhysPage - 1)) : '';
+  rp.innerHTML = _cfPageHTML(_cfFrontIdx(_cfPhysPage));
+  _updateCfNav();
 }
 
 document.getElementById('cf-prev-arrow').addEventListener('click', () => _cfFlip(-1));
@@ -3745,7 +3677,13 @@ function openCommunityZoom() {
   if (_communityZoomed) return;
   _communityZoomed = true;
   navMenu.classList.remove('open');
-  _zoomToHotspot('polaroids', 1.8, () => _openZoomUI('community-zoom-overlay', 'community-zoom-back'), '50%');
+  _zoomToHotspot('polaroids', 1.8, () => {
+    _openZoomUI('community-zoom-overlay', 'community-zoom-back');
+    // Always start scrolled to top so CBC (Community Building Chair) card is first visible
+    const overlay = document.getElementById('community-zoom-overlay');
+    overlay.scrollTop = 0;
+    requestAnimationFrame(() => { overlay.scrollTop = 0; });
+  }, '50%');
 }
 function closeCommunityZoom() {
   if (!_communityZoomed) return;
