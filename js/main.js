@@ -969,8 +969,8 @@ function renderWorldMap() {
   requestAnimationFrame(() => {
     const isMob = window.innerWidth <= 600;
     _wmMap = L.map('wm-leaflet', {
-      center: isMob ? [28, -25] : [30, 10],
-      zoom: 2,
+      center: isMob ? [20, 0] : [30, 10],
+      zoom: isMob ? 1 : 2,
       zoomControl: true,
       attributionControl: false,
       scrollWheelZoom: true,

@@ -4180,11 +4180,12 @@
       width: 90vw !important;
       max-width: 90vw !important;
       outline-width: 10px !important;
-      overflow: hidden !important;
+      overflow: visible !important; /* allow ::after label to show above frame */
     }
     #modal-bg.wm-mode #wm-leaflet {
       height: min(56vw, 300px) !important;
       min-height: 200px !important;
       border-radius: 0 !important;
+      overflow: hidden !important; /* clip map tiles to container */
     }
   }
