@@ -1514,7 +1514,7 @@
       top: 7%; left: 11%; right: 11%; bottom: 13%;
       display:flex; flex-direction:column;
       overflow:hidden; border-radius:12px 12px 12px 12px;
-      background:#f0eefa; /* solid backing so monitor image never bleeds through */
+      background:#f8f6ff; /* solid backing so monitor image never bleeds through */
     }
     /* Override browser chrome to fit inside the monitor */
     .monitor-screen-inset .browser-chrome {
@@ -1524,7 +1524,7 @@
     .monitor-screen-inset .browser-content {
       flex:1; margin:0; overflow-y:scroll;
       min-height:0; padding:0.9rem 1.1rem 1.1rem;
-      background:linear-gradient(to bottom, #f0eefa 0%, #e8e2f8 60%, #ccc4e8 100%);
+      background:linear-gradient(to bottom, #f8f6ff 0%, #f4f0fe 55%, #e0d8f4 80%, #c8bce8 100%);
     }
     .monitor-screen-inset .browser-tabs {
       margin-bottom:0;
@@ -2317,7 +2317,7 @@
       margin-bottom:-2px;
     }
     .browser-tab.active {
-      background:#f0eefa;
+      background:#f8f6ff;
       color:#1a0830; font-weight:600;
       border-color:#1a1208;
       z-index:2;
@@ -2326,7 +2326,7 @@
       background:#e0c8d8; color:#1a0830;
     }
     .browser-content {
-      background:linear-gradient(to bottom, #f0eefa 0%, #e8e2f8 60%, #ccc4e8 100%);
+      background:linear-gradient(to bottom, #f8f6ff 0%, #f4f0fe 55%, #e0d8f4 80%, #c8bce8 100%);
       border:1px solid #1a1208;
       border-bottom:none;
       border-radius:0;
