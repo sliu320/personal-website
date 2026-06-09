@@ -657,29 +657,31 @@ function _browserProjectsData() {
         <div class="proj-sections">
           <div class="proj-section" data-s="problem">
             <div class="proj-section-label">Problem</div>
-            <div class="proj-section-body">Hunter Water (NSW, Australia) issues ~600 Statements of Available Pressure per year — technical packets developers need to plan water connections. Each took ~1 hour across two engineers: find the right hydrant in GIS, calculate pressure in Excel, generate a Word doc. 600+ hours of repetitive work annually, with no standardized QA, in a regulated environment where accuracy is non-negotiable.</div>
+            <div class="proj-section-body">Hunter Water (NSW, Australia) issues ~600 Statements of Available Pressure per year — technical packets developers need to plan water connections. Each took ~1 hour across two engineers: find the right hydrant in GIS, calculate pressure in Excel, generate a Word doc. 600+ hours of repetitive, low-judgment work annually, with no standardized QA, in a regulated environment where accuracy is non-negotiable.</div>
           </div>
           <div class="proj-section" data-s="built">
             <div class="proj-section-label">What I Built</div>
-            <div class="proj-section-body"><ul>
-              <li><strong>Vision-LLM pipeline:</strong> Gemini 2.5 Flash reads unstructured PDF site plans → structured JSON. Chose Flash over Pro after testing — no accuracy gain, and its native multimodal skipped an OCR pipeline entirely</li>
-              <li><strong>Hydrant scoring:</strong> 3-tier geocoding fallback, then multi-factor scoring on distance + pipe diameter + street — replicating engineer judgment, not just proximity</li>
-              <li><strong>Deterministic hydraulics:</strong> Excel pressure calcs → chart → Word template. Kept engineering logic outside the LLM to stay auditable</li>
-              <li><strong>Human-in-the-loop:</strong> Low-confidence cases flagged; top-5 shown; one-click override. No silent hallucinations</li>
+            <div class="proj-section-body">End-to-end automation pipeline: vision LLM reads site plans, scoring algorithm selects the right hydrant, deterministic hydraulic logic generates the final output.
+            <ul>
+              <li>Benchmarked Gemini Flash vs. Pro — no accuracy gain; Flash's native multimodal eliminated a separate OCR step entirely</li>
+              <li>Built hydrant scoring: 3-tier geocoding fallback + multi-factor scoring on distance, pipe diameter, and street alignment — replicating engineer judgment, not just proximity</li>
+              <li>Kept all hydraulic calculations outside the LLM so outputs stay fully auditable in a regulated context</li>
+              <li>Designed human-in-the-loop flagging: low-confidence cases surface top-5 options with one-click override — no silent hallucinations</li>
             </ul></div>
           </div>
-          <div class="proj-section" data-s="outcome">
-            <div class="proj-section-label">Outcome</div>
-            <div class="proj-section-body"><ul>
-              <li><strong>Best Project, MIT GenAI Lab</strong></li>
-              <li>30 min → 45 sec end-to-end runtime</li>
-              <li>93.3% accuracy on 15-case test set</li>
-              <li>~$1.30/run · ~600 hrs/yr saved</li>
-            </ul></div>
-          </div>
-          <div class="proj-section" data-s="learnings">
-            <div class="proj-section-label">Learnings</div>
-            <div class="proj-section-body">In regulated industries, the goal isn't to replace the engineer — it's to eliminate the parts that don't require judgment. Keeping logic deterministic made results trustworthy to the client.</div>
+          <div class="proj-rhs-stack">
+            <div class="proj-section" data-s="outcome">
+              <div class="proj-section-label">Outcome</div>
+              <div class="proj-section-body"><ul>
+                <li><strong>Best Project, MIT GenAI Lab</strong></li>
+                <li>30 min → 45 sec · 93.3% accuracy · ~$1.30/run</li>
+                <li>~600 engineer-hours saved per year</li>
+              </ul></div>
+            </div>
+            <div class="proj-section" data-s="learnings">
+              <div class="proj-section-label">Learnings</div>
+              <div class="proj-section-body">In regulated industries, the goal isn't to replace the engineer — it's to eliminate the parts that don't require judgment. Keeping logic deterministic made results trustworthy to the client.</div>
+            </div>
           </div>
         </div>`,
     },
@@ -699,29 +701,36 @@ function _browserProjectsData() {
           <div class="proj-sections">
             <div class="proj-section" data-s="problem">
               <div class="proj-section-label">Problem</div>
-              <div class="proj-section-body">Shopping is a manual research project. Young professionals have disposable income but no time — they struggle to articulate their style, can't translate it to products, and are overwhelmed by volume. Virtual try-on existed but was expensive and produced uncanny results that eroded trust.</div>
+              <div class="proj-section-body">Young professionals have disposable income but no time to shop intentionally. They struggle to articulate their style, can't translate it to specific products, and are overwhelmed by volume. Virtual try-on existed but produced uncanny results and was prohibitively expensive — until diffusion models changed the economics.</div>
             </div>
             <div class="proj-section" data-s="built">
               <div class="proj-section-label">What I Built</div>
-              <div class="proj-section-body"><ul>
-                <li><strong>Style DNA engine:</strong> decodes aesthetic, color preferences, and body profile from Instagram follows/photos — no manual input required</li>
-                <li><strong>GenAI virtual try-on:</strong> diffusion models made this viable for the first time at near-zero marginal cost, with zero inventory risk</li>
-                <li><strong>Affiliate close loop:</strong> every item linked to live inventory — solved the "dead link" problem that makes Pinterest a dead end</li>
-                <li><strong>Style Twin network:</strong> social layer connecting users by body type + taste; the data flywheel and switching cost competitors couldn't replicate</li>
-                <li><strong>Tradeoff:</strong> passive Instagram input over active quiz — lower friction, but cold start required Instagram access</li>
+              <div class="proj-section-body">Co-built a product that decodes personal style from Instagram and generates AI try-ons linked to live inventory — no manual quiz, no dead links.
+              <ul>
+                <li>Led 100+ customer discovery interviews through MIT FUSE; won <strong>Top Banana</strong> (most PMR in a cohort of 50+ teams)</li>
+                <li>Designed the Style DNA engine concept: infer aesthetic + body profile from Instagram follows — passive input, zero friction</li>
+                <li>Framed affiliate close-loop as the core differentiation from Pinterest: every try-on links to live inventory, not dead product pages</li>
+                <li>Led pitch materials and investor presentation at IIA AI Summit; secured MIT Sandbox grant</li>
               </ul></div>
             </div>
-            <div class="proj-section" data-s="outcome">
-              <div class="proj-section-label">Outcome</div>
-              <div class="proj-section-body">100+ customer interviews · functional prototype · <strong>Top Banana Award</strong> (Best PMR, 50+ MIT teams) · MIT FUSE accelerator · $1.5K MIT Sandbox grant · pitched at IIA AI Summit</div>
-            </div>
-            <div class="proj-section" data-s="learnings">
-              <div class="proj-section-label">Learnings</div>
-              <div class="proj-section-body"><ul>
-                <li>Passion is a prerequisite — we couldn't give product experiments 100%, and that's a bad foundation</li>
-                <li>Unfair advantage matters: GenAI levels the playing field on domain knowledge, but two MBAs with overlapping skills still lacked a technical or domain expert</li>
-                <li>Consumer CAC compounds fast — every advisor pushed B2B; we weren't wrong to push back, but it's a real constraint</li>
-              </ul></div>
+            <div class="proj-rhs-stack">
+              <div class="proj-section" data-s="outcome">
+                <div class="proj-section-label">Outcome</div>
+                <div class="proj-section-body"><ul>
+                  <li>100+ interviews · functional prototype</li>
+                  <li>MIT FUSE accelerator · $1.5K Sandbox grant</li>
+                  <li>Pitched at IIA AI Summit</li>
+                  <li>Sunset after 4 months — intentional decision</li>
+                </ul></div>
+              </div>
+              <div class="proj-section" data-s="learnings">
+                <div class="proj-section-label">Learnings</div>
+                <div class="proj-section-body"><ul>
+                  <li>Passion is a prerequisite — we couldn't give product experiments 100%, and that's a bad foundation</li>
+                  <li>GenAI levels the playing field on domain knowledge, but two MBAs with overlapping skills still lacked a technical co-founder</li>
+                  <li>Consumer CAC compounds fast — B2B pressure from advisors was real, even if we were right to push back</li>
+                </ul></div>
+              </div>
             </div>
           </div>
         </div>
@@ -781,27 +790,28 @@ function _browserProjectsData() {
           <div class="proj-sections">
             <div class="proj-section" data-s="problem">
               <div class="proj-section-label">Problem</div>
-              <div class="proj-section-body">1 in 4 Americans has a functional GI disorder ($140B/yr in direct costs — more than heart disease). GI practitioners prescribe dietary changes, but half never provide guidance on meal planning or shopping. 56% of patients find prescribed diets hard to follow. The gap isn't the diagnosis — it's everything between the doctor's note and the dinner plate.</div>
+              <div class="proj-section-body">1 in 4 Americans has a functional GI disorder ($140B/yr — more than heart disease). GI practitioners prescribe dietary changes, but half never provide guidance on meal planning or shopping. 56% find prescribed diets hard to follow. The gap isn't the diagnosis — it's everything between the doctor's note and the dinner plate.</div>
             </div>
             <div class="proj-section" data-s="built">
               <div class="proj-section-label">What I Built</div>
-              <div class="proj-section-body"><ul>
-                <li><strong>AI recipe generation:</strong> tailored to dietary restrictions, with natural language refinements (cuisine, substitutions, dislikes); onboarding scans doctor's notes directly</li>
-                <li><strong>Social + community:</strong> feed for sharing meals/finds, community groups, streak tracking and group challenges for accountability</li>
-                <li><strong>Tracking + insights:</strong> photo-snap meal logging, AI insights from past meals and GI research, shareable provider reports</li>
-                <li><strong>Tradeoff:</strong> balancing clinical utility (reporting) with social habit formation — social was the daily hook; tracking built the longitudinal data that made insights useful</li>
+              <div class="proj-section-body">AI-powered gut-health companion combining personalized meal planning, photo-snap food logging, and a social accountability layer — built in one week with three classmates.
+              <ul>
+                <li>Led problem framing and market sizing</li>
+                <li>Identified social accountability as the core differentiator — for chronic conditions, community is often the strongest adherence driver</li>
+                <li>Led pitch deck and final presentation to judges</li>
               </ul></div>
             </div>
-            <div class="proj-section" data-s="outcome">
-              <div class="proj-section-label">Outcome</div>
-              <div class="proj-section-body"><ul>
-                <li><strong>Semi-finalist</strong>, Google PM Hackathon (~25 teams)</li>
-                <li>Led problem framing, market research, and the pitch deck</li>
-              </ul></div>
-            </div>
-            <div class="proj-section" data-s="learnings">
-              <div class="proj-section-label">Learnings</div>
-              <div class="proj-section-body">The social accountability layer was the most differentiated part — most health apps treat it as a nice-to-have, but for chronic condition management, community is often the strongest driver of adherence.</div>
+            <div class="proj-rhs-stack">
+              <div class="proj-section" data-s="outcome">
+                <div class="proj-section-label">Outcome</div>
+                <div class="proj-section-body"><ul>
+                  <li><strong>Semi-finalist</strong>, Google PM Hackathon (~25 teams)</li>
+                </ul></div>
+              </div>
+              <div class="proj-section" data-s="learnings">
+                <div class="proj-section-label">Learnings</div>
+                <div class="proj-section-body">Most health apps treat community as a nice-to-have. For chronic condition management, it's often the primary adherence mechanism — that insight shaped the entire product architecture.</div>
+              </div>
             </div>
           </div>
         </div>
@@ -829,29 +839,29 @@ function _browserProjectsData() {
         <div class="proj-sections">
           <div class="proj-section" data-s="problem">
             <div class="proj-section-label">Problem</div>
-            <div class="proj-section-body">Sloan students bid on courses with points — but the information needed to bid well is scattered: class descriptions in one place, teaching awards in another, bidding history across student org spreadsheets, real intel from asking second-years. No one knows how much to bid. The result is hype-driven scrambles for classes students would pass on with better information.</div>
+            <div class="proj-section-body">Sloan students bid on courses with points — but the information needed to bid well is scattered across class catalogs, student org spreadsheets, and second-year word-of-mouth. No one knows how much to bid. The result is hype-driven scrambles for classes students might pass on with better information.</div>
           </div>
           <div class="proj-section" data-s="built">
             <div class="proj-section-label">What I Built</div>
-            <div class="proj-section-body"><ul>
-              <li><strong>Unified course cards:</strong> class description + professor reputation (awards, research, network) + round-by-round bid history, with point estimates</li>
-              <li><strong>Interest profile:</strong> tag selection or free-text onboarding; proactive course recommendations based on your goals and what you've already taken</li>
-              <li><strong>Filters:</strong> by certificate track and topic</li>
-              <li><strong>LLM chat:</strong> trained on all course content — "which electives go deep on GTM for B2B?" or "how does this professor compare to the other strategy options?"</li>
-              <li><strong>Key decision:</strong> treated student org spreadsheets as first-class data — that's where the real signal lives</li>
+            <div class="proj-section-body">Vibecoded a course research tool that consolidates everything — class info, professor reputation, and historical bid data — into one place.
+            <ul>
+              <li>Identified student org bidding spreadsheets as first-class data — where real signal lives, not the official catalog</li>
+              <li>Designed the unified course card: description + teaching awards + round-by-round bid history with point estimates</li>
+              <li>Built and iterated on an LLM chat trained on all course content — turned out to be the sleeper feature, used more than browse/filter once discovered</li>
             </ul></div>
           </div>
-          <div class="proj-section" data-s="outcome">
-            <div class="proj-section-label">Outcome</div>
-            <div class="proj-section-body"><ul>
-              <li><strong>Top 5, Hack for Sloan</strong> (Lovable-sponsored)</li>
-              <li>Used personally for bidding; shared with classmates</li>
-              <li>Made bid decisions feel grounded rather than anxiety-driven</li>
-            </ul></div>
-          </div>
-          <div class="proj-section" data-s="learnings">
-            <div class="proj-section-label">Learnings</div>
-            <div class="proj-section-body">Data sourcing was the hardest part — peer notes and bidding history live in unstructured Google Sheets, not any official system. The LLM chat turned out to be the sleeper feature; people used it more than anything else once they discovered it.</div>
+          <div class="proj-rhs-stack">
+            <div class="proj-section" data-s="outcome">
+              <div class="proj-section-label">Outcome</div>
+              <div class="proj-section-body"><ul>
+                <li><strong>Top 5, Hack for Sloan</strong> (Lovable-sponsored)</li>
+                <li>Used personally; shared with classmates</li>
+              </ul></div>
+            </div>
+            <div class="proj-section" data-s="learnings">
+              <div class="proj-section-label">Learnings</div>
+              <div class="proj-section-body">The LLM chat was the sleeper feature — people reached for it more than anything once they discovered it. Data sourcing was the hardest part: peer bidding history lives in unstructured Google Sheets, not any official system.</div>
+            </div>
           </div>
         </div>`,
     },
@@ -864,31 +874,32 @@ function _browserProjectsData() {
         <div class="proj-sections">
           <div class="proj-section" data-s="problem">
             <div class="proj-section-label">Problem</div>
-            <div class="proj-section-body">MBA networking is high-volume and almost entirely manual — meeting 5–10 new people a week across coffee chats, events, and Zoom calls. My tool stack (Granola for notes, Gmail for outreach, Obsidian for reading) was generating rich relationship data, but none of it flowed together. The result: lost context, missed follow-ups, and relationships that decayed before they mattered.</div>
+            <div class="proj-section-body">MBA networking is high-volume and almost entirely manual — meeting 5–10 new people a week. My tools (Granola for notes, Gmail for outreach, Obsidian for reading) generated rich relationship data, but none of it flowed together. The result: lost context, missed follow-ups, and relationships that decayed before they mattered.</div>
           </div>
           <div class="proj-section" data-s="built">
-            <div class="proj-section-label">What I Built — V1 (live)</div>
-            <div class="proj-section-body"><ul>
-              <li><strong>Granola → Notion pipeline:</strong> meeting notes auto-sync to a People DB; <code>auto_linker.py</code> runs every 15 min, parses attendee emails, finds or creates People rows, and links meetings — zero manual entry</li>
-              <li><strong>Gmail ingestion:</strong> <code>email_linker.py</code> runs every 30 min on messages tagged <em>crm-log</em>, detects inbound/outbound direction, and logs contact history</li>
-              <li><strong>Relationship health automation:</strong> Status field auto-managed — any new meeting or email sets Active; staleness check degrades Active → Warm (30 days) → Dormant (90 days); Archived is the only manual state</li>
-              <li><strong>LLM enrichment per meeting:</strong> single Claude call extracts name, company, role, tags, warmth, priority, relationship summary, and action items</li>
-              <li><strong>Built on Notion:</strong> data stays portable and human-readable — no proprietary black box</li>
+            <div class="proj-section-label">What I Built</div>
+            <div class="proj-section-body">Fully automated personal CRM on Notion — meeting notes and emails sync automatically, zero manual entry. V1 live; V2 in progress.
+            <ul>
+              <li>Built <code>auto_linker.py</code>: parses Granola notes every 15 min, finds or creates People rows in Notion, links meetings automatically</li>
+              <li>Built <code>email_linker.py</code>: runs every 30 min on Gmail, detects contact direction, logs history</li>
+              <li>Designed relationship health automation: Active → Warm (30d) → Dormant (90d) — no manual tagging ever</li>
+              <li>LLM enrichment per meeting: single Claude call extracts company, role, warmth, priority, and action items</li>
+              <li><strong>V2 roadmap:</strong> pre-meeting briefs, network connector (intro suggestions), weekly digest, article matching, calendar integration</li>
             </ul></div>
           </div>
-          <div class="proj-section" data-s="outcome">
-            <div class="proj-section-label">What's Coming — V2+</div>
-            <div class="proj-section-body"><ul>
-              <li><strong>Pre-meeting briefs:</strong> Notion button triggers a Claude call synthesizing past notes + web research → structured brief written to the Person page</li>
-              <li><strong>Network connector:</strong> after every new meeting, Claude scans all existing People for intro opportunities — surfaces specific, non-generic matches to an Intro Suggestions DB</li>
-              <li><strong>Weekly digest:</strong> Sunday email with prioritized re-engagement nudges, intro suggestions, and article send recommendations</li>
-              <li><strong>Article matching:</strong> Obsidian reading vault scanned against People profiles — surfaces "send this to X" suggestions when you save something new</li>
-              <li><strong>Calendar integration:</strong> looks ahead 7 days for 1:1s, creates People stubs pre-meeting so context is ready before the conversation</li>
-            </ul></div>
-          </div>
-          <div class="proj-section" data-s="learnings">
-            <div class="proj-section-label">Learnings</div>
-            <div class="proj-section-body">Idempotency is everything in an always-on pipeline — every script needed to be safe to re-run without creating duplicates or overwriting good data. The other surprise: the relationship health status automation (Active → Warm → Dormant) turned out to be the most immediately useful feature, surfacing neglected relationships without any prompting.</div>
+          <div class="proj-rhs-stack">
+            <div class="proj-section" data-s="outcome">
+              <div class="proj-section-label">Outcome</div>
+              <div class="proj-section-body"><ul>
+                <li>Zero manual entry across all contacts</li>
+                <li>Relationship health scoring surfaces neglected connections unprompted</li>
+                <li>Active daily — used throughout MBA networking season</li>
+              </ul></div>
+            </div>
+            <div class="proj-section" data-s="learnings">
+              <div class="proj-section-label">Learnings</div>
+              <div class="proj-section-body">Idempotency is everything in an always-on pipeline — every script must be safe to re-run without creating duplicates. The relationship health automation (Active → Warm → Dormant) turned out to be the most immediately useful feature: it surfaces neglected relationships without any prompting.</div>
+            </div>
           </div>
         </div>`,
     },

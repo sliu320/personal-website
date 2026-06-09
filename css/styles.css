@@ -2459,18 +2459,22 @@
       gap:1.3rem; margin-top:0.9rem;
     }
     .proj-section[data-s="problem"]   { grid-column:1 / -1; }
-    .proj-section[data-s="built"]     { grid-column:1 / 2; grid-row:2 / 4; }
-    .proj-section[data-s="outcome"]   { grid-column:2 / 3; grid-row:2; }
-    .proj-section[data-s="learnings"] { grid-column:2 / 3; grid-row:3; }
+    .proj-section[data-s="built"]     { grid-column:1 / 2; grid-row:2; }
+    /* RHS stack: outcome + learnings share one continuous border */
+    .proj-rhs-stack {
+      grid-column:2 / 3; grid-row:2;
+      display:flex; flex-direction:column; gap:1.5rem;
+      border-left:2px solid rgba(122,92,46,0.22);
+      padding-left:1rem;
+    }
+    .proj-rhs-stack .proj-section {
+      border-left:none; padding-left:0;
+    }
     .proj-section {
       border-radius:0;
       padding:0rem 0.9rem 0rem 1rem;
       background:none;
       border-left:2px solid rgba(122,92,46,0.22);
-      transition:border-color 150ms ease-out;
-    }
-    .proj-section:hover {
-      border-left-color:rgba(122,92,46,0.5);
     }
     /* Notion-style label: bold, uppercase, clear */
     .proj-section-label {
@@ -3003,9 +3007,8 @@
       /* Collapse project section grid to single column */
       .proj-sections { grid-template-columns:1fr; }
       .proj-section[data-s="built"],
-      .proj-section[data-s="outcome"],
-      .proj-section[data-s="problem"],
-      .proj-section[data-s="learnings"] { grid-column:1 / -1; grid-row:auto; }
+      .proj-section[data-s="problem"] { grid-column:1 / -1; grid-row:auto; }
+      .proj-rhs-stack { grid-column:1 / -1; grid-row:auto; border-left:2px solid rgba(122,92,46,0.22); }
     }
 
     /* ── Sticky Notes scatter overlay ─────────────────────────── */
