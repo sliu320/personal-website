@@ -2656,11 +2656,15 @@ function _zoomToHotspot(key, scale, onOpen, originY) {
     const hsScreenX = Math.round(imgW * pct + destX);
     if (_tourMode) {
       // Softer zoom for tour — less motion, gentler easing
-      container.style.transition      = 'transform 0.5s ease-out';
+      // Mobile gets extra time since the snap from short pan distance feels abrupt
+      const isMobile = window.innerWidth <= 768;
+      const tourDur  = isMobile ? 900 : 500;
+      const tourDelay = isMobile ? 780 : 420;
+      container.style.transition      = `transform ${tourDur}ms ease-in-out`;
       container.style.transformOrigin = `${hsScreenX}px ${yOrigin}`;
       container.style.transform       = `scale(${(scale || 2.2) * 0.65})`;
       container.style.cursor          = 'default';
-      setTimeout(onOpen, 420);
+      setTimeout(onOpen, tourDelay);
     } else {
       // Original zoom for regular exploration
       container.style.transition      = 'transform 0.75s cubic-bezier(0.35,0,0.1,1)';
