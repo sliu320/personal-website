@@ -1514,6 +1514,7 @@
       top: 10%; left: 11%; right: 11%; bottom: 10%;
       display:flex; flex-direction:column;
       overflow:hidden; border-radius:12px 12px 2px 2px;
+      background:#fdf8ff; /* solid backing so monitor image never bleeds through */
     }
     /* Override browser chrome to fit inside the monitor */
     .monitor-screen-inset .browser-chrome {
@@ -1521,7 +1522,7 @@
       padding:0.4rem 0.6rem 0;
     }
     .monitor-screen-inset .browser-content {
-      flex:1; margin:0; overflow-y:auto;
+      flex:1; margin:0; overflow-y:scroll;
       min-height:0; padding:0.9rem 1.1rem 1.1rem;
       background:linear-gradient(160deg, #ede4f8 0%, #f4eaf8 30%, #fdf8ff 100%);
     }
@@ -2334,9 +2335,8 @@
       position:relative; z-index:1;
     }
     /* ── Old-school chunky scrollbar ────────────────────────── */
-    .browser-content::-webkit-scrollbar {
-      width:14px;
-    }
+    .browser-content { scrollbar-gutter:stable; }
+    .browser-content::-webkit-scrollbar { width:14px; }
     .browser-content::-webkit-scrollbar-track {
       background:#edd8f4;
       border-left:1px solid #1a1208;
@@ -2345,28 +2345,21 @@
       background:#d0b4dc;
       border-radius:2px;
       border:1px solid #1a1208;
-      border-right:none;
     }
-    .browser-content::-webkit-scrollbar-thumb:hover {
-      background:#a880be;
-    }
-    /* Arrow buttons at top and bottom */
-    .browser-content::-webkit-scrollbar-button {
-      display:block;
-      height:14px;
-      background:#d0b4dc;
-      border:1px solid #1a1208;
-      border-right:none;
+    .browser-content::-webkit-scrollbar-thumb:hover { background:#a880be; }
+    /* Arrow buttons */
+    .browser-content::-webkit-scrollbar-button:single-button {
+      display:block; height:14px;
+      background:#d0b4dc; border:1px solid #1a1208;
+      background-repeat:no-repeat; background-position:center;
     }
     .browser-content::-webkit-scrollbar-button:single-button:vertical:decrement {
-      background:#c4a0d0 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M4 1 L7 5 L1 5 Z' fill='%231a1208'/%3E%3C/svg%3E") center/8px 6px no-repeat;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpolygon points='5,1 9,6 1,6' fill='%231a1208'/%3E%3C/svg%3E");
     }
     .browser-content::-webkit-scrollbar-button:single-button:vertical:increment {
-      background:#c4a0d0 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M4 5 L7 1 L1 1 Z' fill='%231a1208'/%3E%3C/svg%3E") center/8px 6px no-repeat;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpolygon points='5,6 9,1 1,1' fill='%231a1208'/%3E%3C/svg%3E");
     }
-    .browser-content::-webkit-scrollbar-button:hover {
-      background-color:#a880be;
-    }
+    .browser-content::-webkit-scrollbar-button:hover { background-color:#a880be; }
 
     .project-panel { display:none; }
     .project-panel.active {
