@@ -2274,7 +2274,7 @@
 
     /* ---- Browser / Projects ---- */
     .browser-chrome {
-      background:#7b68b5;
+      background:#b8b0e8;
       border-radius:12px 12px 0 0;
       padding:0.55rem 0.65rem 0;
       box-shadow:0 2px 12px rgba(30,10,70,0.28);
@@ -2302,7 +2302,7 @@
       padding:0; flex-wrap:wrap;
     }
     .browser-tab {
-      background:#c4a0d0;
+      background:#d0b4dc;
       border:1px solid #1a1208;
       border-bottom:none;
       border-radius:10px 10px 0 0;
@@ -2338,11 +2338,11 @@
       width:14px;
     }
     .browser-content::-webkit-scrollbar-track {
-      background:#f0d8f0;
+      background:#edd8f4;
       border-left:1px solid #1a1208;
     }
     .browser-content::-webkit-scrollbar-thumb {
-      background:#c4a0d0;
+      background:#d0b4dc;
       border-radius:2px;
       border:1px solid #1a1208;
       border-right:none;
@@ -2354,7 +2354,7 @@
     .browser-content::-webkit-scrollbar-button {
       display:block;
       height:14px;
-      background:#c4a0d0;
+      background:#d0b4dc;
       border:1px solid #1a1208;
       border-right:none;
     }
