@@ -3826,7 +3826,13 @@ function openStickiesZoom() {
   if (_stickiesZoomed) return;
   _stickiesZoomed = true;
   navMenu.classList.remove('open');
-  _zoomToHotspot('stickynotes', 1.8, () => _openZoomUI('stickies-zoom-overlay', 'stickies-zoom-back'), '50%');
+  _zoomToHotspot('stickynotes', 1.8, () => {
+    _openZoomUI('stickies-zoom-overlay', 'stickies-zoom-back');
+    // Always start scrolled to the top so the first sticky notes are visible
+    const overlay = document.getElementById('stickies-zoom-overlay');
+    overlay.scrollTop = 0;
+    requestAnimationFrame(() => { overlay.scrollTop = 0; });
+  }, '50%');
 }
 function closeStickiesZoom() {
   if (!_stickiesZoomed) return;
