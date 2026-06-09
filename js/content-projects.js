@@ -470,15 +470,15 @@ const PROJECTS_DATA = [
           <div class="proj-demo-strip">
             <figure class="proj-demo-item">
               <p class="proj-demo-caption"><span class="proj-demo-num">1.</span> A warm, Friendsgiving-themed grid of classmates' names and dish avatars — pick someone to send a private gratitude note to.</p>
-              <img src="assets/images/Projects/Friendsgiving/Friendsgiving1.png" alt="Classmate directory" class="proj-demo-img proj-demo-img--tall" loading="lazy">
+              <img src="assets/images/Projects/Friendsgiving/Friendsgiving1.png" alt="Classmate directory" class="proj-demo-img proj-demo-img--wide" loading="lazy">
             </figure>
             <figure class="proj-demo-item">
               <p class="proj-demo-caption"><span class="proj-demo-num">2.</span> Write a heartfelt note of thanks, with a history of past notes you've sent them.</p>
-              <img src="assets/images/Projects/Friendsgiving/Friendsgiving2.png" alt="Send a gratitude note" class="proj-demo-img proj-demo-img--tall" loading="lazy">
+              <img src="assets/images/Projects/Friendsgiving/Friendsgiving2.png" alt="Send a gratitude note" class="proj-demo-img proj-demo-img--wide" loading="lazy">
             </figure>
             <figure class="proj-demo-item">
               <p class="proj-demo-caption"><span class="proj-demo-num">3.</span> Your gratitude jar: all the appreciation notes classmates have sent you, as warm, readable cards.</p>
-              <img src="assets/images/Projects/Friendsgiving/Friendsgiving3.png" alt="My gratitude jar" class="proj-demo-img proj-demo-img--tall" loading="lazy">
+              <img src="assets/images/Projects/Friendsgiving/Friendsgiving3.png" alt="My gratitude jar" class="proj-demo-img proj-demo-img--wide" loading="lazy">
             </figure>
           </div>
         </div>

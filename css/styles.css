@@ -2517,8 +2517,8 @@
       object-position: top;
       width: 100%;
     }
-    .proj-demo-img--wide  { height: 160px; }
-    .proj-demo-img--tall  { height: 220px; }
+    .proj-demo-img--wide  { aspect-ratio: 4 / 3; }
+    .proj-demo-img--tall  { aspect-ratio: 3 / 5; }
     .proj-demo-caption {
       font-size: 0.82rem;
       line-height: 1.55;
