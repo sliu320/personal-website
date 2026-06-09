@@ -3617,7 +3617,7 @@
 
       /* ── Projects / Monitor: vertical phone shape ── */
       .monitor-zoom-card {
-        width: 92vw !important;
+        width: 96vw !important;
         height: auto !important;
         max-height: 88vh !important;
         aspect-ratio: unset !important;
@@ -3743,7 +3743,7 @@
 
       /* ── Note modal ── */
       .notepad-css {
-        height: 88vh !important;
+        height: 70vh !important;
         width: 94vw !important;
       }
 
