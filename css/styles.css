@@ -2305,7 +2305,7 @@
       border-bottom:none;
       border-radius:7px 7px 0 0;
       padding:0.3rem 0.8rem;
-      font-size:0.63rem; color:#9e8e72;
+      font-size:0.7rem; color:#7a6a52;
       cursor:pointer; white-space:nowrap;
       position:relative; z-index:0;
       transition:background 0.15s, color 0.15s;
@@ -2360,7 +2360,7 @@
       margin:0.5rem 0 0.55rem;
     }
     .project-desc {
-      font-size:0.8125rem; color:#6b5240; line-height:1.7;
+      font-size:0.9rem; color:#3a2510; line-height:1.7;
       margin-bottom:0.9rem; font-style:italic;
     }
     .project-demo  {
@@ -2392,9 +2392,9 @@
 
     /* ── Overview bucket layout ───────────────────────────────── */
     .proj-overview { display:flex; flex-direction:column; gap:1.2rem; padding:0.2rem 0 0.5rem; }
-    .proj-bucket-label { font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em; color:#9e8e72; margin-bottom:0.45rem; font-family:Georgia,serif; }
+    .proj-bucket-label { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; color:#6b5a3e; margin-bottom:0.45rem; font-family:Georgia,serif; }
     .proj-bucket-links { display:flex; flex-direction:column; gap:0.35rem; }
-    .proj-bucket-link { font-size:0.82rem; color:#4a3f2f; text-decoration:none; cursor:pointer; padding:0.35rem 0.6rem; border-radius:5px; transition:background 0.15s, color 0.15s; border:1px solid transparent; font-family:Georgia,serif; }
+    .proj-bucket-link { font-size:0.9rem; color:#2a1f0e; text-decoration:none; cursor:pointer; padding:0.35rem 0.6rem; border-radius:5px; transition:background 0.15s, color 0.15s; border:1px solid transparent; font-family:Georgia,serif; }
     .proj-bucket-link:hover { background:rgba(122,92,46,0.08); border-color:rgba(122,92,46,0.2); color:#2a1f0e; }
 
     /* ── 3. Section cards — no borders, more padding, r:10px ─── */
@@ -2408,18 +2408,18 @@
       flex-wrap:wrap;
     }
     .proj-inner-tab {
-      font-size:0.62rem; padding:4px 12px 5px;
+      font-size:0.7rem; padding:4px 12px 5px;
       border:none; border-bottom:2px solid transparent;
       cursor:pointer; background:transparent;
-      color:#b0a090; font-family:inherit;
+      color:#8a7a62; font-family:inherit;
       transition:color 0.15s, border-color 0.15s;
       letter-spacing:0.03em;
     }
     .proj-inner-tab.active {
-      color:#4a3f2f; font-weight:600;
+      color:#2a1f0e; font-weight:600;
       border-bottom-color:rgba(122,92,46,0.55);
     }
-    .proj-inner-tab:hover:not(.active) { color:#7a6a52; }
+    .proj-inner-tab:hover:not(.active) { color:#4a3f2f; }
     .proj-inner-panel { display:none; }
     .proj-inner-panel.active { display:block; }
 
@@ -2452,24 +2452,22 @@
     .proj-section[data-s="outcome"]   { grid-column:2 / 3; }
     .proj-section[data-s="learnings"] { grid-column:1 / -1; }
     .proj-section {
-      border-radius:10px;
-      padding:0.85rem 1rem 0.9rem;
-      border:none;
-      transition:transform 150ms ease-out, box-shadow 150ms ease-out;
+      border-radius:0;
+      padding:0.75rem 0.9rem 0.85rem 1rem;
+      background:none;
+      border-left:2px solid rgba(122,92,46,0.22);
+      transition:transform 150ms ease-out, border-color 150ms ease-out;
     }
     .proj-section:hover {
-      transform:translateY(-2px);
-      box-shadow:0 4px 14px rgba(42,31,14,0.09);
+      transform:translateY(-1px);
+      border-left-color:rgba(122,92,46,0.5);
+      background:rgba(122,92,46,0.03);
     }
-    .proj-section[data-s="problem"]   { background:#ede8df; }
-    .proj-section[data-s="built"]     { background:#f5f0e8; }
-    .proj-section[data-s="outcome"]   { background:#faf3e2; }
-    .proj-section[data-s="learnings"] { background:#edeae4; }
     /* Notebook-header label: icon + text + extending rule */
     .proj-section-label {
       display:flex; align-items:center; gap:0.35rem;
-      font-size:0.72rem; font-style:italic;
-      color:rgba(74,63,47,0.7); margin-bottom:0.5rem;
+      font-size:0.76rem; font-style:italic;
+      color:#5a4a32; margin-bottom:0.5rem;
       font-family:Georgia,serif;
     }
     .proj-section-label::after {
@@ -2484,9 +2482,9 @@
     .proj-section[data-s="outcome"]   .proj-section-label::before { content:"✦"; }
     .proj-section[data-s="learnings"] .proj-section-label::before { content:"💡"; }
     .proj-section-body {
-      font-size:0.8125rem; color:#3a2f1e; line-height:1.8; margin:0;
+      font-size:0.875rem; color:#2a1f0e; line-height:1.8; margin:0;
     }
-    .proj-section-body strong { color:#2a1f0e; font-weight:600; }
+    .proj-section-body strong { color:#1a1208; font-weight:600; }
     .proj-section-body ul { margin:0.3rem 0 0; padding-left:1.1rem; }
     .proj-section-body li { margin-bottom:0.4rem; }
     .proj-section-body li:last-child { margin-bottom:0; }
