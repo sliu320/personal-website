@@ -4061,13 +4061,6 @@
   @media (max-width: 480px) {
 
     /* ── Projects / Monitor: centered, no black gap ── */
-    #monitor-zoom-back,
-    #community-zoom-back {
-      top: auto !important;
-      bottom: 1rem !important;
-      right: 50% !important;
-      transform: translateX(50%) !important;
-    }
     #monitor-zoom-overlay {
       padding: 0 !important;
       align-items: center !important;
