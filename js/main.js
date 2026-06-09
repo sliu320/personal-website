@@ -3070,7 +3070,7 @@ document.querySelectorAll('.trophy-btn').forEach(btn => {
 /* Pages map: CF_CASES[0]=TOC(right, initial), [1]=GenAI Assess(left p1), [2]=GenAI Prop(right p1),
    [3]=Sales(left p2), [4]=Healthcare(right p2), [5]=Investment(left p3),
    [6]=PostM&A+DD(right p3), [7]=BI+Insourcing(left p4), [8]=Social(right p4) */
-let _cfZoomed = false, _cfPhysPage = 0;
+let _cfZoomed = false, _cfPhysPage = 0, _cfFlipping = false;
 
 function _cfIsMobile() { return window.innerWidth <= 700; }
 // Desktop shows two content pages per spread (right = p*2, left = p*2−1).
@@ -3255,6 +3255,7 @@ function _cfBuildScene() {
 
 /* Jump directly to a page — desktopPhys for book spread, mobileIdx for single-page */
 function cfJumpTo(desktopPhys, mobileIdx) {
+  if (_cfFlipping) return;
   const target = _cfIsMobile() ? (mobileIdx ?? desktopPhys) : desktopPhys;
   _cfPhysPage = Math.max(0, Math.min(target, _cfNumPages() - 1));
   _cfBuildScene();
@@ -3286,19 +3287,66 @@ function _cfFlipMobile(dir) {
 }
 
 function _cfFlip(dir) {
+  if (_cfFlipping) return;
   if (_cfIsMobile()) { _cfFlipMobile(dir); return; }
 
   const targetPhys = _cfPhysPage + dir;
   if (targetPhys < 0 || targetPhys >= _cfNumPages()) return;
+  _cfFlipping = true;
 
-  _cfPhysPage = targetPhys;
+  const wrap = document.getElementById('cf-pages');
+  const lp   = document.getElementById('cf-left-page');
+  const rp   = document.getElementById('cf-right-page');
 
-  const lp = document.getElementById('cf-left-page');
-  const rp = document.getElementById('cf-right-page');
+  if (dir > 0) {
+    // ── Forward flip ─────────────────────────────────────────
+    rp.innerHTML = _cfPageHTML(_cfFrontIdx(targetPhys));
 
-  lp.innerHTML = _cfPhysPage > 0 ? _cfPageHTML(_cfBackIdx(_cfPhysPage - 1)) : '';
-  rp.innerHTML = _cfPageHTML(_cfFrontIdx(_cfPhysPage));
-  _updateCfNav();
+    const turner = document.createElement('div');
+    turner.className = 'cf-turner';
+    turner.innerHTML = `
+      <div class="cf-turner-face">${_cfPageHTML(_cfFrontIdx(_cfPhysPage))}</div>
+      <div class="cf-turner-back">${_cfPageHTML(_cfBackIdx(_cfPhysPage))}</div>`;
+    wrap.appendChild(turner);
+
+    requestAnimationFrame(() => requestAnimationFrame(() => turner.classList.add('flip-fwd')));
+
+    setTimeout(() => {
+      _cfPhysPage = targetPhys;
+      lp.innerHTML = _cfPageHTML(_cfBackIdx(_cfPhysPage - 1));
+      _updateCfNav();
+      turner.remove();
+      _cfFlipping = false;
+    }, 510);
+
+  } else {
+    // ── Back flip: reverse of forward ─────────────────────────
+    // Turner starts at -180° (visually on the LEFT side, back face = old left page
+    // content), then sweeps rightward to 0° where its FACE (destination right page)
+    // lands on the right. rp is NOT updated until the turner reaches 0° and covers
+    // it — updating rp at the start would cause the right page to snap to new content
+    // before the animation begins (the turner can't cover rp from the left).
+    lp.innerHTML = targetPhys > 0 ? _cfPageHTML(_cfBackIdx(targetPhys - 1)) : '';
+    // rp intentionally left showing current content until the turner covers it
+
+    const turner = document.createElement('div');
+    turner.className = 'cf-turner cf-turner-rev';
+    turner.innerHTML = `
+      <div class="cf-turner-face">${_cfPageHTML(_cfFrontIdx(targetPhys))}</div>
+      <div class="cf-turner-back">${_cfPageHTML(_cfBackIdx(targetPhys))}</div>`;
+    wrap.appendChild(turner);
+
+    requestAnimationFrame(() => requestAnimationFrame(() => turner.classList.add('flip-rev')));
+
+    setTimeout(() => {
+      _cfPhysPage = targetPhys;
+      // Swap rp under the cover of the turner face (now at 0°, same content) — invisible to user
+      rp.innerHTML = _cfPageHTML(_cfFrontIdx(targetPhys));
+      _updateCfNav();
+      turner.remove();
+      _cfFlipping = false;
+    }, 510);
+  }
 }
 
 let _cfNavLock = false;
