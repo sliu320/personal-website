@@ -3382,8 +3382,8 @@
     /* After selecting a polaroid, keep arrows hoverable (active state) */
     .cpol.active .cpol-photos:hover .cpol-prev,
     .cpol.active .cpol-photos:hover .cpol-next { opacity: 1; }
-    .cpol.active .cpol-prev,
-    .cpol.active .cpol-next { pointer-events: all; }
+    /* arrows always interactive — pointer-events:none was never set, this is belt+suspenders */
+    .cpol-prev, .cpol-next { pointer-events: all; }
     @media (hover: none) {
       /* Touch devices: always show arrows so users know they exist */
       .cpol-prev, .cpol-next { opacity: 0.7; }
@@ -4021,7 +4021,8 @@
   @media (max-width: 480px) {
 
     /* ── Projects / Monitor: centered, no black gap ── */
-    #monitor-zoom-back {
+    #monitor-zoom-back,
+    #community-zoom-back {
       top: auto !important;
       bottom: 1rem !important;
       right: 50% !important;
@@ -4055,59 +4056,62 @@
       overflow: hidden !important;
     }
 
-    /* ── Case files: full bleed, nav above card ── */
+    /* ── Case files: book visual intact, full-width right page, nav below ── */
     #consulting-zoom-overlay {
-      padding: 0 !important;
-      align-items: stretch !important;
+      padding: 0.8rem 0 0 !important;
+      align-items: center !important;
       justify-content: flex-start !important;
       flex-direction: column !important;
-      overflow: hidden !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
       gap: 0 !important;
     }
-    .casefiles-bg { display: none !important; }
+    .casefiles-bg { display: block !important; } /* restore folder graphic */
     .casefiles-zoom-card {
-      width: 100vw !important;
-      height: auto !important;
+      width: 96vw !important;
+      height: calc(96vw / 1.4288) !important; /* maintain aspect ratio */
       min-height: 0 !important;
-      flex: 1 1 0 !important;
-      aspect-ratio: unset !important;
-      filter: none !important;
-      flex-shrink: 1 !important;
+      flex: 0 0 auto !important;
+      aspect-ratio: 1.4288 !important;
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.45)) !important;
       position: relative !important;
     }
     .casefiles-pages {
       position: absolute !important;
-      top: 0 !important; bottom: 0 !important;
-      left: 0 !important; right: 0 !important;
-      background: #fefcf5 !important;
-      border: none !important; border-radius: 0 !important; box-shadow: none !important;
+      top: 8% !important; bottom: 9% !important;
+      left: 6% !important; right: 4% !important;
+      background: transparent !important;
+      border: none !important;
     }
     .cf-left-page { display: none !important; }
     .cf-right-page {
       position: absolute !important;
       top: 0 !important; bottom: 0 !important;
-      left: 0 !important; right: 0 !important;
-      padding: 1.2rem 1.1rem 1rem !important;
+      left: 0 !important; right: 0 !important; /* full width of pages area */
+      padding: 0.55rem 0.65rem 0.5rem !important;
       overflow-y: auto !important;
       overflow-x: hidden !important;
-      background: #fefcf5 !important;
+      background: rgba(253,252,246,0.97) !important;
       border: none !important;
       border-radius: 0 !important;
       box-shadow: none !important;
+      font-size: 0.7rem !important;
       transition: opacity 0.18s ease !important;
     }
     .cf-right-page.cf-fade { opacity: 0 !important; }
-    /* Mobile nav bar: move ABOVE the document */
+    /* Nav bar at BOTTOM, naturally after the card */
     .cf-mobile-nav {
-      order: -1 !important;
+      order: 0 !important;
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
-      width: 100vw !important;
-      height: 3.5rem !important;
-      padding: 0 1.2rem !important;
+      width: 96vw !important;
+      height: 3.2rem !important;
+      padding: 0 1rem !important;
       flex-shrink: 0 !important;
       background: rgba(0,0,0,0.35) !important;
+      border-radius: 0 0 6px 6px !important;
+      margin-bottom: 0.5rem !important;
     }
     .cf-mob-btn {
       background: rgba(255,255,255,0.15) !important;
