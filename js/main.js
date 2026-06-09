@@ -671,11 +671,11 @@ function _browserProjectsData() {
         </div>
         <div class="proj-inner-panel active" id="inner-dr-content">
           <div class="proj-sections">
-            <div class="proj-section">
+            <div class="proj-section" data-s="problem">
               <div class="proj-section-label">Problem</div>
               <div class="proj-section-body">Shopping is a manual research project. Young professionals have disposable income but no time — they struggle to articulate their style, can't translate it to products, and are overwhelmed by volume. Virtual try-on existed but was expensive and produced uncanny results that eroded trust.</div>
             </div>
-            <div class="proj-section">
+            <div class="proj-section" data-s="built">
               <div class="proj-section-label">What I Built</div>
               <div class="proj-section-body"><ul>
                 <li><strong>Style DNA engine:</strong> decodes aesthetic, color preferences, and body profile from Instagram follows/photos — no manual input required</li>
@@ -685,11 +685,11 @@ function _browserProjectsData() {
                 <li><strong>Tradeoff:</strong> passive Instagram input over active quiz — lower friction, but cold start required Instagram access</li>
               </ul></div>
             </div>
-            <div class="proj-section">
+            <div class="proj-section" data-s="outcome">
               <div class="proj-section-label">Outcome</div>
               <div class="proj-section-body">100+ customer interviews · functional prototype · <strong>Top Banana Award</strong> (Best PMR, 50+ MIT teams) · MIT FUSE accelerator · $1.5K MIT Sandbox grant · pitched at IIA AI Summit</div>
             </div>
-            <div class="proj-section">
+            <div class="proj-section" data-s="learnings">
               <div class="proj-section-label">Learnings</div>
               <div class="proj-section-body"><ul>
                 <li>Passion is a prerequisite — we couldn't give product experiments 100%, and that's a bad foundation</li>
@@ -700,14 +700,18 @@ function _browserProjectsData() {
           </div>
         </div>
         <div class="proj-inner-panel" id="inner-dr-video">
-          <div style="position:relative;width:100%;height:0;padding-top:56.25%;border-radius:8px;overflow:hidden;margin-bottom:0.5rem;">
-            <iframe loading="lazy" style="position:absolute;width:100%;height:100%;top:0;left:0;border:none;"
-              src="https://www.canva.com/design/DAHFeOG-ESU/xeE9q3Fw0cl7DxgtiatpeA/watch?embed"
-              allowfullscreen allow="fullscreen"></iframe>
+          <div class="proj-embed-wrap" style="transform:rotate(-0.4deg)">
+            <div style="position:relative;width:100%;height:0;padding-top:56.25%;overflow:hidden;">
+              <iframe loading="lazy" style="position:absolute;width:100%;height:100%;top:0;left:0;border:none;border-radius:3px;"
+                src="https://www.canva.com/design/DAHFeOG-ESU/xeE9q3Fw0cl7DxgtiatpeA/watch?embed"
+                allowfullscreen allow="fullscreen"></iframe>
+            </div>
           </div>
         </div>
         <div class="proj-inner-panel" id="inner-dr-pitch">
-          <iframe src="https://1drv.ms/p/c/a0428aea2d954231/IQTpHhZS7_d2R6tzG1c2DC16AQfqdGu2enVS-8qigFJIWB4?em=2&wdAr=1.7777777777777777" height="440" frameborder="0" allowfullscreen title="DressingRoom Pitch Deck" style="width:100%;border-radius:6px;"></iframe>
+          <div class="proj-embed-wrap" style="transform:rotate(0.3deg)">
+            <iframe src="https://1drv.ms/p/c/a0428aea2d954231/IQTpHhZS7_d2R6tzG1c2DC16AQfqdGu2enVS-8qigFJIWB4?em=2&wdAr=1.7777777777777777" height="440" frameborder="0" allowfullscreen title="DressingRoom Pitch Deck" style="width:100%;"></iframe>
+          </div>
         </div>
         <div class="proj-inner-panel" id="inner-dr-story">
           <div class="dr-timeline">
@@ -749,11 +753,11 @@ function _browserProjectsData() {
         </div>
         <div class="proj-inner-panel active" id="inner-fg-content">
           <div class="proj-sections">
-            <div class="proj-section">
+            <div class="proj-section" data-s="problem">
               <div class="proj-section-label">Problem</div>
               <div class="proj-section-body">1 in 4 Americans has a functional GI disorder ($140B/yr in direct costs — more than heart disease). GI practitioners prescribe dietary changes, but half never provide guidance on meal planning or shopping. 56% of patients find prescribed diets hard to follow. The gap isn't the diagnosis — it's everything between the doctor's note and the dinner plate.</div>
             </div>
-            <div class="proj-section">
+            <div class="proj-section" data-s="built">
               <div class="proj-section-label">What I Built</div>
               <div class="proj-section-body"><ul>
                 <li><strong>AI recipe generation:</strong> tailored to dietary restrictions, with natural language refinements (cuisine, substitutions, dislikes); onboarding scans doctor's notes directly</li>
@@ -762,11 +766,11 @@ function _browserProjectsData() {
                 <li><strong>Tradeoff:</strong> balancing clinical utility (reporting) with social habit formation — social was the daily hook; tracking built the longitudinal data that made insights useful</li>
               </ul></div>
             </div>
-            <div class="proj-section">
+            <div class="proj-section" data-s="outcome">
               <div class="proj-section-label">Outcome</div>
               <div class="proj-section-body"><strong>Semi-finalist</strong>, Google PM Hackathon (~25 teams). I led problem framing, market research, and the pitch deck.</div>
             </div>
-            <div class="proj-section">
+            <div class="proj-section" data-s="learnings">
               <div class="proj-section-label">Learnings</div>
               <div class="proj-section-body">The social accountability layer was the most differentiated part — most health apps treat it as a nice-to-have, but for chronic condition management, community is often the strongest driver of adherence.</div>
             </div>
@@ -777,10 +781,14 @@ function _browserProjectsData() {
           <div class="proj-prompt-text"><strong>The Problem:</strong> Healthcare and personal wellness remain two of the most critical and complex areas of life. Traditional systems are often reactive, expensive, and follow a one-size-fits-all model that fails to address individual needs.<br><br><strong>The Challenge:</strong> Leveraging the power of AI, develop a product or service that provides personalized, proactive, and accessible support for an individual's well-being.</div>
         </div>
         <div class="proj-inner-panel" id="inner-fg-pitch">
-          <iframe src="https://1drv.ms/p/c/a0428aea2d954231/IQT80LIy4v0UQKaiUQj3SPt2AQ8IA6aPsRXPRy5OI-cxqF8?em=2&wdAr=1.7777777777777777" height="480" frameborder="0" allowfullscreen title="FoodGroups Pitch Deck"></iframe>
+          <div class="proj-embed-wrap" style="transform:rotate(0.3deg)">
+            <iframe src="https://1drv.ms/p/c/a0428aea2d954231/IQT80LIy4v0UQKaiUQj3SPt2AQ8IA6aPsRXPRy5OI-cxqF8?em=2&wdAr=1.7777777777777777" height="480" frameborder="0" allowfullscreen title="FoodGroups Pitch Deck" style="width:100%;"></iframe>
+          </div>
         </div>
         <div class="proj-inner-panel" id="inner-fg-video">
-          <iframe src="https://drive.google.com/file/d/1UvpVvsi709s7xxtChGDPO_jEjtcEpXaV/preview" height="500" allow="autoplay" title="FoodGroups Video"></iframe>
+          <div class="proj-embed-wrap" style="transform:rotate(-0.4deg)">
+            <iframe src="https://drive.google.com/file/d/1UvpVvsi709s7xxtChGDPO_jEjtcEpXaV/preview" height="500" allow="autoplay" title="FoodGroups Video" style="width:100%;"></iframe>
+          </div>
         </div>`,
     },
     {
@@ -879,12 +887,14 @@ function _buildBrowserHTML(projects) {
   projects.forEach((p, i) => {
     tabsHtml += `<div class="browser-tab${i===0?' active':''}" data-tab="${p.id}">${p.tab}</div>`;
     const tagsHtml = p.tags.length ? `<div class="project-tags">${p.tags.map(t=>`<span class="project-tag">${t}</span>`).join('')}</div>` : '';
-    const backLink = p.id !== 'overview' ? `<a class="proj-back-link" href="javascript:void(0)">← all projects</a>` : '';
+    const backLink = p.id !== 'overview' ? `<a class="proj-back-link" href="javascript:void(0)">↩ all projects</a>` : '';
+    const rule = p.id !== 'overview' ? `<div class="project-title-rule"></div>` : '';
     if (p.customContent) {
       panelsHtml += `<div class="project-panel${i===0?' active':''}" id="proj-${p.id}">
         ${backLink}
         <div class="project-title">${p.title}</div>
         ${tagsHtml}
+        ${rule}
         ${p.desc ? `<div class="project-desc">${p.desc}</div>` : ''}
         ${p.customContent}
       </div>`;
@@ -893,6 +903,7 @@ function _buildBrowserHTML(projects) {
         ${backLink}
         <div class="project-title">${p.title}</div>
         ${tagsHtml}
+        ${rule}
         <div class="project-desc">${p.desc}</div>
         <div class="project-demo">${p.demo}<div class="project-demo-label">${p.demoLabel}</div></div>
         ${p.link !== '#' ? `<a class="project-link" href="${p.link}" target="_blank">→ view project</a>` : ''}

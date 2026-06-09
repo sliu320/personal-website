@@ -1530,7 +1530,7 @@
     }
     .monitor-screen-inset .browser-dot { width:10px; height:10px; }
     .monitor-screen-inset .browser-url { font-size:0.65rem; }
-    .monitor-screen-inset .browser-tab { font-size:0.68rem; padding:0.28rem 0.8rem; max-width:140px; }
+    .monitor-screen-inset .browser-tab { font-size:0.62rem; padding:0.22rem 0.7rem; max-width:130px; }
     .monitor-screen-inset .browser-status {
       margin:0; font-size:0.58rem; padding:0.18rem 0.6rem; flex-shrink:0;
     }
@@ -2293,39 +2293,61 @@
       font-size:0.62rem; color:#555; padding:0.2rem 0.6rem;
       font-family:'Courier New',monospace; letter-spacing:0.02em;
     }
+    /* ── A. Outer browser tabs — warm pill style ──────────────── */
     .browser-tabs {
-      display:flex; gap:2px; align-items:flex-end;
+      display:flex; gap:5px; align-items:center;
+      padding:0 0 0.65rem;
+      flex-wrap:wrap;
     }
     .browser-tab {
-      background:rgba(255,255,255,0.5); border-radius:6px 6px 0 0;
-      padding:0.3rem 0.75rem; font-size:0.65rem; color:#555;
+      background:transparent;
+      border:1px solid rgba(122,92,46,0.22);
+      border-radius:20px;
+      padding:0.28rem 0.85rem;
+      font-size:0.65rem; color:#9e8e72;
       cursor:pointer; white-space:nowrap;
-      border:1px solid rgba(0,0,0,0.1); border-bottom:none;
-      transition:background 0.15s, color 0.15s;
-      max-width:110px; overflow:hidden; text-overflow:ellipsis;
+      transition:background 0.15s, color 0.15s, border-color 0.15s;
+      max-width:140px; overflow:hidden; text-overflow:ellipsis;
+      font-family:Georgia,serif; letter-spacing:0.02em;
     }
     .browser-tab.active {
-      background:#faf5ed; color:#1a1208; font-weight:600;
-      border-color:rgba(0,0,0,0.08);
+      background:#2a1f0e; color:#faf5ed;
+      border-color:#2a1f0e; font-weight:600;
     }
-    .browser-tab:hover:not(.active) { background:rgba(255,255,255,0.75); }
+    .browser-tab:hover:not(.active) {
+      background:rgba(122,92,46,0.08); color:#4a3f2f;
+      border-color:rgba(122,92,46,0.4);
+    }
     .browser-content {
       background:#faf5ed;
-      border-left:1px solid rgba(0,0,0,0.08); border-right:1px solid rgba(0,0,0,0.08);
-      margin:0 -0.5rem; padding:1.1rem 1.2rem 1.3rem;
+      border:1px solid rgba(122,92,46,0.12);
+      border-radius:10px;
+      margin:0 -0.5rem; padding:1.2rem 1.3rem 1.4rem;
       min-height:420px;
       overflow-y:auto;
     }
     .project-panel { display:none; }
     .project-panel.active { display:block; }
-    .project-title { font-size:1rem; color:#2a1f0e; font-weight:600; margin-bottom:0.3rem; }
-    .project-tags  { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:0.7rem; }
-    .project-tag   {
-      font-size:0.6rem; letter-spacing:0.1em; padding:2px 8px;
-      border-radius:20px; background:rgba(122,92,46,0.1);
-      color:rgba(122,92,46,0.8); border:1px solid rgba(122,92,46,0.2);
+
+    /* ── B. Project title block ───────────────────────────────── */
+    .project-title {
+      font-family:Georgia,serif;
+      font-size:1.1rem; color:#2a1f0e; font-weight:700;
+      margin-bottom:0.5rem; line-height:1.25;
     }
-    .project-desc  { font-size:0.8125rem; color:#3a2f1e; line-height:1.75; margin-bottom:0.8rem; }
+    .project-title-rule {
+      height:1px; background:rgba(122,92,46,0.18);
+      margin:0.5rem 0 0.6rem;
+    }
+    .project-tags  { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:0.75rem; }
+    .project-tag   {
+      font-size:0.58rem; letter-spacing:0.1em; padding:2px 9px;
+      border-radius:3px;
+      background:transparent;
+      color:rgba(122,92,46,0.75); border:1px solid rgba(122,92,46,0.3);
+      font-family:Georgia,serif; text-transform:uppercase;
+    }
+    .project-desc  { font-size:0.8125rem; color:#3a2f1e; line-height:1.75; margin-bottom:0.9rem; font-style:italic; }
     .project-demo  {
       background:linear-gradient(135deg,#1a1208,#0e0904);
       border-radius:6px; height:120px;
@@ -2341,28 +2363,63 @@
       font-size:0.6rem; color:rgba(255,255,255,0.4); letter-spacing:0.1em;
     }
     .project-link { font-size:0.75rem; color:#7a5c2e; text-decoration:underline; cursor:pointer; margin-top:0.5rem; display:inline-block; }
-    /* Back-to-overview link */
-    .proj-back-link { display:inline-block; font-size:0.7rem; color:#9e8e72; text-decoration:none; letter-spacing:0.04em; margin-bottom:0.55rem; cursor:pointer; transition:color 0.15s; }
-    .proj-back-link:hover { color:#4a3f2f; }
-    /* Overview bucket layout */
+
+    /* ── Back-to-overview — stamp chip ───────────────────────── */
+    .proj-back-link {
+      display:inline-flex; align-items:center; gap:0.3rem;
+      font-size:0.62rem; font-family:Georgia,serif; letter-spacing:0.06em;
+      color:#9e8e72; text-decoration:none; cursor:pointer;
+      border:1px solid rgba(122,92,46,0.2); border-radius:20px;
+      padding:2px 10px; margin-bottom:0.75rem;
+      transition:background 0.15s, color 0.15s, border-color 0.15s;
+      text-transform:uppercase;
+    }
+    .proj-back-link:hover {
+      background:rgba(122,92,46,0.08); color:#4a3f2f;
+      border-color:rgba(122,92,46,0.4);
+    }
+
+    /* ── Overview bucket layout ───────────────────────────────── */
     .proj-overview { display:flex; flex-direction:column; gap:1.2rem; padding:0.2rem 0 0.5rem; }
     .proj-bucket-label { font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em; color:#9e8e72; margin-bottom:0.45rem; font-family:Georgia,serif; }
     .proj-bucket-links { display:flex; flex-direction:column; gap:0.35rem; }
     .proj-bucket-link { font-size:0.82rem; color:#4a3f2f; text-decoration:none; cursor:pointer; padding:0.35rem 0.6rem; border-radius:5px; transition:background 0.15s, color 0.15s; border:1px solid transparent; font-family:Georgia,serif; }
     .proj-bucket-link:hover { background:rgba(122,92,46,0.08); border-color:rgba(122,92,46,0.2); color:#2a1f0e; }
-    /* Inner sub-tabs for FoodGroups panel */
-    .proj-inner-tabs { display:flex; gap:6px; margin:0.65rem 0 0.6rem; }
-    .proj-inner-tab {
-      font-size:0.68rem; padding:4px 12px; border-radius:20px;
-      border:1px solid rgba(122,92,46,0.25); cursor:pointer;
-      background:transparent; color:#7a5c2e; font-family:inherit;
-      transition:background 0.15s, border-color 0.15s;
+
+    /* ── C. Inner asset tabs — smaller, visually distinct ────── */
+    .proj-inner-tabs {
+      display:flex; gap:4px; margin:0.8rem 0 0.7rem;
+      padding-top:0.7rem;
+      border-top:1px solid rgba(122,92,46,0.12);
+      flex-wrap:wrap;
     }
-    .proj-inner-tab.active { background:rgba(122,92,46,0.12); border-color:rgba(122,92,46,0.5); font-weight:600; }
-    .proj-inner-tab:hover:not(.active) { background:rgba(122,92,46,0.06); }
+    .proj-inner-tab {
+      font-size:0.62rem; padding:3px 10px; border-radius:4px;
+      border:1px solid rgba(122,92,46,0.2); cursor:pointer;
+      background:rgba(255,255,255,0.5); color:#9e8e72; font-family:inherit;
+      transition:background 0.15s, border-color 0.15s, color 0.15s;
+      letter-spacing:0.03em;
+    }
+    .proj-inner-tab.active {
+      background:#f5f0e8; border-color:rgba(122,92,46,0.45);
+      color:#4a3f2f; font-weight:600;
+    }
+    .proj-inner-tab:hover:not(.active) { background:rgba(122,92,46,0.06); color:#6b5240; }
     .proj-inner-panel { display:none; }
     .proj-inner-panel.active { display:block; }
-    .proj-inner-panel iframe { width:100%; border:none; border-radius:6px; display:block; }
+
+    /* ── D. Pinned-paper iframe wrapper ──────────────────────── */
+    .proj-inner-panel iframe { width:100%; border:none; border-radius:4px; display:block; }
+    .proj-embed-wrap {
+      background:#fdf9f2;
+      border:1px solid rgba(122,92,46,0.15);
+      border-radius:6px;
+      padding:0.6rem;
+      box-shadow:0 3px 12px rgba(42,31,14,0.1), 0 1px 3px rgba(42,31,14,0.06);
+      transform:rotate(-0.3deg);
+      margin:0.2rem 0.2rem 0.5rem;
+    }
+    .proj-embed-wrap iframe { border-radius:3px; }
     .proj-prompt-text {
       font-size:0.82rem; color:#4a3f2f; line-height:1.7;
       background:rgba(0,0,0,0.03); border-radius:6px; padding:0.8rem 1rem;
