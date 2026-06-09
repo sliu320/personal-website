@@ -3010,6 +3010,10 @@
       flex-shrink:0;
     }
     /* Per-door color themes */
+    .door-col-1 .door-role-label       { color:#3f5a8c; }
+    .door-col-2 .door-role-label       { color:#a6628f; }
+    .door-col-3 .door-role-label       { color:#6b5278; }
+
     /* Door 1: Lofi navy blue */
     .door-col-1 .door-frame::before    { border-color:#3f5a8c; }
     .door-col-1 .door-frame-interior   { background:#1f2a47; }
