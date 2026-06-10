@@ -34,11 +34,11 @@ const PROJECTS_DATA = [
             </a>
             <a class="proj-bucket-link" data-goto="dressingroom">
               <span class="proj-bucket-link-name">👗 DressingRoom</span>
-              <span class="proj-bucket-link-sub">AI-powered visual commerce startup. MIT FUSE accelerator, IIA AI Summit. Sunset after 4 months — a lot learned.</span>
+              <span class="proj-bucket-link-sub">AI-powered visual e-commerce startup. MIT FUSE accelerator, IIA AI Summit. Sunset after 4 months — a lot learned.</span>
             </a>
             <a class="proj-bucket-link" data-goto="foodgroups">
               <span class="proj-bucket-link-name">🥗 FoodGroups</span>
-              <span class="proj-bucket-link-sub">Personalized gut-health companion built in one week. Semi-finalist, Google PM Hackathon.</span>
+              <span class="proj-bucket-link-sub">Personalized gut-health companion concept built in one week. Semi-finalist, Google PM Hackathon.</span>
             </a>
             <a class="proj-bucket-link" data-goto="bidding">
               <span class="proj-bucket-link-name">📚 BeaverBid</span>
@@ -60,11 +60,11 @@ const PROJECTS_DATA = [
           <div class="proj-bucket-links">
             <a class="proj-bucket-link" data-goto="whereabout">
               <span class="proj-bucket-link-name">📍 WhereAbout</span>
-              <span class="proj-bucket-link-sub">Location-sharing app for the Atlantic Ocean cohort.</span>
+              <span class="proj-bucket-link-sub">Social GeoGuessr app for the Atlantic Ocean cohort.</span>
             </a>
             <a class="proj-bucket-link" data-goto="friendsgiving">
               <span class="proj-bucket-link-name">🦃 Friendsgiving</span>
-              <span class="proj-bucket-link-sub">Event site for the Atlantic Ocean Friendsgiving.</span>
+              <span class="proj-bucket-link-sub">Grattitude jar for the Atlantic Ocean Friendsgiving.</span>
             </a>
           </div>
         </div>
@@ -74,23 +74,24 @@ const PROJECTS_DATA = [
   // ── GenAI Lab ──────────────────────────────────────────────
   {
     id: 'genai', tab: '🤖 GenAI Lab',
-    title: 'GenAI Lab — Hunter Water × SAP',
-    tags: ['LLM', 'Computer Vision', 'FastAPI', 'React', 'MIT Sloan', 'Best Project 🏆'],
-    desc: 'Automated a high-stakes engineering workflow for a regulated Australian water utility. 30 minutes → 45 seconds, with human oversight built in by design.',
+    title: 'GenAI Lab Best Project',
+    tags: ['LLM', 'Computer Vision', 'MIT Sloan', 'Best Project 🏆'],
+    desc: 'Automated a high-stakes engineering workflow for a regulated water utility. 30 minutes → 45 seconds, with human oversight built in by design. Worked with two teammates with data and software engineering backgrounds.',
     customContent: `
       <div class="proj-sections">
         <div class="proj-section" data-s="problem">
           <div class="proj-section-label">Problem</div>
-          <div class="proj-section-body">Hunter Water (NSW, Australia) issues ~600 Statements of Available Pressure per year — technical packets developers need to plan water connections. Each took ~1 hour across two engineers: find the right hydrant in GIS, calculate pressure in Excel, generate a Word doc. 600+ hours of repetitive, low-judgment work annually, with no standardized QA, in a regulated environment where accuracy is non-negotiable.</div>
+          <div class="proj-section-body">Client issues ~600 Statements of Available Pressure per year — technical packets developers need to plan water connections. Each took ~1 hour across two engineers: find the right hydrant in GIS, calculate pressure in Excel, generate a Word doc. 600+ hours of repetitive, low-judgment work annually, with no standardized QA, in a regulated environment where accuracy is non-negotiable.</div>
         </div>
         <div class="proj-section" data-s="built">
           <div class="proj-section-label">What I Built</div>
           <div class="proj-section-body"><span class="proj-built-lead">End-to-end automation pipeline: vision LLM reads site plans, scoring algorithm selects the right hydrant, deterministic hydraulic logic generates the output.</span>
           <ul>
-            <li>Benchmarked Gemini Flash vs. Pro — no accuracy gain; Flash's native multimodal eliminated a separate OCR step entirely</li>
-            <li>Built hydrant scoring: 3-tier geocoding fallback + multi-factor scoring on distance, pipe diameter, and street alignment — replicating engineer judgment, not just proximity</li>
-            <li>Kept all hydraulic calculations outside the LLM so outputs stay fully auditable in a regulated context</li>
-            <li>Designed human-in-the-loop flagging: low-confidence cases surface top-5 options with one-click override — no silent hallucinations</li>
+            <li>Key contribution: Designed intuitive UI/UX with human-in-the-loop flagging and intermediate steps visible, incl. site plans and pressure calculation outputs. LLM QA justification report and top-5 options on every run keep the engineer in charge with no silent hallucinations</li>
+            <li>Key contribution: Prepared presentation, talk track, and demo to tell a compelling story on pitch day</li>
+            <li>Hydrant scoring scheme: 3-tier geocoding fallback + multi-factor scoring on distance, pipe diameter, and street alignment — replicating engineer judgment, not just proximity</li>
+            <li>All hydraulic calculations kept outside the LLM so outputs stay fully auditable in a regulated context</li>
+
           </ul></div>
         </div>
         <div class="proj-rhs-stack">
@@ -106,7 +107,10 @@ const PROJECTS_DATA = [
           </div>
           <div class="proj-section" data-s="learnings">
             <div class="proj-section-label">Learnings</div>
-            <div class="proj-section-body">In regulated industries, the goal isn't to replace the engineer — it's to eliminate the parts that don't require judgment. Keeping logic deterministic made results trustworthy to the client.</div>
+            <div class="proj-section-body"><ul>
+              <li>In regulated industries, the goal isn't to replace the engineer — it's to eliminate the parts that don't require judgment. Keeping logic deterministic made results trustworthy to the client.</li> 
+              <li>Developing a product with vibecoding tools requires a lot of discipline when scoping and developing features to ensure the output is not a blackbox and legible for handover</li>
+              <ul></div>
           </div>
         </div>
       </div>`,
@@ -117,7 +121,7 @@ const PROJECTS_DATA = [
     id: 'dressingroom', tab: '👗 DressingRoom',
     title: 'DressingRoom',
     tags: ['Startup', 'Entrepreneurship', 'Consumer', 'MIT FUSE', 'Fashion Tech'],
-    desc: 'An AI-powered visual commerce startup I co-founded with a fellow Sloan MBA. MIT FUSE accelerator, Imagination in Action AI Summit. Sunset after ~4 months — a lot learned along the way.',
+    desc: 'An AI-powered visual ecommerce startup I co-founded with a fellow Sloan MBA. MIT FUSE accelerator, Imagination in Action AI Summit. Sunset after ~4 months — a lot learned along the way.',
     customContent: `
       <div class="proj-inner-tabs">
         <button class="proj-inner-tab active" data-inner="dr-content">📋 Overview</button>
@@ -129,16 +133,15 @@ const PROJECTS_DATA = [
         <div class="proj-sections">
           <div class="proj-section" data-s="problem">
             <div class="proj-section-label">Problem</div>
-            <div class="proj-section-body">Young professionals have disposable income but no time to shop intentionally. They struggle to articulate their style, can't translate it to specific products, and are overwhelmed by volume. Virtual try-on existed but produced uncanny results and was prohibitively expensive — until diffusion models changed the economics.</div>
+            <div class="proj-section-body">Young professionals have disposable income but no time to shop intentionally. They struggle to articulate their style, can't translate it to specific products, and are overwhelmed by volume. GenAI and diffusion models enables a truly personalized shopping experience at scale that can translate visual langauge and close the gap between inspiration and purchase.</div>
           </div>
           <div class="proj-section" data-s="built">
             <div class="proj-section-label">What I Built</div>
-            <div class="proj-section-body"><span class="proj-built-lead">Co-built a product that decodes personal style from Instagram and generates AI try-ons linked to live inventory — no manual quiz, no dead links.</span>
+            <div class="proj-section-body"><span class="proj-built-lead">Designed a product and co-built a prototype that decodes personal style from Instagram posts + follows and generates curated clothing collections with AI try-ons.</span>
             <ul>
               <li>Led 100+ customer discovery interviews through MIT FUSE; won <strong>Top Banana</strong> (most PMR in a cohort of 50+ teams)</li>
-              <li>Designed the Style DNA engine concept: infer aesthetic + body profile from Instagram follows — passive input, zero friction</li>
-              <li>Framed affiliate close-loop as core differentiation from Pinterest: every try-on links to live inventory, not dead product pages</li>
-              <li>Led pitch materials and investor presentation at IIA AI Summit; secured MIT Sandbox grant</li>
+              <li>Conducted competitor analysis and articulated product differentiation--no high friction text chats or dead links, and no burden on user to describe their style</li>
+              <li>Led pitch materials and pitched at IIA AI Summit</li>
             </ul></div>
           </div>
           <div class="proj-rhs-stack">
@@ -147,17 +150,18 @@ const PROJECTS_DATA = [
               <div class="proj-section-body"><div class="proj-stat-chips">
                 <span class="proj-stat-chip">100+ interviews</span>
                 <span class="proj-stat-chip">MIT FUSE accelerator</span>
-                <span class="proj-stat-chip">$1.5K Sandbox grant</span>
+                <span class="proj-stat-chip">$1.5K MIT Sandbox grant</span>
                 <span class="proj-stat-chip">IIA AI Summit</span>
+                <span class="proj-stat-chip">Prototype developed</span>
                 <span class="proj-stat-chip hi">Sunset after 4 months</span>
               </div></div>
             </div>
             <div class="proj-section" data-s="learnings">
               <div class="proj-section-label">Learnings</div>
               <div class="proj-section-body"><ul>
-                <li>Passion is a prerequisite — we couldn't give product experiments 100%, and that's a bad foundation</li>
-                <li>GenAI levels the playing field on domain knowledge, but two MBAs with overlapping skills still lacked a technical co-founder</li>
-                <li>Consumer CAC compounds fast — B2B pressure from advisors was real, even if we were right to push back</li>
+                <li>Passion is a prerequisite — after some pivots, we couldn't give the idea 100%, and we had to be honest about it</li>
+                <li>GenAI levels the playing field on domain and technical knowledge to an extent, but two MBAs with overlapping skills still lacked a co-founder who would truly bring an unfair advantage</li>
+                <li>Building for consumer is tough given CAC, but we were passionate about building for people, not businesses, and stuck with our starting point</li>
               </ul></div>
             </div>
           </div>
@@ -209,7 +213,7 @@ const PROJECTS_DATA = [
     id: 'foodgroups', tab: '🥗 FoodGroups',
     title: 'FoodGroups',
     tags: ['AI', 'Health', 'Product', 'Google PM Hackathon', 'Semi-finalist 🏅'],
-    desc: 'A personalized gut-health companion — built with 3 classmates in one week for the Google PM Hackathon. Semi-finalist among ~25 teams.',
+    desc: 'A personalized gut-health companion — built with 3 classmates with engineering and product backgrounds in one week for the Google PM Hackathon. Semi-finalist among ~25 teams.',
     customContent: `
       <div class="proj-inner-tabs">
         <button class="proj-inner-tab active" data-inner="fg-content">📋 Overview</button>
@@ -221,15 +225,15 @@ const PROJECTS_DATA = [
         <div class="proj-sections">
           <div class="proj-section" data-s="problem">
             <div class="proj-section-label">Problem</div>
-            <div class="proj-section-body">1 in 4 Americans has a functional GI disorder ($140B/yr — more than heart disease). GI practitioners prescribe dietary changes, but half never provide guidance on meal planning or shopping. 56% find prescribed diets hard to follow. The gap isn't the diagnosis — it's everything between the doctor's note and the dinner plate.</div>
+            <div class="proj-section-body">1 in 4 Americans has a functional GI disorder ($140B/yr — more than heart disease). GI practitioners prescribe dietary changes, but half never provide guidance on meal planning or shopping, and 56% find prescribed diets hard to follow. The gap isn't the diagnosis — it's everything between the doctor's note and the dinner plate.</div>
           </div>
           <div class="proj-section" data-s="built">
             <div class="proj-section-label">What I Built</div>
-            <div class="proj-section-body"><span class="proj-built-lead">AI-powered gut-health companion combining personalized meal planning, photo-snap food logging, and a social accountability layer — built in one week with three classmates.</span>
+            <div class="proj-section-body"><span class="proj-built-lead">Product concept for AI-powered gut-health companion (Strava for gut health) combining personalized meal planning, photo-snap food logging, and social accountability.</span>
             <ul>
               <li>Led problem framing and market sizing</li>
               <li>Identified social accountability as the core differentiator — for chronic conditions, community is often the strongest adherence driver</li>
-              <li>Led pitch deck and final presentation to judges</li>
+              <li>Led pitch deck and helped storyboard video and demo</li>
             </ul></div>
           </div>
           <div class="proj-rhs-stack">
@@ -237,12 +241,11 @@ const PROJECTS_DATA = [
               <div class="proj-section-label">Outcome</div>
               <div class="proj-section-body"><div class="proj-stat-chips">
                 <span class="proj-stat-chip hi">🏅 Semi-finalist, Google PM Hackathon</span>
-                <span class="proj-stat-chip">~25 teams</span>
               </div></div>
             </div>
             <div class="proj-section" data-s="learnings">
               <div class="proj-section-label">Learnings</div>
-              <div class="proj-section-body">Most health apps treat community as a nice-to-have. For chronic condition management, it's often the primary adherence mechanism — that insight shaped the entire product architecture.</div>
+              <div class="proj-section-body">Most health apps treat community as a nice-to-have. Foodgroups was build with the understanding that community can be the primary adherence mechanism for chronic condition management. But social features can only exist if the app delivers quality one-player value prop first--and we could have been sharper on defining that.</div>
             </div>
           </div>
         </div>
@@ -267,8 +270,8 @@ const PROJECTS_DATA = [
   {
     id: 'bidding', tab: '📚 BeaverBid',
     title: 'BeaverBid',
-    tags: ['Vibecoded', 'LLM', 'MIT Sloan', 'Education', 'Top 5 — Hack for Sloan 🏅'],
-    desc: 'Course research and bidding tool for MIT Sloan students. Top 5 at Hack for Sloan, a Lovable-sponsored hackathon for builds that improve life at Sloan.',
+    tags: ['GenAI', 'MIT Sloan', 'Education', 'Top 5 — Hack for Sloan 🏅'],
+    desc: 'Course research and bidding tool for MIT Sloan students. Top 5 at Hack for Sloan, a Lovable-sponsored hackathon for builds that improve life at Sloan. Built with 3 classmates with diverse backgrounds in two hours.',
     customContent: `
       <div class="proj-inner-tabs">
         <button class="proj-inner-tab active" data-inner="bb-content">📋 Overview</button>
@@ -278,15 +281,14 @@ const PROJECTS_DATA = [
         <div class="proj-sections">
           <div class="proj-section" data-s="problem">
             <div class="proj-section-label">Problem</div>
-            <div class="proj-section-body">Sloan students bid on courses with points — but the information needed to bid well is scattered across class catalogs, student org spreadsheets, and second-year word-of-mouth. No one knows how much to bid. The result is hype-driven scrambles for classes students might pass on with better information.</div>
+            <div class="proj-section-body">Sloan students bid on courses with points — but no one knows how much to bid, or what courses are truly excellent. Information to bid well is scattered across class catalogs, Sloan websites, student spreadsheets, and word-of-mouth from limited second-year experience. The result is hype-driven scrambles for classes students might pass on with better information.</div>
           </div>
           <div class="proj-section" data-s="built">
             <div class="proj-section-label">What I Built</div>
-            <div class="proj-section-body"><span class="proj-built-lead">Vibecoded a course research tool that consolidates everything — class info, professor reputation, and historical bid data — into one place.</span>
+            <div class="proj-section-body"><span class="proj-built-lead">Vibecoded a course research tool that consolidates everything — class info, professor reputation, and historical bid data — into one place, with LLM advisor as primary browse and filter mechanism</span>
             <ul>
               <li>Identified student org bidding spreadsheets as first-class data — where real signal lives, not the official catalog</li>
-              <li>Designed the unified course card: description + teaching awards + round-by-round bid history with point estimates</li>
-              <li>Built and iterated on an LLM chat trained on all course content — turned out to be the sleeper feature, used more than browse/filter once discovered</li>
+              <li>Designed the unified course card: description + teaching awards + round-by-round bid history with point estimates and student intel inline</li>
             </ul></div>
           </div>
           <div class="proj-rhs-stack">
@@ -295,12 +297,12 @@ const PROJECTS_DATA = [
               <div class="proj-section-body"><div class="proj-stat-chips">
                 <span class="proj-stat-chip hi">🏅 Top 5, Hack for Sloan</span>
                 <span class="proj-stat-chip">Lovable-sponsored</span>
-                <span class="proj-stat-chip">Used personally + shared</span>
+                <span class="proj-stat-chip">Used personally</span>
               </div></div>
             </div>
             <div class="proj-section" data-s="learnings">
               <div class="proj-section-label">Learnings</div>
-              <div class="proj-section-body">The LLM chat was the sleeper feature — people reached for it more than anything once they discovered it. Data sourcing was the hardest part: peer bidding history lives in unstructured Google Sheets, not any official system.</div>
+              <div class="proj-section-body">This tool may have to live outside of Sloan's official bidding platform, given informal student intel. On the other hand, improved information in this market may raise the bar for quality of courses offered.</div>
             </div>
           </div>
         </div>
@@ -336,17 +338,17 @@ const PROJECTS_DATA = [
       <div class="proj-sections">
         <div class="proj-section" data-s="problem">
           <div class="proj-section-label">Problem</div>
-          <div class="proj-section-body">MBA networking is high-volume and almost entirely manual — meeting 5–10 new people a week. My tools (Granola for notes, Gmail for outreach, Obsidian for reading) generated rich relationship data, but none of it flowed together. The result: lost context, missed follow-ups, and relationships that decayed before they mattered.</div>
+          <div class="proj-section-body">MBA and startup networking is high-volume and almost entirely manual. My tools (Granola for notes, Gmail for outreach) generate rich relationship data, but none of it flowed together. The result: lost context, missed follow-ups, and relationships that decayed before they mattered.</div>
         </div>
         <div class="proj-section" data-s="built">
           <div class="proj-section-label">What I Built</div>
           <div class="proj-section-body"><span class="proj-built-lead">Fully automated personal CRM on Notion — meeting notes and emails sync automatically, zero manual entry. V1 live; V2 in progress.</span>
           <ul>
-            <li>Built <code>auto_linker.py</code>: parses Granola notes every 15 min, finds or creates People rows in Notion, links meetings automatically</li>
-            <li>Built <code>email_linker.py</code>: runs every 30 min on Gmail, detects contact direction, logs history</li>
-            <li>Designed relationship health automation: Active → Warm (30d) → Dormant (90d) — no manual tagging ever</li>
-            <li>LLM enrichment per meeting: single Claude call extracts company, role, warmth, priority, and action items</li>
-            <li><strong>V2 roadmap:</strong> pre-meeting briefs, network connector (intro suggestions), weekly digest, article matching, calendar integration</li>
+            <li>Built meeting ingestion script that parses Granola notes every 15 min, finds or creates People rows in Notion, links meetings, detects followups and adds to to do list automatically</li>
+            <li>Built email scraping layer that runs periodically on my inbox, detects contact history and additional context to add to Notion CRM</li>
+            <li>Designed relationship health automation based on frequency and quality of contact, with automated status decay over time</li>
+            <li>LLM enrichment per meeting: Claude chron job extracts company, role, warmth, priority, and action items to populate CRM data automatically</li>
+            <li><strong>V2 roadmap:</strong> pre-meeting briefs, network connector (intro suggestions), weekly digest, articles sharing and follow-up language suggestions, calendar integration</li>
           </ul></div>
         </div>
         <div class="proj-rhs-stack">
@@ -360,7 +362,7 @@ const PROJECTS_DATA = [
           </div>
           <div class="proj-section" data-s="learnings">
             <div class="proj-section-label">Learnings</div>
-            <div class="proj-section-body">Idempotency is everything in an always-on pipeline — every script must be safe to re-run without creating duplicates. The relationship health automation (Active → Warm → Dormant) turned out to be the most immediately useful feature: it surfaces neglected relationships without any prompting.</div>
+            <div class="proj-section-body">I thought about creating a separate UI or app for this, but for it to be actually useful, this product must be embedded in my existing workflows.</div>
           </div>
         </div>
       </div>`,
@@ -397,9 +399,7 @@ const PROJECTS_DATA = [
             <div class="proj-section" data-s="outcome">
               <div class="proj-section-label">Outcome</div>
               <div class="proj-section-body"><div class="proj-stat-chips">
-                <span class="proj-stat-chip hi">Half the cohort joined day 1</span>
-                <span class="proj-stat-chip">Active participation</span>
-                <span class="proj-stat-chip">Vibecoded</span>
+                <span class="proj-stat-chip hi">Half the cohort participated day 1</span>
               </div></div>
             </div>
           </div>
