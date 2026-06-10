@@ -597,6 +597,36 @@ function _browserProjectsData() {
   return PROJECTS_DATA;
 }
 
+/* ── Project video embeds (DressingRoom + FoodGroups) ────────
+   These iframes auto-play; "stopping" them means clearing src
+   so the embedded player unloads. We stash the original src on
+   first stop so it can be restored if the user comes back. ── */
+const PROJECT_VIDEO_PANEL_IDS = ['inner-dr-video', 'inner-fg-video'];
+
+function _stopProjectVideo(panel) {
+  if (!panel) return;
+  const iframe = panel.querySelector('iframe');
+  if (!iframe) return;
+  if (!iframe.dataset.src) iframe.dataset.src = iframe.src;
+  if (iframe.src !== 'about:blank') iframe.src = 'about:blank';
+}
+
+function _restoreProjectVideo(panel) {
+  if (!panel) return;
+  const iframe = panel.querySelector('iframe');
+  if (!iframe) return;
+  if (iframe.dataset.src && iframe.src !== iframe.dataset.src) iframe.src = iframe.dataset.src;
+}
+
+/* Stop any project video that's currently active anywhere within root */
+function _stopAllProjectVideos(root) {
+  if (!root) return;
+  PROJECT_VIDEO_PANEL_IDS.forEach(id => {
+    const panel = root.querySelector('#' + id);
+    if (panel) _stopProjectVideo(panel);
+  });
+}
+
 function _buildBrowserHTML(projects) {
   let tabsHtml = '', panelsHtml = '';
   projects.forEach((p, i) => {
@@ -638,8 +668,19 @@ function _wireBrowserTabs(root, projects) {
   let skipHistory = false; // flag so navigating via back/fwd doesn't double-push
 
   function _switchTo(id, pushToHistory) {
+    // Stop any project video playing in the panel we're leaving
+    const leaving = root.querySelector('.project-panel.active');
+    if (leaving && leaving.id !== 'proj-'+id) _stopAllProjectVideos(leaving);
     root.querySelectorAll('.browser-tab').forEach(t => t.classList.toggle('active', t.dataset.tab===id));
     root.querySelectorAll('.project-panel').forEach(p => p.classList.toggle('active', p.id==='proj-'+id));
+    // Restore video in the panel we're entering, if its video tab is active
+    const entering = root.querySelector('#proj-'+id);
+    if (entering) {
+      PROJECT_VIDEO_PANEL_IDS.forEach(vid => {
+        const panel = entering.querySelector('#'+vid+'.active');
+        if (panel) _restoreProjectVideo(panel);
+      });
+    }
     const urlEl = root.querySelector('#browser-url');
     if (urlEl) urlEl.textContent = `susyliu.com/projects/${id}`;
     const stEl = root.querySelector('#browser-status');
@@ -697,8 +738,15 @@ function _wireBrowserTabs(root, projects) {
     tab.addEventListener('click', () => {
       const id = tab.dataset.inner;
       const panel = tab.closest('.project-panel');
+      // Stop any video panel that's about to become inactive
+      panel.querySelectorAll('.proj-inner-panel.active').forEach(p => {
+        if (PROJECT_VIDEO_PANEL_IDS.includes(p.id)) _stopProjectVideo(p);
+      });
       panel.querySelectorAll('.proj-inner-tab').forEach(t => t.classList.toggle('active', t.dataset.inner===id));
       panel.querySelectorAll('.proj-inner-panel').forEach(p => p.classList.toggle('active', p.id==='inner-'+id));
+      // Restore video if we just switched into a video tab
+      const newPanel = panel.querySelector('#inner-'+id);
+      if (newPanel && PROJECT_VIDEO_PANEL_IDS.includes(newPanel.id)) _restoreProjectVideo(newPanel);
     });
   });
 }
@@ -2465,10 +2513,19 @@ document.getElementById('hs-lamp-toggle').addEventListener('click', e => {
   document.getElementById('hs-monitor-led').addEventListener('click', e => e.stopPropagation());
   document.getElementById('hs-music-notes').addEventListener('click', e => e.stopPropagation());
 
-  // iPod center button — switch back to lofi from Spotify
+  // iPod center button — toggle lofi on/off, or switch back to lofi from Spotify
   document.getElementById('ipod-center-btn').addEventListener('click', (e) => {
     e.stopPropagation();
-    _resumeLofi();
+    if (_spotifyPlaying) {
+      // Spotify is playing → switch back to lofi
+      _resumeLofi();
+    } else if (_lofiAudio && !_lofiAudio.paused) {
+      // Lofi is playing → stop it for people who don't want music
+      _stopLofi();
+    } else {
+      // Nothing playing → resume lofi
+      _resumeLofi();
+    }
     // Update now-playing strip to show lofi info
     _updateIpodScreen();
   });
@@ -2543,6 +2600,7 @@ function closeModal() {
   if (currentModalKey === 'speaker') {
     _parkSpotify();
   }
+  _stopAllProjectVideos(modalBody);
   // Destroy Leaflet map before clearing innerHTML
   if (_wmMap) { _wmMap.remove(); _wmMap = null; }
   modalEditBtn.textContent = '✎ edit';
@@ -2957,6 +3015,22 @@ function startMusicNotes() {
 function stopMusicNotes() {
   clearTimeout(_noteTimer);
   _noteTimer = null;
+}
+
+/* Is any music (lofi or Spotify) currently audible? */
+function _isMusicPlaying() {
+  const lofiPlaying = !!(_lofiAudio && !_lofiAudio.paused && _lofiAudio.volume > 0);
+  return lofiPlaying || _spotifyPlaying;
+}
+
+/* Show/hide the floating music notes based on whether anything is playing */
+function _syncMusicNotes() {
+  if (!document.body.classList.contains('room-entered')) return;
+  if (_isMusicPlaying()) {
+    startMusicNotes();
+  } else {
+    stopMusicNotes();
+  }
 }
 
 function _scheduleNote() {
@@ -3392,18 +3466,23 @@ function _wireSpotifyLofi(ctrl) {
   let _resumeTimer = null;
   ctrl.addListener('playback_update', (e) => {
     clearTimeout(_resumeTimer);
+    _spotifyPlaying = !e.data.isPaused;
     if (!e.data.isPaused) {
       // Spotify starts playing → cut lofi instantly (zero overlap)
       if (_lofiAudio && !_lofiAudio.paused) {
         _lofiAudio.volume = 0;
         _lofiAudio.pause();
       }
+      _syncMusicNotes();
     } else {
-      // Spotify paused → resume lofi after 400ms (audio hw fully stops first)
+      // Spotify paused → resume lofi after 400ms (audio hw fully stops first),
+      // unless the user manually silenced the music via the iPod button.
       _resumeTimer = setTimeout(() => {
-        if (_lofiAudio && _lofiAudio.paused) {
+        if (_lofiAudio && _lofiAudio.paused && !_lofiManuallyStopped) {
           _lofiAudio.volume = 0;
-          _lofiAudio.play().then(() => _fadeLofi(LOFI_VOL)).catch(() => {});
+          _lofiAudio.play().then(() => { _fadeLofi(LOFI_VOL); _syncMusicNotes(); }).catch(() => {});
+        } else {
+          _syncMusicNotes();
         }
       }, 400);
     }
@@ -3412,14 +3491,25 @@ function _wireSpotifyLofi(ctrl) {
 
 /* Switch back to lofi explicitly (iPod center button) */
 function _resumeLofi() {
+  _lofiManuallyStopped = false;
   if (_spotifyCtrl) { try { _spotifyCtrl.pause(); } catch(e) {} }
   // Small delay to let Spotify fully stop before lofi starts
   setTimeout(() => {
     if (_lofiAudio) {
       _lofiAudio.volume = 0;
-      _lofiAudio.play().then(() => _fadeLofi(LOFI_VOL)).catch(() => {});
+      _lofiAudio.play().then(() => { _fadeLofi(LOFI_VOL); _syncMusicNotes(); }).catch(() => {});
     }
   }, 300);
+}
+
+/* Pause lofi entirely — for users who don't want background music */
+function _stopLofi() {
+  _lofiManuallyStopped = true;
+  if (!_lofiAudio || _lofiAudio.paused) { _syncMusicNotes(); return; }
+  _fadeLofi(0, () => {
+    if (_lofiAudio) _lofiAudio.pause();
+    _syncMusicNotes();
+  });
 }
 
 function openSpeakerZoom() {
@@ -3954,6 +4044,7 @@ function openMonitorZoom() {
 function closeMonitorZoom() {
   if (!_monitorZoomed) return;
   _monitorZoomed = false;
+  _stopAllProjectVideos(document.getElementById('monitor-screen-content'));
   _closeZoomUI('monitor-zoom-overlay', 'monitor-zoom-back');
 }
 document.getElementById('monitor-zoom-back').addEventListener('click', closeMonitorZoom);
@@ -4145,6 +4236,7 @@ const LOFI_TRACKS = {
 let _lofiAudio = null;
 let _lofiSrc   = null;
 let _lofiKey   = null;  // current track key (for iPod display)
+let _lofiManuallyStopped = false; // user pressed iPod center button to silence music
 const LOFI_VOL = 0.32;
 
 function _getLofiKey() {
@@ -4190,7 +4282,7 @@ function startLofi() {
   _lofiKey = _getLofiKey();
   _lofiSrc = LOFI_TRACKS[_lofiKey];
   _lofiAudio.src = _lofiSrc;
-  _lofiAudio.play().then(() => _fadeLofi(LOFI_VOL)).catch(() => {});
+  _lofiAudio.play().then(() => { _fadeLofi(LOFI_VOL); _syncMusicNotes(); }).catch(() => { _syncMusicNotes(); });
   _updateIpodScreen();
 }
 
@@ -4199,11 +4291,20 @@ function switchLofi() {
   const nextKey = _getLofiKey();
   const nextSrc = LOFI_TRACKS[nextKey];
   if (nextSrc === _lofiSrc) return;
+  // If the user manually silenced the music, just remember the new track —
+  // don't start playback back up behind their back.
+  if (_lofiManuallyStopped) {
+    _lofiKey = nextKey;
+    _lofiSrc = nextSrc;
+    _lofiAudio.src = nextSrc;
+    _updateIpodScreen();
+    return;
+  }
   _fadeLofi(0, () => {
     _lofiKey = nextKey;
     _lofiSrc = nextSrc;
     _lofiAudio.src = nextSrc;
-    _lofiAudio.play().then(() => _fadeLofi(LOFI_VOL)).catch(() => {});
+    _lofiAudio.play().then(() => { _fadeLofi(LOFI_VOL); _syncMusicNotes(); }).catch(() => {});
     _updateIpodScreen();
   });
 }
@@ -4301,6 +4402,7 @@ document.querySelectorAll('.tp-item').forEach(btn => {
 let _spotifyAPI  = null;   // IFrameAPI object once script loads
 let _spotifyCtrl = null;   // EmbedController, created once
 let _spotifyEl   = null;   // the div Spotify renders its iframe into
+let _spotifyPlaying = false; // is Spotify currently audible?
 
 function initSpotifyAPI() {
   if (document.getElementById('spotify-api-script')) return;
