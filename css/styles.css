@@ -2104,7 +2104,7 @@
     }
     /* Top green section */
     .about-top {
-      background:#cce0d3;
+      background:#ced7c2;
       display:flex; flex-direction:column; align-items:center;
       padding:1.4rem 1.6rem 1rem;
     }
@@ -2146,7 +2146,7 @@
     }
     /* Body — warm beige, matching the What's Next door modal background */
     .about-body {
-      background:rgba(252,248,238,0.97);
+      background:#f3e0d0;
       padding:1.2rem 2rem 0;
       flex:1;
       border-top:none;
@@ -2160,7 +2160,7 @@
     /* Bottom green links strip — bleeds edge-to-edge out of the beige body */
     .about-links {
       text-align:center; font-size:0.92rem;
-      background:#cce0d3;
+      background:#ced7c2;
       margin:0 -2rem;
       padding:0.85rem 2rem;
     }
@@ -3664,6 +3664,9 @@
         flex-shrink: 0 !important;
         background: rgba(0,0,0,0.35) !important;
       }
+      /* In tour mode, the bottom-fixed tour bar covers the bottom nav —
+         move prev/next above the case files document instead. */
+      body.tour-mode .cf-mobile-nav { order: -1 !important; }
       .cf-mob-btn {
         background: rgba(255,255,255,0.15) !important;
         border: 1px solid rgba(255,255,255,0.3) !important;
@@ -4004,6 +4007,9 @@
       justify-content: space-between !important;
       width: 72vw !important; padding: 0.5rem 0 !important; flex-shrink: 0 !important;
     }
+    /* In tour mode, the bottom-fixed tour bar covers the bottom nav —
+       move prev/next above the case files document instead. */
+    body.tour-mode .cf-mobile-nav { order: -1 !important; }
     .cf-mob-btn {
       background: rgba(255,255,255,0.15) !important;
       border: 1px solid rgba(255,255,255,0.3) !important;
@@ -4084,18 +4090,18 @@
      ============================================================ */
   @media (max-width: 480px) {
 
-    /* ── Projects / Monitor: push card to bottom, back btn breathes at top ── */
+    /* ── Projects / Monitor: fill the full viewport, back btn floats on top ── */
     #monitor-zoom-overlay {
       padding: 0 !important;
-      align-items: flex-end !important;
+      align-items: stretch !important;
       justify-content: center !important;
     }
     .monitor-zoom-card {
       width: 100vw !important;
       max-width: 100vw !important;
       margin: 0 !important;
-      height: calc(100vh - 5rem) !important;
-      max-height: calc(100vh - 5rem) !important;
+      height: 100vh !important;
+      max-height: 100vh !important;
       aspect-ratio: unset !important;
       border-radius: 0 !important;
       border: none !important;
@@ -4241,6 +4247,12 @@
       flex-shrink: 0 !important;
       background: rgba(0,0,0,0.35) !important;
       border-radius: 0 0 6px 6px !important;
+    }
+    /* In tour mode, the bottom-fixed tour bar covers the bottom nav —
+       move prev/next above the case files document instead. */
+    body.tour-mode .cf-mobile-nav {
+      order: -1 !important;
+      border-radius: 6px 6px 0 0 !important;
     }
     .cf-mob-btn {
       background: rgba(255,255,255,0.15) !important;

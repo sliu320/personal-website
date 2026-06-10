@@ -598,15 +598,14 @@ function _browserProjectsData() {
 }
 
 /* ── Project video embeds (DressingRoom + FoodGroups) ────────
-   These iframes auto-play; "stopping" them means clearing src
-   so the embedded player unloads. We stash the original src on
-   first stop so it can be restored if the user comes back.
-
-   Some embeds (Canva) can end up as the page's fullscreen element
-   when the user clicks the embed's fullscreen control — if we blank
-   the src while it's still the fullscreen element, the browser keeps
-   rendering/playing the old (now-detached) fullscreen frame and the
-   video never actually pauses. So always exit fullscreen first. ── */
+   These iframes auto-play; "stopping" them means removing the iframe
+   from the DOM entirely (caching its markup so it can be recreated on
+   return). Just blanking src='about:blank' wasn't reliable for every
+   embed — e.g. DressingRoom's Canva player can pop itself into the
+   page's fullscreen element or native Picture-in-Picture, and changing
+   the src of an iframe in either of those states doesn't stop playback.
+   Fully removing the iframe (which destroys its browsing context and
+   forces fullscreen/PiP to close) does. ── */
 const PROJECT_VIDEO_PANEL_IDS = ['inner-dr-video', 'inner-fg-video'];
 
 let _videoPausedLofi = false; // did we pause lofi specifically because a project video started?
@@ -614,20 +613,31 @@ let _videoPausedLofi = false; // did we pause lofi specifically because a projec
 function _stopProjectVideo(panel) {
   if (!panel) return;
   const iframe = panel.querySelector('iframe');
-  if (!iframe) return;
+  if (!iframe) return; // already removed/stopped
   if (document.fullscreenElement === iframe) {
     try { document.exitFullscreen(); } catch (e) {}
   }
-  if (!iframe.dataset.src) iframe.dataset.src = iframe.src;
-  if (iframe.src !== 'about:blank') iframe.src = 'about:blank';
+  // Stash the live iframe + a placeholder marking where it goes, then
+  // remove it from the DOM — this unconditionally kills playback.
+  const marker = document.createComment('project-video-placeholder');
+  iframe.parentNode.insertBefore(marker, iframe);
+  iframe.remove();
+  panel._videoMarker = marker;
+  panel._videoIframe = iframe;
   _onProjectVideoStop();
 }
 
 function _restoreProjectVideo(panel) {
   if (!panel) return;
-  const iframe = panel.querySelector('iframe');
-  if (!iframe) return;
-  if (iframe.dataset.src && iframe.src !== iframe.dataset.src) iframe.src = iframe.dataset.src;
+  if (panel.querySelector('iframe')) { _onProjectVideoPlay(); return; } // never stopped
+  const marker = panel._videoMarker;
+  const iframe = panel._videoIframe;
+  if (marker && iframe) {
+    marker.parentNode.insertBefore(iframe, marker);
+    marker.remove();
+    panel._videoMarker = null;
+    panel._videoIframe = null;
+  }
   _onProjectVideoPlay();
 }
 
@@ -3571,10 +3581,13 @@ function openSpeakerZoom() {
 
   // Visually move the (already-mounted) embed over the iPod screen slot —
   // no DOM reparenting, so the iframe never reloads. Wait until the zoom
-  // overlay is actually open before placing/revealing it; placing it here
-  // (before the overlay exists/animates in) made the embed flash into view
-  // in the wrong spot ahead of the modal itself.
-  _zoomToHotspot('speaker', 2.2, () => { _openZoomUI('speaker-zoom-overlay', 'speaker-zoom-back'); _placeSpotifyOverSlot(); }, '14%');
+  // overlay has actually faded in (0.45s, see .world-zoom-overlay.visible)
+  // before placing/revealing it — placing it any earlier made the embed
+  // flash into view in the wrong spot ahead of the modal itself.
+  _zoomToHotspot('speaker', 2.2, () => {
+    _openZoomUI('speaker-zoom-overlay', 'speaker-zoom-back');
+    setTimeout(_placeSpotifyOverSlot, 460);
+  }, '14%');
 }
 
 function closeSpeakerZoom() {
