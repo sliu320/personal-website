@@ -15,7 +15,7 @@
   <meta name="twitter:title" content="Susy Liu">
   <meta name="twitter:description" content="Step into my room — an interactive portfolio exploring projects, community building, and what's next.">
   <meta name="twitter:image" content="assets/images/room.webp">
-  <link rel="stylesheet" href="css/styles.css?v=20260609g">
+  <link rel="stylesheet" href="css/styles.css?v=20260609t">
   <!-- Leaflet — loaded here, map only initialises when modal opens -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
@@ -851,6 +851,14 @@
   </div>
 </div>
 
+<!-- Full-viewport click/drag shield, active only during the guided tour.
+     Sits at z-index 50 — below modals (100), zoom overlays (190), and the
+     tour bar (10001), but above the room. Any tap/click/drag that isn't on
+     one of those higher-stacked elements lands here and is swallowed,
+     guaranteeing the room never receives interaction during the tour
+     regardless of timing between steps. -->
+<div id="tour-click-shield"></div>
+
 <!-- Guided tour bar — persistent during tour -->
 <div id="tour-bar">
   <button id="tour-exit-btn">✕ exit tour</button>
@@ -870,15 +878,15 @@
 <!-- Hidden Spotify embed container — keeps the iframe alive between modal opens -->
 <div id="spotify-bg" style="position:fixed;left:0;bottom:0;width:320px;height:380px;overflow:hidden;pointer-events:none;opacity:0.001;z-index:-1;"></div>
 
-<script src="js/content.js?v=20260609g"></script>
-<script src="js/content-trophy.js?v=20260609g"></script>
-<script src="js/content-cases.js?v=20260609g"></script>
-<script src="js/content-door.js?v=20260609g"></script>
-<script src="js/content-hobbies.js?v=20260609g"></script>
-<script src="js/content-community.js?v=20260609g"></script>
-<script src="js/content-stickies.js?v=20260609g"></script>
-<script src="js/content-projects.js?v=20260609g"></script>
-<script src="js/content-music.js?v=20260609g"></script>
-<script src="js/main.js?v=20260609g"></script>
+<script src="js/content.js?v=20260609t"></script>
+<script src="js/content-trophy.js?v=20260609t"></script>
+<script src="js/content-cases.js?v=20260609t"></script>
+<script src="js/content-door.js?v=20260609t"></script>
+<script src="js/content-hobbies.js?v=20260609t"></script>
+<script src="js/content-community.js?v=20260609t"></script>
+<script src="js/content-stickies.js?v=20260609t"></script>
+<script src="js/content-projects.js?v=20260609t"></script>
+<script src="js/content-music.js?v=20260609t"></script>
+<script src="js/main.js?v=20260609t"></script>
 </body>
 </html>

@@ -609,6 +609,7 @@ function _browserProjectsData() {
 const PROJECT_VIDEO_PANEL_IDS = ['inner-dr-video', 'inner-fg-video'];
 
 let _videoPausedLofi = false; // did we pause lofi specifically because a project video started?
+let _videoPausedSpotify = false; // did we pause the Spotify embed specifically because a project video started?
 
 function _stopProjectVideo(panel) {
   if (!panel) return;
@@ -650,9 +651,10 @@ function _stopAllProjectVideos(root) {
   });
 }
 
-/* A project video started playing → duck the background lofi (if it's
-   currently audible) so the two don't overlap. Remember that *we* paused
-   it so we know to bring it back when the video stops. */
+/* A project video started playing → duck whichever background music is
+   currently audible (lofi OR the Spotify embed) so the two don't overlap.
+   Remember which one *we* paused so we know what to bring back when the
+   video stops. */
 function _onProjectVideoPlay() {
   if (_lofiAudio && !_lofiAudio.paused) {
     _videoPausedLofi = true;
@@ -661,11 +663,20 @@ function _onProjectVideoPlay() {
       _syncMusicNotes();
     });
   }
+  if (_spotifyPlaying && _spotifyCtrl) {
+    _videoPausedSpotify = true;
+    try { _spotifyCtrl.pause(); } catch (e) {}
+    // playback_update listener will flip _spotifyPlaying + sync notes
+  }
 }
 
-/* A project video stopped/paused → bring lofi back, unless the user has
-   manually silenced it via the iPod button. */
+/* A project video stopped/paused → bring back whichever music we ducked,
+   unless the user has manually silenced lofi via the iPod button. */
 function _onProjectVideoStop() {
+  if (_videoPausedSpotify) {
+    _videoPausedSpotify = false;
+    if (_spotifyCtrl) { try { _spotifyCtrl.resume(); } catch (e) {} }
+  }
   if (!_videoPausedLofi) return;
   _videoPausedLofi = false;
   if (_lofiManuallyStopped) return;
@@ -1928,6 +1939,11 @@ const TOUR_STEPS = [
 ];
 
 let _tourMode = false;
+// _tourActive stays true for the whole guided tour, including the brief
+// windows where _tourMode is toggled off (e.g. _tourAdvance's zoom-out
+// step). Used to gate room-interaction blocking — _tourMode alone leaves a
+// ~300ms gap during step transitions where clicks/drags weren't blocked.
+let _tourActive = false;
 let _tourIdx  = -1;
 
 function _tourPulseHotspot(key, cb) {
@@ -1944,6 +1960,7 @@ function _tourPulseHotspot(key, cb) {
 function startTour() {
   dismissOnboarding();
   _tourMode = true;
+  _tourActive = true;
   _tourIdx  = 0;
   document.body.classList.add('tour-mode');
   _updateTourBar();
@@ -1953,6 +1970,7 @@ function startTour() {
 
 function _exitTour() {
   _tourMode = false;
+  _tourActive = false;
   _tourIdx  = -1;
   document.body.classList.remove('tour-mode');
   document.getElementById('tour-bar').classList.remove('visible');
@@ -1968,6 +1986,7 @@ function _tourAdvance() {
   _origCloseActiveZoom();
 
   if (atEnd) {
+    _tourActive = false;
     document.body.classList.remove('tour-mode');
     document.getElementById('tour-bar').classList.remove('visible');
     setTimeout(() => document.getElementById('tour-end').classList.add('visible'), 500);
@@ -1994,7 +2013,7 @@ function _updateTourBar() {
 // in tour mode intercept before the original close handler fires → exit tour
 document.querySelectorAll('[id$="-zoom-back"]').forEach(btn => {
   btn.addEventListener('click', e => {
-    if (!_tourMode) return;
+    if (!_tourActive) return;
     e.stopImmediatePropagation();
     _exitTour();
   }, true);
@@ -2005,6 +2024,34 @@ document.getElementById('tour-exit-btn').addEventListener('click', _exitTour);
 document.getElementById('tour-next-btn').addEventListener('click', _tourAdvance);
 document.getElementById('tour-end-close').addEventListener('click', () => {
   document.getElementById('tour-end').classList.remove('visible');
+});
+
+// During the guided tour, the room pans/zooms between steps with no modal
+// open yet. Clicking a hotspot (or anything else in the room) mid-pan during
+// that window starts a second zoom/modal on top of the in-progress one and
+// the tour gets stuck. While in tour mode and no modal/overlay is currently
+// open, swallow clicks on everything except the tour bar itself.
+// During the guided tour, the room pans/zooms between steps with no modal
+// open yet. Any interaction with the room during that window — clicking a
+// hotspot, or even just pressing/dragging to pan — starts a second
+// zoom/pan or kills the in-progress transition (drag clears the transform
+// transition), and the tour gets stuck. While in tour mode and no
+// modal/overlay is currently open, swallow these interactions everywhere
+// except the tour bar itself.
+function _tourBlocksInteraction(e) {
+  if (!_tourActive) return false;
+  if (e.target.closest('#tour-bar')) return false;
+  const modalOpen = modalBg.classList.contains('open');
+  const overlayOpen = document.querySelectorAll('.world-zoom-overlay.visible').length > 0;
+  return !(modalOpen || overlayOpen);
+}
+
+['click', 'mousedown', 'touchstart', 'pointerdown'].forEach(type => {
+  document.addEventListener(type, e => {
+    if (!_tourBlocksInteraction(e)) return;
+    e.stopPropagation();
+    e.preventDefault();
+  }, { capture: true, passive: false });
 });
 
 /* ============================================================
@@ -2609,6 +2656,7 @@ function openModal(key) {
   if (key === 'teapot')     { openTeaZoom();        return; }
   if (key === 'stickynotes'){ openStickiesZoom();   return; }
   if (key === 'polaroids')  { openCommunityZoom();  return; }
+  if (key === 'wardrobe')   { openWardrobeZoom();   return; }
   const data = CONTENT[key]; if (!data) return;
   currentModalKey = key;
   isModalEditing  = false;
@@ -2648,7 +2696,9 @@ function closeModal() {
   modalEditBtn.textContent = '✎ edit';
   modalEditBtn.classList.remove('editing');
   const wasWmMode = modalBg.classList.contains('wm-mode');
+  const wasZoomMode = modalBg.classList.contains('zoom-mode');
   modalBg.classList.remove('wm-mode');
+  modalBg.classList.remove('zoom-mode');
   modalBody.innerHTML = '';
   modalTitle.textContent = '';
   if (wasWmMode) {
@@ -2656,6 +2706,9 @@ function closeModal() {
     modalEl.style.visibility = 'hidden';
     modalBg.classList.remove('open');
     setTimeout(() => { modalEl.style.visibility = ''; }, 500);
+    _zoomOut();
+  } else if (wasZoomMode) {
+    modalBg.classList.remove('open');
     _zoomOut();
   } else {
     modalBg.classList.remove('open');
@@ -3059,9 +3112,14 @@ function stopMusicNotes() {
   _noteTimer = null;
 }
 
-/* Is any music (lofi or Spotify) currently audible? */
+/* Is any music (lofi or Spotify) currently audible?
+   Note: don't gate on _lofiAudio.volume > 0 — _fadeLofi() ramps the
+   volume up gradually via setInterval, so right after starting playback
+   (volume still 0) this would read as "not playing" and immediately
+   stop the notes that were just started. Whether lofi is "playing" is
+   about play state, not the current point in its fade. */
 function _isMusicPlaying() {
-  const lofiPlaying = !!(_lofiAudio && !_lofiAudio.paused && _lofiAudio.volume > 0);
+  const lofiPlaying = !!(_lofiAudio && !_lofiAudio.paused && !_lofiManuallyStopped);
   return lofiPlaying || _spotifyPlaying;
 }
 
@@ -3193,6 +3251,29 @@ function _cfIsMobile() { return window.innerWidth <= 700; }
 function _cfNumPages() { return _cfIsMobile() ? _CF_PAGES.length : Math.ceil((_CF_PAGES.length + 1) / 2); }
 function _cfFrontIdx(p) { return p * 2; }
 function _cfBackIdx(p)  { return p * 2 + 1; }
+
+/* Wardrobe is a plain CONTENT modal, but (unlike every other hotspot) it
+   used to open with no pan/zoom at all. Reuse the same "zoom into the
+   hotspot, then open the modal over it, zoom back out on close" pattern
+   as the world map. */
+function openWardrobeZoom() {
+  _zoomToHotspot('wardrobe', 2.2, () => {
+    const key = 'wardrobe';
+    const data = CONTENT[key]; if (!data) return;
+    currentModalKey = key;
+    isModalEditing  = false;
+    modalTitle.textContent = data.title;
+    modalEditBtn.style.display = '';
+    const saved = (() => { try { return localStorage.getItem('modal-'+key); } catch(e) { return null; } })();
+    modalBody.innerHTML = saved || data.body;
+    modalBody.contentEditable = 'false';
+    modalEditBtn.textContent = '✎ edit';
+    modalEditBtn.classList.remove('editing');
+    modalResetBtn.classList.toggle('visible', !!saved);
+    modalBg.classList.add('zoom-mode');
+    modalBg.classList.add('open');
+  }, '40%');
+}
 
 function openWorldMapZoom() {
   _zoomToHotspot('worldmap', 2.2, () => {

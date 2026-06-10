@@ -1392,6 +1392,34 @@
     /* Hide back buttons during guided tour — tour bar handles navigation */
     body.tour-mode .zoom-back-btn { display:none !important; }
 
+    /* During the guided tour, the room (hotspots + drag-to-pan) must not
+       respond to clicks/taps/drags at all — a stray press while the camera
+       is panning/zooming between steps was breaking the in-progress
+       transition and freezing the tour. #room-container holds only the
+       room image + hotspots; all overlays, modals, the project browser's
+       close button, and #tour-bar live outside it and are unaffected. This
+       is a hard CSS guarantee, independent of any JS click-guard timing. */
+    body.tour-mode #room-container { pointer-events: none !important; }
+
+    /* During the guided tour, closing the project browser via its window "✕"
+       was leaving the tour in a stuck state (overlay closed but the tour
+       still waiting on a step that's no longer open). Rather than rewiring
+       the close behavior, simply make the button inert during the tour —
+       it stays visible (so the window chrome still looks right) but
+       clicks/taps pass through and do nothing. */
+    body.tour-mode .browser-win-btn-close { pointer-events: none !important; }
+
+    /* Full-viewport shield used during the guided tour (see index.html for
+       why). Inert outside tour mode; during the tour it sits at z-index 50,
+       below #modal-bg (100), .world-zoom-overlay (190), #zoom-backdrop (188)
+       and #tour-bar (10001) — so those remain fully interactive — but above
+       the room, catching any stray click/tap/drag that would otherwise reach
+       #room-container or fall through to it. */
+    #tour-click-shield {
+      position:fixed; inset:0; z-index:50; pointer-events:none;
+    }
+    body.tour-mode #tour-click-shield { pointer-events:all !important; cursor:default; }
+
     /* ── NOTE card ─────────────────────────────────────────── */
     /* ── Pure CSS stationery notepad ──────────────────────────── */
     .notepad-css {
@@ -3539,7 +3567,7 @@
         position: relative !important;
         top: auto !important; left: auto !important;
         transform: none !important;
-        width: min(80vw, 300px);
+        width: min(85vw, 420px);
         margin: -0.4rem auto 0;
         box-shadow: 0 4px 18px rgba(0,0,0,0.15);
       }
@@ -4077,7 +4105,7 @@
     #community-blurb-panel {
       position: relative !important; top: auto !important;
       left: auto !important; transform: none !important;
-      width: min(60vw, 360px) !important;
+      width: min(85vw, 420px) !important;
       margin: -0.4rem auto 0 !important;
       box-shadow: 0 4px 18px rgba(0,0,0,0.15) !important;
     }
@@ -4095,6 +4123,10 @@
       padding: 0 !important;
       align-items: stretch !important;
       justify-content: center !important;
+    }
+    /* Back button is redundant on mobile — the browser's own X closes it */
+    #monitor-zoom-back {
+      display: none !important;
     }
     .monitor-zoom-card {
       width: 100vw !important;
@@ -4249,10 +4281,17 @@
       border-radius: 0 0 6px 6px !important;
     }
     /* In tour mode, the bottom-fixed tour bar covers the bottom nav —
-       move prev/next above the case files document instead. */
+       move prev/next above the case files document instead. Nudge it
+       down a bit so it sits closer to the document below it, with a
+       small breathing-room gap (not flush against the top edge, not
+       overlapping the card). */
     body.tour-mode .cf-mobile-nav {
       order: -1 !important;
       border-radius: 6px 6px 0 0 !important;
+      margin-top: 1.5rem !important;
+    }
+    body.tour-mode .casefiles-zoom-card {
+      margin-top: 0.5rem !important;
     }
     .cf-mob-btn {
       background: rgba(255,255,255,0.15) !important;
