@@ -600,15 +600,27 @@ function _browserProjectsData() {
 /* ── Project video embeds (DressingRoom + FoodGroups) ────────
    These iframes auto-play; "stopping" them means clearing src
    so the embedded player unloads. We stash the original src on
-   first stop so it can be restored if the user comes back. ── */
+   first stop so it can be restored if the user comes back.
+
+   Some embeds (Canva) can end up as the page's fullscreen element
+   when the user clicks the embed's fullscreen control — if we blank
+   the src while it's still the fullscreen element, the browser keeps
+   rendering/playing the old (now-detached) fullscreen frame and the
+   video never actually pauses. So always exit fullscreen first. ── */
 const PROJECT_VIDEO_PANEL_IDS = ['inner-dr-video', 'inner-fg-video'];
+
+let _videoPausedLofi = false; // did we pause lofi specifically because a project video started?
 
 function _stopProjectVideo(panel) {
   if (!panel) return;
   const iframe = panel.querySelector('iframe');
   if (!iframe) return;
+  if (document.fullscreenElement === iframe) {
+    try { document.exitFullscreen(); } catch (e) {}
+  }
   if (!iframe.dataset.src) iframe.dataset.src = iframe.src;
   if (iframe.src !== 'about:blank') iframe.src = 'about:blank';
+  _onProjectVideoStop();
 }
 
 function _restoreProjectVideo(panel) {
@@ -616,6 +628,7 @@ function _restoreProjectVideo(panel) {
   const iframe = panel.querySelector('iframe');
   if (!iframe) return;
   if (iframe.dataset.src && iframe.src !== iframe.dataset.src) iframe.src = iframe.dataset.src;
+  _onProjectVideoPlay();
 }
 
 /* Stop any project video that's currently active anywhere within root */
@@ -625,6 +638,31 @@ function _stopAllProjectVideos(root) {
     const panel = root.querySelector('#' + id);
     if (panel) _stopProjectVideo(panel);
   });
+}
+
+/* A project video started playing → duck the background lofi (if it's
+   currently audible) so the two don't overlap. Remember that *we* paused
+   it so we know to bring it back when the video stops. */
+function _onProjectVideoPlay() {
+  if (_lofiAudio && !_lofiAudio.paused) {
+    _videoPausedLofi = true;
+    _fadeLofi(0, () => {
+      if (_lofiAudio) _lofiAudio.pause();
+      _syncMusicNotes();
+    });
+  }
+}
+
+/* A project video stopped/paused → bring lofi back, unless the user has
+   manually silenced it via the iPod button. */
+function _onProjectVideoStop() {
+  if (!_videoPausedLofi) return;
+  _videoPausedLofi = false;
+  if (_lofiManuallyStopped) return;
+  if (_lofiAudio && _lofiAudio.paused) {
+    _lofiAudio.volume = 0;
+    _lofiAudio.play().then(() => { _fadeLofi(LOFI_VOL); _syncMusicNotes(); }).catch(() => {});
+  }
 }
 
 function _buildBrowserHTML(projects) {
@@ -3532,9 +3570,10 @@ function openSpeakerZoom() {
   }
 
   // Visually move the (already-mounted) embed over the iPod screen slot —
-  // no DOM reparenting, so the iframe never reloads.
-  _placeSpotifyOverSlot();
-
+  // no DOM reparenting, so the iframe never reloads. Wait until the zoom
+  // overlay is actually open before placing/revealing it; placing it here
+  // (before the overlay exists/animates in) made the embed flash into view
+  // in the wrong spot ahead of the modal itself.
   _zoomToHotspot('speaker', 2.2, () => { _openZoomUI('speaker-zoom-overlay', 'speaker-zoom-back'); _placeSpotifyOverSlot(); }, '14%');
 }
 
