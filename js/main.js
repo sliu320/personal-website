@@ -1,4 +1,26 @@
 /* ============================================================
+   ANALYTICS — thin wrapper around gtag so calls are safe even
+   if Google Analytics hasn't loaded yet (ad blockers, etc.)
+============================================================ */
+function trackEvent(name, params) {
+  if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
+}
+
+/* Modal/zoom-overlay dwell time tracking */
+const _modalOpenTimes = {};
+function trackModalOpen(key) {
+  if (!key) return;
+  _modalOpenTimes[key] = Date.now();
+  trackEvent('modal_open', { modal: key });
+}
+function trackModalClose(key) {
+  if (!key || !(key in _modalOpenTimes)) return;
+  const duration_ms = Date.now() - _modalOpenTimes[key];
+  delete _modalOpenTimes[key];
+  trackEvent('modal_close', { modal: key, duration_ms, duration_sec: Math.round(duration_ms / 1000) });
+}
+
+/* ============================================================
    RICH MODAL RENDERERS
    These inject custom HTML into modalBody for specific hotspots.
    Return true if handled, false to fall through to plain text.
@@ -763,7 +785,10 @@ function _wireBrowserTabs(root, projects) {
   }
 
   root.querySelectorAll('.browser-tab').forEach(tab => {
-    tab.addEventListener('click', () => _switchTo(tab.dataset.tab, true));
+    tab.addEventListener('click', () => {
+      trackEvent(`project_tab_${tab.dataset.tab}`);
+      _switchTo(tab.dataset.tab, true);
+    });
   });
 
   // Nav buttons
@@ -785,6 +810,7 @@ function _wireBrowserTabs(root, projects) {
   root.querySelectorAll('.proj-bucket-link[data-goto]').forEach(link => {
     link.addEventListener('click', () => {
       const id = link.dataset.goto;
+      trackEvent('project_overview_jump', { target: id });
       _switchTo(id, true);
     });
   });
@@ -1958,6 +1984,7 @@ function _tourPulseHotspot(key, cb) {
 }
 
 function startTour() {
+  trackEvent('start_tour');
   dismissOnboarding();
   _tourMode = true;
   _tourActive = true;
@@ -2572,6 +2599,7 @@ function _doLampFlicker() {
 }
 document.getElementById('hs-lamp-toggle').addEventListener('click', e => {
   if (editMode) return; e.stopPropagation();
+  trackEvent('hotspot_click', { hotspot: 'lamp-toggle', is_easter_egg: true });
   lampOn = !lampOn;
   setLampOverlays(lampOn);
 });
@@ -2673,6 +2701,7 @@ function openModal(key) {
     if (key === 'worldmap') { modalBg.classList.add('wm-mode'); document.getElementById('wm-zoom-back').style.display = 'block'; }
     renderRichModal(key);
     modalBg.classList.add('open');
+    trackModalOpen(key);
     return;
   }
 
@@ -2684,8 +2713,10 @@ function openModal(key) {
   modalEditBtn.classList.remove('editing');
   modalResetBtn.classList.toggle('visible', !!saved);
   modalBg.classList.add('open');
+  trackModalOpen(key);
 }
 function closeModal() {
+  trackModalClose(currentModalKey);
   if (isModalEditing) { isModalEditing=false; modalBody.contentEditable='false'; }
   if (currentModalKey === 'speaker') {
     _parkSpotify();
@@ -2759,7 +2790,12 @@ modalResetBtn.addEventListener('click', () => {
 });
 
 document.querySelectorAll('.hotspot:not(#hs-lamp-toggle)').forEach(hs => {
-  hs.addEventListener('click', e => { if(editMode) return; e.stopPropagation(); openModal(hs.dataset.key); });
+  hs.addEventListener('click', e => {
+    if(editMode) return;
+    e.stopPropagation();
+    trackEvent('hotspot_click', { hotspot: hs.dataset.key, is_easter_egg: hs.classList.contains('egg') });
+    openModal(hs.dataset.key);
+  });
   // Keyboard accessibility: make hotspots focusable and activatable via Enter/Space
   if (!hs.hasAttribute('tabindex')) hs.setAttribute('tabindex', '0');
   hs.setAttribute('role', 'button');
@@ -2898,6 +2934,7 @@ function _openZoomUI(overlayId, backBtnId) {
     const hs = _tourActiveHs; _tourActiveHs = null;
     setTimeout(() => hs.classList.remove('hs-tour-active'), 450);
   }
+  trackModalOpen(overlayId.replace(/-zoom-overlay$/, ''));
 }
 
 function _closeZoomUI(overlayId, backBtnId) {
@@ -2907,6 +2944,7 @@ function _closeZoomUI(overlayId, backBtnId) {
   const anyOpen = document.querySelectorAll('.world-zoom-overlay.visible').length > 0;
   if (!anyOpen) document.getElementById('zoom-backdrop').classList.remove('active');
   _zoomOut();
+  trackModalClose(overlayId.replace(/-zoom-overlay$/, ''));
 }
 
 /* Close whichever zoom is currently open */
@@ -3272,6 +3310,7 @@ function openWardrobeZoom() {
     modalResetBtn.classList.toggle('visible', !!saved);
     modalBg.classList.add('zoom-mode');
     modalBg.classList.add('open');
+    trackModalOpen(key);
   }, '40%');
 }
 
@@ -3285,6 +3324,7 @@ function openWorldMapZoom() {
     modalBody.contentEditable = 'false';
     renderWorldMap();
     modalBg.classList.add('open');
+    trackModalOpen('worldmap');
   }, '35%');
 }
 
@@ -3429,6 +3469,16 @@ function _cfPageHTML(idx) {
   return `${inner}<span class="cf-pg-num cf-pg-num-${side}">${pgNum}</span>`;
 }
 
+/* Human-readable label for a case-files page, used for analytics */
+function _cfPageLabel(idx) {
+  const c = _CF_PAGES[idx];
+  if (!c) return `page ${idx + 1}`;
+  if (c.type === 'toc')      return 'TOC';
+  if (c.type === 'featured') return c.title;
+  if (c.type === 'compact')  return c.cases.map(x => x.title).join(' | ');
+  return `page ${idx + 1}`;
+}
+
 /* Build/rebuild the scene at the current _cfPhysPage */
 function _cfBuildScene() {
   const wrap = document.getElementById('cf-pages');
@@ -3441,11 +3491,11 @@ function _cfBuildScene() {
   }
   const rp = document.createElement('div');
   rp.id = 'cf-right-page'; rp.className = 'cf-right-page';
-  rp.innerHTML = _cfIsMobile()
-    ? _cfPageHTML(_cfPhysPage)
-    : _cfPageHTML(_cfFrontIdx(_cfPhysPage));
+  const frontIdx = _cfIsMobile() ? _cfPhysPage : _cfFrontIdx(_cfPhysPage);
+  rp.innerHTML = _cfPageHTML(frontIdx);
   wrap.appendChild(rp);
   _updateCfNav();
+  trackEvent('case_files_page_view', { page: _cfPageLabel(frontIdx), page_index: frontIdx + 1 });
 }
 
 /* Jump directly to a page — desktopPhys for book spread, mobileIdx for single-page */
@@ -3453,6 +3503,8 @@ function cfJumpTo(desktopPhys, mobileIdx) {
   if (_cfFlipping) return;
   const target = _cfIsMobile() ? (mobileIdx ?? desktopPhys) : desktopPhys;
   _cfPhysPage = Math.max(0, Math.min(target, _cfNumPages() - 1));
+  const frontIdx = _cfIsMobile() ? _cfPhysPage : _cfFrontIdx(_cfPhysPage);
+  trackEvent('case_files_toc_jump', { page: _cfPageLabel(frontIdx), page_index: frontIdx + 1 });
   _cfBuildScene();
 }
 
@@ -3479,6 +3531,7 @@ function _cfFlipMobile(dir) {
   rp.innerHTML = _cfPageHTML(_cfPhysPage);
   rp.scrollTop = 0;
   _updateCfNav();
+  trackEvent('case_files_page_view', { page: _cfPageLabel(_cfPhysPage), page_index: _cfPhysPage + 1 });
 }
 
 function _cfFlip(dir) {
@@ -3512,6 +3565,7 @@ function _cfFlip(dir) {
       _updateCfNav();
       turner.remove();
       _cfFlipping = false;
+      trackEvent('case_files_page_view', { page: _cfPageLabel(_cfFrontIdx(_cfPhysPage)), page_index: _cfFrontIdx(_cfPhysPage) + 1 });
     }, 510);
 
   } else {
@@ -3540,6 +3594,7 @@ function _cfFlip(dir) {
       _updateCfNav();
       turner.remove();
       _cfFlipping = false;
+      trackEvent('case_files_page_view', { page: _cfPageLabel(_cfFrontIdx(_cfPhysPage)), page_index: _cfFrontIdx(_cfPhysPage) + 1 });
     }, 510);
   }
 }
