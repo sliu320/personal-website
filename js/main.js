@@ -6,18 +6,60 @@ function trackEvent(name, params) {
   if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
 }
 
+/* Per-hotspot click events — fired in addition to opening the modal */
+const HOTSPOT_CLICK_EVENTS = {
+  mirror:      'click_about',
+  consulting:  'click_case_files',
+  laptop:      'click_projects',
+  trophy:      'click_awards',
+  door:        'click_whats_next',
+  contact:     'click_note',
+  polaroids:   'click_community',
+  hobbies:     'click_hobbies',
+  stickynotes: 'click_stickies',
+  piano:       'click_music',
+  worldmap:    'click_world_map',
+  wardrobe:    'click_wardrobe',
+  speaker:     'click_now_playing',
+  teapot:      'click_tea_time',
+  'lamp-toggle': 'click_lamp',
+};
+
+/* Per-modal open/close events, keyed by the internal modal/overlay key.
+   Close events include duration_sec so each "section" acts like a page
+   with its own dwell time. */
+const MODAL_EVENT_NAMES = {
+  about:      ['about_open',      'about_close'],
+  consulting: ['case_files_open', 'case_files_close'],
+  monitor:    ['projects_open',   'projects_close'],
+  trophy:     ['awards_open',     'awards_close'],
+  door:       ['whats_next_open', 'whats_next_close'],
+  note:       ['note_open',       'note_close'],
+  community:  ['community_open',  'community_close'],
+  hobbies:    ['hobbies_open',    'hobbies_close'],
+  stickies:   ['stickies_open',   'stickies_close'],
+  music:      ['music_open',      'music_close'],
+  worldmap:   ['world_map_open',  'world_map_close'],
+  wardrobe:   ['wardrobe_open',   'wardrobe_close'],
+  speaker:    ['now_playing_open','now_playing_close'],
+  tea:        ['tea_time_open',   'tea_time_close'],
+  bookshelf:  ['bookshelf_open',  'bookshelf_close'],
+};
+
 /* Modal/zoom-overlay dwell time tracking */
 const _modalOpenTimes = {};
 function trackModalOpen(key) {
   if (!key) return;
   _modalOpenTimes[key] = Date.now();
-  trackEvent('modal_open', { modal: key });
+  const names = MODAL_EVENT_NAMES[key];
+  if (names) trackEvent(names[0]);
 }
 function trackModalClose(key) {
   if (!key || !(key in _modalOpenTimes)) return;
   const duration_ms = Date.now() - _modalOpenTimes[key];
   delete _modalOpenTimes[key];
-  trackEvent('modal_close', { modal: key, duration_ms, duration_sec: Math.round(duration_ms / 1000) });
+  const names = MODAL_EVENT_NAMES[key];
+  if (names) trackEvent(names[1], { duration_ms, duration_sec: Math.round(duration_ms / 1000) });
 }
 
 /* ============================================================
@@ -2608,7 +2650,7 @@ function _doLampFlicker() {
 }
 document.getElementById('hs-lamp-toggle').addEventListener('click', e => {
   if (editMode) return; e.stopPropagation();
-  trackEvent('hotspot_click', { hotspot: 'lamp-toggle', is_easter_egg: true });
+  trackEvent('click_lamp');
   lampOn = !lampOn;
   setLampOverlays(lampOn);
 });
@@ -2802,7 +2844,8 @@ document.querySelectorAll('.hotspot:not(#hs-lamp-toggle)').forEach(hs => {
   hs.addEventListener('click', e => {
     if(editMode) return;
     e.stopPropagation();
-    trackEvent('hotspot_click', { hotspot: hs.dataset.key, is_easter_egg: hs.classList.contains('egg') });
+    const clickEvt = HOTSPOT_CLICK_EVENTS[hs.dataset.key];
+    if (clickEvt) trackEvent(clickEvt);
     openModal(hs.dataset.key);
   });
   // Keyboard accessibility: make hotspots focusable and activatable via Enter/Space
@@ -3259,9 +3302,12 @@ document.getElementById('trophy-zoom-back').addEventListener('click', closeTroph
 // for several seconds. Briefly toggling overflow off/on resets it.
 function _resetOverlayScroll(ov) {
   if (!ov) return;
-  ov.style.overflowY = 'hidden';
+  // Use !important so this wins over #trophy-zoom-overlay's
+  // `overflow-y: auto !important` mobile rule — a non-important inline
+  // style is silently ignored against an !important stylesheet rule.
+  ov.style.setProperty('overflow-y', 'hidden', 'important');
   requestAnimationFrame(() => {
-    requestAnimationFrame(() => { ov.style.overflowY = ''; });
+    requestAnimationFrame(() => { ov.style.removeProperty('overflow-y'); });
   });
 }
 
@@ -3494,6 +3540,11 @@ function _cfPageHTML(idx) {
 }
 
 /* Human-readable label for a case-files page, used for analytics */
+/* Page 0 is the TOC (no event); pages 1-7 fire case_files_page_2 .. case_files_page_8 */
+function _cfTrackPageView(idx) {
+  if (idx >= 1) trackEvent(`case_files_page_${idx + 1}`, { page: _cfPageLabel(idx) });
+}
+
 function _cfPageLabel(idx) {
   const c = _CF_PAGES[idx];
   if (!c) return `page ${idx + 1}`;
@@ -3519,7 +3570,7 @@ function _cfBuildScene() {
   rp.innerHTML = _cfPageHTML(frontIdx);
   wrap.appendChild(rp);
   _updateCfNav();
-  trackEvent('case_files_page_view', { page: _cfPageLabel(frontIdx), page_index: frontIdx + 1 });
+  _cfTrackPageView(frontIdx);
 }
 
 /* Jump directly to a page — desktopPhys for book spread, mobileIdx for single-page */
@@ -3555,7 +3606,7 @@ function _cfFlipMobile(dir) {
   rp.innerHTML = _cfPageHTML(_cfPhysPage);
   rp.scrollTop = 0;
   _updateCfNav();
-  trackEvent('case_files_page_view', { page: _cfPageLabel(_cfPhysPage), page_index: _cfPhysPage + 1 });
+  _cfTrackPageView(_cfPhysPage);
 }
 
 function _cfFlip(dir) {
@@ -3589,7 +3640,7 @@ function _cfFlip(dir) {
       _updateCfNav();
       turner.remove();
       _cfFlipping = false;
-      trackEvent('case_files_page_view', { page: _cfPageLabel(_cfFrontIdx(_cfPhysPage)), page_index: _cfFrontIdx(_cfPhysPage) + 1 });
+      _cfTrackPageView(_cfFrontIdx(_cfPhysPage));
     }, 510);
 
   } else {
@@ -3618,7 +3669,7 @@ function _cfFlip(dir) {
       _updateCfNav();
       turner.remove();
       _cfFlipping = false;
-      trackEvent('case_files_page_view', { page: _cfPageLabel(_cfFrontIdx(_cfPhysPage)), page_index: _cfFrontIdx(_cfPhysPage) + 1 });
+      _cfTrackPageView(_cfFrontIdx(_cfPhysPage));
     }, 510);
   }
 }
