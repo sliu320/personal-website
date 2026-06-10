@@ -3559,6 +3559,29 @@ document.getElementById('cf-next-arrow').addEventListener('click', _cfSafe(() =>
 document.getElementById('cf-mob-prev').addEventListener('click', _cfSafe(() => _cfFlipMobile(-1)));
 document.getElementById('cf-mob-next').addEventListener('click', _cfSafe(() => _cfFlipMobile(1)));
 
+/* ── Mobile: swipe left/right on the page to flip ────────── */
+(function() {
+  const cfCard = document.querySelector('.casefiles-zoom-card');
+  let startX = 0, startY = 0, tracking = false;
+  cfCard.addEventListener('touchstart', e => {
+    if (!_cfIsMobile() || e.touches.length !== 1) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    tracking = true;
+  }, { passive: true });
+  cfCard.addEventListener('touchend', e => {
+    if (!tracking) return;
+    tracking = false;
+    if (!_cfIsMobile()) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    // Require a clearly horizontal swipe so vertical text scrolling isn't hijacked
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      _cfSafe(() => _cfFlipMobile(dx < 0 ? 1 : -1))();
+    }
+  }, { passive: true });
+})();
+
 /* ── Speaker / iPod zoom ─────────────────────────────────── */
 const LOFI_CREDITS = {
   morning:   { name:'Morning Routine', artist:'Ghostrifter Official', license:'CC BY-SA 3.0 · chosic.com' },
@@ -4401,14 +4424,34 @@ function _fadeLofi(targetVol, onDone) {
   }, 40);
 }
 
+// Warm the audio cache for the track we'll most likely open with — kicked
+// off as soon as the page loads (landing screen) so by the time the user
+// clicks through the door, playback can start instantly instead of waiting
+// on a multi-MB download. Best-effort: if the predicted track turns out to
+// be wrong (e.g. weather sync changes the pick), startLofi() just falls
+// back to a fresh fetch as before.
+let _lofiPreload = null, _lofiPreloadSrc = null;
+function _preloadLofi() {
+  _lofiPreloadSrc = _getLofiSrc();
+  _lofiPreload = new Audio();
+  _lofiPreload.preload = 'auto';
+  _lofiPreload.src = _lofiPreloadSrc;
+  _lofiPreload.load();
+}
+setTimeout(_preloadLofi, 300);
+
 function startLofi() {
   if (_lofiAudio) return;
-  _lofiAudio = new Audio();
-  _lofiAudio.loop = true;
-  _lofiAudio.volume = 0;
   _lofiKey = _getLofiKey();
   _lofiSrc = LOFI_TRACKS[_lofiKey];
-  _lofiAudio.src = _lofiSrc;
+  if (_lofiPreload && _lofiPreloadSrc === _lofiSrc) {
+    _lofiAudio = _lofiPreload;
+  } else {
+    _lofiAudio = new Audio();
+    _lofiAudio.src = _lofiSrc;
+  }
+  _lofiAudio.loop = true;
+  _lofiAudio.volume = 0;
   _lofiAudio.play().then(() => { _fadeLofi(LOFI_VOL); _syncMusicNotes(); }).catch(() => { _syncMusicNotes(); });
   _updateIpodScreen();
 }
@@ -4830,4 +4873,80 @@ function spawnDustMotes() {
 }
 // Spawn after room image has loaded
 img.addEventListener('load', spawnDustMotes);
+
+/* ============================================================
+   PREFETCH — warm the browser cache for assets that aren't
+   needed for the very first paint, in priority order:
+     1. Tour assets (Awards + Projects) — seen by every tour-taker
+     2. Other visible hotspots (Community, Hobbies, About, Bookshelf)
+     3. Easter eggs (Tea) — found by curious users only, lowest priority
+============================================================ */
+const PREFETCH_TIERS = [
+  // Tier 1 — tour assets
+  [
+    'assets/images/trophies/mens-et-manus-detail.webp',
+    'assets/images/trophies/genai-lab-detail.jpg',
+    'assets/images/trophies/deans-list-detail.webp',
+    'assets/images/Projects/DressingRoom/me and kar shin.jpg',
+    'assets/images/Projects/DressingRoom/fuse.webp',
+    'assets/images/Projects/DressingRoom/IIA pitch.jpg',
+    'assets/images/Projects/BeaverBid/beaver bid 1.png',
+    'assets/images/Projects/BeaverBid/beaver bid 2.png',
+    'assets/images/Projects/BeaverBid/beaver bid 3.png',
+    'assets/images/Projects/WhereAbout/Wherabout 1.png',
+    'assets/images/Projects/WhereAbout/WhereAbout 2.png',
+    'assets/images/Projects/WhereAbout/Wherabout 3.png',
+    'assets/images/Projects/Friendsgiving/Friendsgiving1.png',
+    'assets/images/Projects/Friendsgiving/Friendsgiving2.png',
+    'assets/images/Projects/Friendsgiving/Friendsgiving3.png',
+  ],
+  // Tier 2 — other visible hotspots (community, hobbies, about, bookshelf)
+  [
+    'assets/images/about.jpg',
+    'assets/images/bookshelf.webp',
+    'assets/images/kit bag.webp',
+    'assets/images/community/Atlantic/atlantic mixer.webp',
+    'assets/images/community/Atlantic/atlantic holiday party.webp',
+    'assets/images/community/Atlantic/snowball.webp',
+    'assets/images/community/Atlantic/bodaborg.webp',
+    'assets/images/community/Atlantic/friendsgiving.webp',
+    'assets/images/community/Pre-fx director/pre-fx.webp',
+    'assets/images/community/bcg lucky strike.jpg',
+    'assets/images/community/Sloan trips/acadia1.webp',
+    'assets/images/community/Sloan trips/NOLA.webp',
+    'assets/images/community/Sloan trips/atlantic retreat.webp',
+    'assets/images/hobbies/run.webp',
+    'assets/images/hobbies/Music.webp',
+    'assets/images/hobbies/DSCF2330-2.webp',
+    'assets/images/hobbies/dance.webp',
+    'assets/images/hobbies/soccer.webp',
+    'assets/images/hobbies/ping pong.webp',
+    'assets/images/hobbies/volleyball.webp',
+  ],
+  // Tier 3 — easter eggs (tea time)
+  [
+    'assets/images/tea/cny.webp',
+    'assets/images/tea/tea china.webp',
+  ],
+];
+
+function prefetchAssets() {
+  const tiers = PREFETCH_TIERS.flat();
+  let i = 0;
+  function loadNext(deadline) {
+    while (i < tiers.length && (!deadline || deadline.timeRemaining() > 0)) {
+      const im = new Image();
+      im.fetchPriority = 'low';
+      im.src = tiers[i++];
+    }
+    if (i < tiers.length) scheduleIdle(loadNext);
+  }
+  const scheduleIdle = window.requestIdleCallback
+    ? cb => requestIdleCallback(cb, { timeout: 2000 })
+    : cb => setTimeout(() => cb(null), 200);
+  scheduleIdle(loadNext);
+}
+// Wait until the room has finished loading so this never competes
+// with the assets the user sees first.
+window.addEventListener('load', () => setTimeout(prefetchAssets, 1500));
 if (img.complete) setTimeout(spawnDustMotes, 100);

@@ -3794,7 +3794,12 @@
       .award-blurb-panel { width: 96vw !important; }
       .award-blurb-panel.open { max-height: none !important; }
       .award-blurb-inner { flex-direction: column !important; height: auto !important; }
-      .award-blurb-text { border-right: none !important; border-bottom: 1px solid rgba(0,0,0,0.07) !important; }
+      .award-blurb-text {
+        border-right: none !important; border-bottom: 1px solid rgba(0,0,0,0.07) !important;
+        /* Don't create a second, independently-scrollable region — the
+           overlay itself handles scrolling on mobile (see .world-zoom-overlay) */
+        overflow-y: visible !important; max-height: none !important;
+      }
       .award-blurb-img  { width: 100% !important; height: 340px !important; }
       .award-blurb-img img { object-position: center center !important; }
       .award-blurb-text p { font-size: max(0.88rem, 12px) !important; }
@@ -3886,6 +3891,8 @@
         justify-content: center !important;
         padding: 1rem !important;
         overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: pan-y !important;
       }
 
       /* ── Override padding=0 for specific overlays (must come AFTER general rule) ── */
