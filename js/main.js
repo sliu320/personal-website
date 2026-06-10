@@ -2073,10 +2073,15 @@ function _tourAdvance() {
 
   _tourMode = true;
   _updateTourBar();
-  // Wait for zoom-out to settle (300ms), then pulse hotspot (600ms), then open
+  // Wait for _zoomOut's transition to fully settle (150ms delay + 650ms
+  // transition = 800ms) before starting the next zoom-in. Starting it
+  // earlier interrupts the in-progress transform/transform-origin
+  // transition — on mobile Safari this forces an expensive repaint of the
+  // scaled scene that can stall for several seconds, especially coming
+  // from About's larger 3.0 scale.
   setTimeout(() => {
     _tourPulseHotspot(TOUR_STEPS[_tourIdx].key, () => openModal(TOUR_STEPS[_tourIdx].key));
-  }, 300);
+  }, 820);
 }
 
 function _updateTourBar() {
