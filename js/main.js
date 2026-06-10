@@ -1999,12 +1999,20 @@ function _exitTour() {
   _tourMode = false;
   _tourActive = false;
   _tourIdx  = -1;
+  _tourNavLock = false;
   document.body.classList.remove('tour-mode');
   document.getElementById('tour-bar').classList.remove('visible');
   _origCloseActiveZoom();
 }
 
+// Guards against repeated taps on "Next" while the room is panning/zooming
+// between steps — without this, taps during the (sometimes multi-second)
+// transition each call _tourAdvance again, silently skipping steps.
+let _tourNavLock = false;
+
 function _tourAdvance() {
+  if (_tourNavLock) return;
+  _tourNavLock = true;
   _tourIdx++;
   const atEnd = _tourIdx >= TOUR_STEPS.length;
 
@@ -2014,6 +2022,7 @@ function _tourAdvance() {
 
   if (atEnd) {
     _tourActive = false;
+    _tourNavLock = false;
     document.body.classList.remove('tour-mode');
     document.getElementById('tour-bar').classList.remove('visible');
     setTimeout(() => document.getElementById('tour-end').classList.add('visible'), 500);
@@ -2934,6 +2943,7 @@ function _openZoomUI(overlayId, backBtnId) {
     const hs = _tourActiveHs; _tourActiveHs = null;
     setTimeout(() => hs.classList.remove('hs-tour-active'), 450);
   }
+  _tourNavLock = false;
   trackModalOpen(overlayId.replace(/-zoom-overlay$/, ''));
 }
 
@@ -3244,6 +3254,17 @@ function closeTrophyZoom() {
 }
 document.getElementById('trophy-zoom-back').addEventListener('click', closeTrophyZoom);
 
+// On iOS, a layout shift inside a -webkit-overflow-scrolling:touch container
+// while momentum scrolling is active leaves the scroll "stuck" mid-momentum
+// for several seconds. Briefly toggling overflow off/on resets it.
+function _resetOverlayScroll(ov) {
+  if (!ov) return;
+  ov.style.overflowY = 'hidden';
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => { ov.style.overflowY = ''; });
+  });
+}
+
 // Trophy click → blurb
 document.querySelectorAll('.trophy-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -3252,11 +3273,13 @@ document.querySelectorAll('.trophy-btn').forEach(btn => {
     if (!data) return;
     const panel = document.getElementById('award-blurb-panel');
     const inner = document.getElementById('award-blurb-inner');
+    const overlay = document.getElementById('trophy-zoom-overlay');
 
       if (_activeTrophy === key) {
       panel.classList.remove('open');
       btn.classList.remove('active');
       _activeTrophy = null;
+      _resetOverlayScroll(overlay);
       return;
     }
     _activeTrophy = key;
@@ -3273,6 +3296,7 @@ document.querySelectorAll('.trophy-btn').forEach(btn => {
       </div>
       <div class="award-blurb-img"><img src="${data.img}" alt="${data.name}"></div>`;
     panel.classList.add('open');
+    _resetOverlayScroll(overlay);
   });
 });
 
