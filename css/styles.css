@@ -967,20 +967,6 @@
     }
 
     /* ============================================================
-       SPOTIFY MODAL EMBED
-    ============================================================ */
-    #modal-body .spotify-embed-wrap {
-      display:flex; flex-direction:column; gap:0.8rem; align-items:center;
-    }
-    #modal-body .spotify-embed-wrap iframe {
-      border-radius:12px; border:none; width:100%; max-width:480px;
-      box-shadow:0 8px 32px rgba(0,0,0,0.18);
-    }
-    #modal-body .spotify-caption {
-      font-size:0.8rem; color:#9e8472; text-align:center; font-style:italic;
-    }
-
-    /* ============================================================
        WINDOW CALIBRATION BOX (edit mode only)
     ============================================================ */
     #win-calib-box {
@@ -1962,12 +1948,17 @@
     .ipod-now-strip-artist {
       font-size:0.56rem; color:rgba(255,255,255,0.5);
     }
-    /* Spotify fills the rest */
+    /* Spotify embed slot — fixed height so its on-screen rect is stable
+       even though the actual iframe lives in #spotify-bg and is just
+       visually overlaid on top of this slot (never reparented, so it
+       never reloads). */
     .ipod-spotify-inset {
-      flex:1; overflow:hidden; display:flex; flex-direction:column;
+      flex:0 0 352px; height:352px; overflow:hidden; display:flex; flex-direction:column;
     }
-    .ipod-spotify-inset iframe {
-      width:100% !important; border:none; display:block;
+    /* The real Spotify iframe lives in #spotify-bg, sized to match
+       #ipod-spotify-slot's rect via JS, and fills that container. */
+    #spotify-bg iframe {
+      width:100% !important; height:100% !important; border:none; display:block;
     }
     /* Hint below wheel */
     .ipod-lofi-hint {
@@ -3557,11 +3548,12 @@
       .speaker-zoom-wrap { width: min(88vw, 300px) !important; gap: 0.5rem !important; }
       .ipod-body   { transform: none !important; width: 100% !important; }
       .ipod-screen { overflow: hidden !important; }
-      /* Scale the embed down to fit the iPod width — keeps full height */
+      /* Constrain the embed slot to the iPod width on small screens —
+         the real iframe (in #spotify-bg) is sized to match this slot's
+         rect via JS, so it follows automatically. */
       .ipod-spotify-inset {
         overflow: hidden !important;
         width: 100% !important;
-        transform-origin: top left !important;
       }
       .ipod-album-art { height: min(44vw, 160px) !important; }
 

@@ -2541,9 +2541,7 @@ function openModal(key) {
 function closeModal() {
   if (isModalEditing) { isModalEditing=false; modalBody.contentEditable='false'; }
   if (currentModalKey === 'speaker') {
-    if (_spotifyEl && _spotifyEl.parentNode) {
-      document.getElementById('spotify-bg').appendChild(_spotifyEl);
-    }
+    _parkSpotify();
   }
   // Destroy Leaflet map before clearing innerHTML
   if (_wmMap) { _wmMap.remove(); _wmMap = null; }
@@ -3431,13 +3429,8 @@ function openSpeakerZoom() {
 
   _updateIpodScreen();
 
-  // Move Spotify embed into the iPod panel slot
-  if (!_spotifyEl) {
-    _spotifyEl = document.createElement('div');
-    document.getElementById('spotify-bg').appendChild(_spotifyEl);
-  }
-  const slot = document.getElementById('ipod-spotify-slot');
-  if (slot) slot.appendChild(_spotifyEl);
+  // Ensure the embed host exists (created once, never reparented)
+  _ensureSpotifyEl();
 
   // Init Spotify embed (don't auto-play — user starts playback from inside the embed)
   if (_spotifyCtrl) {
@@ -3449,35 +3442,23 @@ function openSpeakerZoom() {
     }, (ctrl) => {
       _spotifyCtrl = ctrl;
       _wireSpotifyLofi(ctrl);
-      // On mobile, scale the embed to fit the iPod screen width
-      if (window.innerWidth <= 480) {
-        requestAnimationFrame(() => {
-          const inset = document.querySelector('.ipod-spotify-inset');
-          const iframe = inset && inset.querySelector('iframe');
-          if (inset && iframe) {
-            const iframeW = iframe.offsetWidth || 300;
-            const insetW  = inset.offsetWidth  || 260;
-            const scale   = insetW / iframeW;
-            inset.style.transform = `scale(${scale})`;
-            inset.style.height    = (352 * scale) + 'px';
-          }
-        });
-      }
     });
   } else {
     initSpotifyAPI();
   }
 
-  _zoomToHotspot('speaker', 2.2, () => _openZoomUI('speaker-zoom-overlay', 'speaker-zoom-back'), '14%');
+  // Visually move the (already-mounted) embed over the iPod screen slot —
+  // no DOM reparenting, so the iframe never reloads.
+  _placeSpotifyOverSlot();
+
+  _zoomToHotspot('speaker', 2.2, () => { _openZoomUI('speaker-zoom-overlay', 'speaker-zoom-back'); _placeSpotifyOverSlot(); }, '14%');
 }
 
 function closeSpeakerZoom() {
   if (!_speakerZoomed) return;
   _speakerZoomed = false;
-  // Park embed back (keep playing — bug fix)
-  if (_spotifyEl && _spotifyEl.parentNode) {
-    document.getElementById('spotify-bg').appendChild(_spotifyEl);
-  }
+  // Park embed off-screen (keep playing — bug fix)
+  _parkSpotify();
   _closeZoomUI('speaker-zoom-overlay', 'speaker-zoom-back');
 }
 document.getElementById('speaker-zoom-back').addEventListener('click', closeSpeakerZoom);
@@ -4332,53 +4313,53 @@ function initSpotifyAPI() {
   document.head.appendChild(s);
 }
 
-function openSpotifyModal() {
-  currentModalKey  = 'speaker';
-  isModalEditing   = false;
-  modalTitle.textContent = CONTENT['speaker'].title;
-  modalBody.innerHTML    = '';
-  modalEditBtn.style.display = 'none';
-  modalResetBtn.classList.remove('visible');
-
-  // Ensure embed target element exists (created once, reused)
+/* Create the embed host div once, permanently inside #spotify-bg.
+   It is NEVER reparented again — moving an <iframe> via appendChild
+   forces the browser to reload it, which is what caused the
+   "wrong track plays" / "stops after closing" bugs. Instead we
+   visually relocate #spotify-bg itself with fixed positioning. */
+function _ensureSpotifyEl() {
   if (!_spotifyEl) {
     _spotifyEl = document.createElement('div');
     document.getElementById('spotify-bg').appendChild(_spotifyEl);
   }
-
-  const wrap = document.createElement('div');
-  wrap.className = 'spotify-embed-wrap';
-  wrap.appendChild(_spotifyEl);          // move into modal
-  const caption = document.createElement('p');
-  caption.className = 'spotify-caption';
-  caption.textContent = '♫ lofi hip hop · study beats';
-  wrap.appendChild(caption);
-  modalBody.appendChild(wrap);
-  modalBg.classList.add('open');
-
-  if (_spotifyCtrl) {
-    // Controller already exists — just resume
-    try { _spotifyCtrl.play(); } catch(e) {}
-  } else if (_spotifyAPI) {
-    // API loaded but no controller yet — create one
-    _spotifyAPI.createController(_spotifyEl, {
-      width: '100%', height: '352',
-      uri: 'spotify:playlist:37i9dQZEVXdgEheV90pQ48',
-    }, (ctrl) => { _spotifyCtrl = ctrl; _wireSpotifyLofi(ctrl); });
-  } else {
-    // API still loading — override callback so it fires when ready
-    const prev = window.onSpotifyIframeApiReady;
-    window.onSpotifyIframeApiReady = (IFrameAPI) => {
-      _spotifyAPI = IFrameAPI;
-      if (typeof prev === 'function') prev(IFrameAPI);
-      IFrameAPI.createController(_spotifyEl, {
-        width: '100%', height: '352',
-        uri: 'spotify:playlist:37i9dQZEVXdgEheV90pQ48',
-      }, (ctrl) => { _spotifyCtrl = ctrl; _wireSpotifyLofi(ctrl); });
-    };
-    initSpotifyAPI(); // ensure the script is loading
-  }
 }
+
+/* Move (visually, via CSS) the Spotify embed to sit on top of the
+   iPod screen slot. No DOM reparenting — the iframe never reloads. */
+function _placeSpotifyOverSlot() {
+  const bg   = document.getElementById('spotify-bg');
+  const slot = document.getElementById('ipod-spotify-slot');
+  if (!bg || !slot) return;
+  const r = slot.getBoundingClientRect();
+  bg.style.top    = r.top + 'px';
+  bg.style.left   = r.left + 'px';
+  bg.style.bottom = 'auto';
+  bg.style.width  = r.width + 'px';
+  bg.style.height = r.height + 'px';
+  bg.style.opacity = '1';
+  bg.style.pointerEvents = 'auto';
+  bg.style.zIndex = '192';
+  bg.style.borderRadius = '0 0 10px 10px';
+}
+
+/* Park the embed off-screen again (still mounted + still playing). */
+function _parkSpotify() {
+  const bg = document.getElementById('spotify-bg');
+  if (!bg) return;
+  bg.style.top    = 'auto';
+  bg.style.left   = '0';
+  bg.style.bottom = '0';
+  bg.style.width  = '320px';
+  bg.style.height = '380px';
+  bg.style.opacity = '0.001';
+  bg.style.pointerEvents = 'none';
+  bg.style.zIndex = '-1';
+  bg.style.borderRadius = '0';
+}
+
+// Keep the embed aligned with the iPod slot if the window resizes while open
+window.addEventListener('resize', () => { if (_speakerZoomed) _placeSpotifyOverSlot(); });
 
 /* ============================================================
    SCROLL TO PAN
