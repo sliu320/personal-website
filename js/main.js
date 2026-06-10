@@ -1539,29 +1539,23 @@ function applyLandingLighting() {
   // Match the room's sky resolution: test override > real-weather sync > time-of-day default
   const sky = _testSkyOverride || _syncedSky || cfg.sky;
 
-  // Set entry background to a solid colour matching the approximate sky
-  // so the room is never visible before the sky image loads
-  const skyBg = {
-    'late night':     '#060412',
-    'pre-dawn':       '#1a0d2e',
-    'morning':        '#6a9cc0',
-    'afternoon':      '#5b9fd4',
-    'late afternoon': '#6aaedc',
-    'golden hour':    '#c07030',
-    'dusk':           '#2a1048',
-    'night':          '#070614',
-  };
   const entryEl = document.getElementById('entry');
 
   // Until the real-weather sync resolves, we don't actually know which sky
   // image is correct — loading the time-of-day default first (often
   // "overcast") just means showing the wrong one and then jarringly swapping
-  // it a moment later. Instead, hold on a calm, neutral dark-blue placeholder
-  // with no sky image at all, and only commit to a sky image once we know
-  // which one is real. (applyLandingLighting() re-runs once sync completes.)
+  // it a moment later. Instead, hold on a calm, neutral placeholder with no
+  // sky image at all, and only commit to a sky image once we know which one
+  // is real. (applyLandingLighting() re-runs once sync completes.)
   const stillResolving = (_testSkyOverride === null && _syncedSky === null);
 
-  if (entryEl) entryEl.style.background = stillResolving ? '#16243a' : (skyBg[cfg.label] || '#1c2a3a');
+  // Always keep the entry background on the medium-weight blue placeholder
+  // defined in CSS (#3d6e96) — it reads naturally whether the scene resolves
+  // to a day or night sky, so we no longer swap in per-time-of-day solid
+  // colours here (golden hour's orange/dusk's purple etc. used to flash
+  // before the sky image faded in). The sky image + ambient overlays carry
+  // the actual time-of-day colour once they load.
+  if (entryEl) entryEl.style.background = '';
 
   // Sky image (same brightness/filter logic as room's applySky)
   const skyImg = document.getElementById('land-sky');

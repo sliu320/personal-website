@@ -25,7 +25,9 @@
     }
     #entry {
       position:fixed; inset:0; z-index:200;
-      background:#1c2a3a; /* opaque fallback — JS sets per time-of-day before sky loads */
+      background:#3d6e96; /* medium-weight blue placeholder — neutral base that reads naturally
+                              whether the scene resolves to day or night; JS no longer overrides
+                              this with per-time-of-day solid colours (was flashing orange/purple) */
       overflow:hidden; cursor:default;
       font-family:Georgia,'Times New Roman',serif;
       transition:opacity 1.4s ease;
@@ -456,6 +458,7 @@
     #room-container {
       width:100vw; height:100vh; overflow:hidden;
       cursor:grab; position:relative; user-select:none;
+      background:#3d6e96; /* medium-weight blue placeholder while the room sky/scene loads */
     }
     #room-container.dragging { cursor:grabbing; }
     #room-container.edit-active { cursor:default; }

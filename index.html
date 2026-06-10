@@ -15,7 +15,7 @@
   <meta name="twitter:title" content="Susy Liu">
   <meta name="twitter:description" content="Step into my room — an interactive portfolio exploring projects, community building, and what's next.">
   <meta name="twitter:image" content="assets/images/room.webp">
-  <link rel="stylesheet" href="css/styles.css?v=20260609d">
+  <link rel="stylesheet" href="css/styles.css?v=20260609e">
   <!-- Leaflet — loaded here, map only initialises when modal opens -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
@@ -62,7 +62,7 @@
       <defs>
         <filter id="sk-leaf" x="-6%" y="-3%" width="112%" height="106%">
           <feTurbulence type="fractalNoise" baseFrequency="0.06 0.045" numOctaves="2" seed="13" result="n"/>
-          <feDisplacementMap in="SourceGraphic" in2="n" scale="0.9" xChannelSelector="R" yChannelSelector="G"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="0.35" xChannelSelector="R" yChannelSelector="G"/>
         </filter>
       </defs>
       <rect x="2.6" y="2.6" width="74.8" height="134.8" fill="#ffffff"/>
@@ -86,11 +86,11 @@
       <defs>
         <filter id="sk-frame" x="-6%" y="-3%" width="112%" height="106%">
           <feTurbulence type="fractalNoise" baseFrequency="0.055 0.04" numOctaves="2" seed="11" result="n"/>
-          <feDisplacementMap in="SourceGraphic" in2="n" scale="1.1" xChannelSelector="R" yChannelSelector="G"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="0.4" xChannelSelector="R" yChannelSelector="G"/>
         </filter>
       </defs>
       <g filter="url(#sk-frame)" stroke="var(--frame-color, #1a1208)" stroke-linecap="round" fill="none" style="transition:stroke 1.5s;">
-        <rect x="2.5" y="2.5" width="75" height="135" stroke-width="2.2" opacity="0.90"/>
+        <rect x="2.5" y="2.5" width="75" height="135" stroke-width="1.5" opacity="0.90"/>
         <rect x="5.5" y="5.5" width="69" height="129" stroke-width="0.40" opacity="0.22"/>
         <line x1="0.5" y1="138.5" x2="79.5" y2="138.5" stroke-width="0.85" opacity="0.34"/>
       </g>
@@ -870,15 +870,15 @@
 <!-- Hidden Spotify embed container — keeps the iframe alive between modal opens -->
 <div id="spotify-bg" style="position:fixed;left:0;bottom:0;width:320px;height:380px;overflow:hidden;pointer-events:none;opacity:0.001;z-index:-1;"></div>
 
-<script src="js/content.js?v=20260609d"></script>
-<script src="js/content-trophy.js?v=20260609d"></script>
-<script src="js/content-cases.js?v=20260609d"></script>
-<script src="js/content-door.js?v=20260609d"></script>
-<script src="js/content-hobbies.js?v=20260609d"></script>
-<script src="js/content-community.js?v=20260609d"></script>
-<script src="js/content-stickies.js?v=20260609d"></script>
-<script src="js/content-projects.js?v=20260609d"></script>
-<script src="js/content-music.js?v=20260609d"></script>
-<script src="js/main.js?v=20260609d"></script>
+<script src="js/content.js?v=20260609e"></script>
+<script src="js/content-trophy.js?v=20260609e"></script>
+<script src="js/content-cases.js?v=20260609e"></script>
+<script src="js/content-door.js?v=20260609e"></script>
+<script src="js/content-hobbies.js?v=20260609e"></script>
+<script src="js/content-community.js?v=20260609e"></script>
+<script src="js/content-stickies.js?v=20260609e"></script>
+<script src="js/content-projects.js?v=20260609e"></script>
+<script src="js/content-music.js?v=20260609e"></script>
+<script src="js/main.js?v=20260609e"></script>
 </body>
 </html>
