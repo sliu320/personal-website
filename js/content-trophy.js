@@ -14,7 +14,7 @@ const TROPHY_DATA = {
     scope: '~80 students across 27 teams, representation across MIT and Sloan grad programs',
     desc: 'Won Best Project in MIT\'s flagship GenAI Action Learning class, where students work with live companies to build GenAI use cases. Built a Development Application response tool for an Australian water utility company. Selected for highly intentional use of GenAI vs. human-in-the-loop given the use case, and intuitive user experience.',
     criteria: 'Demo Day: 5-minute pitch and demo in front of judges including seasoned entrepreneurs (incl. YC-backed), VC, and AI researchers (incl. Google DeepMind).',
-    img: 'assets/images/trophies/genai-lab-detail.jpg',
+    img: 'assets/images/trophies/genai-lab-detail.webp',
   },
   deans: {
     name: 'Graduated with Distinction',

@@ -313,15 +313,15 @@ const PROJECTS_DATA = [
           <div class="proj-demo-strip">
             <figure class="proj-demo-item">
               <p class="proj-demo-caption"><span class="proj-demo-num">1.</span> AI Advisor filters courses and surfaces recommended classes. Award-winning professors are tagged; student intel and bid history are shown inline.</p>
-              <img src="assets/images/Projects/BeaverBid/beaver bid 1.png" alt="AI Advisor filtering courses" class="proj-demo-img proj-demo-img--wide" loading="lazy">
+              <img src="assets/images/Projects/BeaverBid/beaver bid 1.webp" alt="AI Advisor filtering courses" class="proj-demo-img proj-demo-img--wide" loading="lazy">
             </figure>
             <figure class="proj-demo-item">
               <p class="proj-demo-caption"><span class="proj-demo-num">2.</span> Build a bidding scenario with pre-filled point recommendations based on fill rates and round history. Auto-balance allocates your full 1,000 pts; time conflicts are flagged automatically.</p>
-              <img src="assets/images/Projects/BeaverBid/beaver bid 2.png" alt="Bid Simulator" class="proj-demo-img proj-demo-img--tall" loading="lazy">
+              <img src="assets/images/Projects/BeaverBid/beaver bid 2.webp" alt="Bid Simulator" class="proj-demo-img proj-demo-img--tall" loading="lazy">
             </figure>
             <figure class="proj-demo-item">
               <p class="proj-demo-caption"><span class="proj-demo-num">3.</span> Upload your transcript to track graduation progress, including towards each Sloan certificate.</p>
-              <img src="assets/images/Projects/BeaverBid/beaver bid 3.png" alt="Degree and Certificate Progress" class="proj-demo-img proj-demo-img--wide" loading="lazy">
+              <img src="assets/images/Projects/BeaverBid/beaver bid 3.webp" alt="Degree and Certificate Progress" class="proj-demo-img proj-demo-img--wide" loading="lazy">
             </figure>
           </div>
         </div>
@@ -411,15 +411,15 @@ const PROJECTS_DATA = [
           <div class="proj-demo-strip">
             <figure class="proj-demo-item">
               <p class="proj-demo-caption"><span class="proj-demo-num">1.</span> Upload a photo, set a guessing window.</p>
-              <img src="assets/images/Projects/WhereAbout/Wherabout 1.png" alt="Upload a photo" class="proj-demo-img proj-demo-img--tall" loading="lazy">
+              <img src="assets/images/Projects/WhereAbout/Wherabout 1.webp" alt="Upload a photo" class="proj-demo-img proj-demo-img--tall" loading="lazy">
             </figure>
             <figure class="proj-demo-item">
               <p class="proj-demo-caption"><span class="proj-demo-num">2.</span> Drop a pin, react — guesses hidden until reveal.</p>
-              <img src="assets/images/Projects/WhereAbout/WhereAbout 2.png" alt="Drop a pin and guess" class="proj-demo-img proj-demo-img--tall" loading="lazy">
+              <img src="assets/images/Projects/WhereAbout/WhereAbout 2.webp" alt="Drop a pin and guess" class="proj-demo-img proj-demo-img--tall" loading="lazy">
             </figure>
             <figure class="proj-demo-item">
               <p class="proj-demo-caption"><span class="proj-demo-num">3.</span> Heat map and leaderboard by accuracy.</p>
-              <img src="assets/images/Projects/WhereAbout/Wherabout 3.png" alt="Group stats and leaderboard" class="proj-demo-img proj-demo-img--tall" loading="lazy">
+              <img src="assets/images/Projects/WhereAbout/Wherabout 3.webp" alt="Group stats and leaderboard" class="proj-demo-img proj-demo-img--tall" loading="lazy">
             </figure>
           </div>
         </div>
@@ -470,15 +470,15 @@ const PROJECTS_DATA = [
           <div class="proj-demo-strip">
             <figure class="proj-demo-item">
               <p class="proj-demo-caption"><span class="proj-demo-num">1.</span> A warm, Friendsgiving-themed grid of classmates' names and dish avatars — pick someone to send a private gratitude note to.</p>
-              <img src="assets/images/Projects/Friendsgiving/Friendsgiving1.png" alt="Classmate directory" class="proj-demo-img proj-demo-img--ultrawide" loading="lazy">
+              <img src="assets/images/Projects/Friendsgiving/Friendsgiving1.webp" alt="Classmate directory" class="proj-demo-img proj-demo-img--ultrawide" loading="lazy">
             </figure>
             <figure class="proj-demo-item">
               <p class="proj-demo-caption"><span class="proj-demo-num">2.</span> Write a heartfelt note of thanks, with a history of past notes you've sent them.</p>
-              <img src="assets/images/Projects/Friendsgiving/Friendsgiving2.png" alt="Send a gratitude note" class="proj-demo-img proj-demo-img--ultrawide" loading="lazy">
+              <img src="assets/images/Projects/Friendsgiving/Friendsgiving2.webp" alt="Send a gratitude note" class="proj-demo-img proj-demo-img--ultrawide" loading="lazy">
             </figure>
             <figure class="proj-demo-item">
               <p class="proj-demo-caption"><span class="proj-demo-num">3.</span> Your gratitude jar: all the appreciation notes classmates have sent you, as warm, readable cards.</p>
-              <img src="assets/images/Projects/Friendsgiving/Friendsgiving3.png" alt="My gratitude jar" class="proj-demo-img proj-demo-img--wide" loading="lazy">
+              <img src="assets/images/Projects/Friendsgiving/Friendsgiving3.webp" alt="My gratitude jar" class="proj-demo-img proj-demo-img--wide" loading="lazy">
             </figure>
           </div>
         </div>
