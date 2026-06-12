@@ -2151,7 +2151,15 @@ function clamp(x)    { return Math.max(maxScroll(),Math.min(0,x)); }
 function moveTo(x)   { curX=clamp(x); wrapper.style.transform=`translateX(${curX}px)`; }
 
 function initRoom() {
-  imgW = img.offsetWidth || img.naturalWidth || 3000;
+  // .room-layer is sized via height:100vh, width:auto, so the rendered width
+  // can be derived from the image's intrinsic aspect ratio without waiting
+  // for layout — offsetWidth is sometimes still 0 on first paint on mobile,
+  // which previously caused a hardcoded 3000px fallback and misaligned hotspots.
+  if (img.naturalWidth && img.naturalHeight) {
+    imgW = Math.round(img.naturalWidth * (window.innerHeight / img.naturalHeight));
+  } else {
+    imgW = img.offsetWidth || 3000;
+  }
   wrapper.style.width = imgW+'px';
   moveTo(maxScroll()*0.32);
   loadPositions();
@@ -2160,7 +2168,7 @@ function initRoom() {
 img.addEventListener('load', initRoom);
 // Fallback: run initRoom even if image fails/is cached
 window.addEventListener('load', () => { if(imgW===0) initRoom(); });
-if(img.complete) setTimeout(initRoom, 50);
+if(img.complete) initRoom();
 
 container.addEventListener('mousedown', e => {
   if(editMode || e.target.closest('.hotspot')) return;
@@ -2206,7 +2214,15 @@ function momentum() {
   cancelAnimationFrame(rafId);
   (function tick() { if(Math.abs(vel)<0.4) return; vel*=0.91; moveTo(curX+vel); rafId=requestAnimationFrame(tick); })();
 }
-window.addEventListener('resize', () => { imgW=img.offsetWidth||imgW; moveTo(curX); });
+window.addEventListener('resize', () => {
+  if (img.naturalWidth && img.naturalHeight) {
+    imgW = Math.round(img.naturalWidth * (window.innerHeight / img.naturalHeight));
+    wrapper.style.width = imgW+'px';
+  } else {
+    imgW = img.offsetWidth || imgW;
+  }
+  moveTo(curX);
+});
 
 /* ============================================================
    EDIT MODE
@@ -2845,7 +2861,7 @@ modalResetBtn.addEventListener('click', () => {
   modalResetBtn.classList.remove('visible');
 });
 
-document.querySelectorAll('.hotspot:not(#hs-lamp-toggle)').forEach(hs => {
+document.querySelectorAll('.hotspot:not(#hs-lamp-toggle):not(#hs-clock):not(#hs-music-notes):not(#hs-monitor-led)').forEach(hs => {
   hs.addEventListener('click', e => {
     if(editMode) return;
     e.stopPropagation();
@@ -3594,6 +3610,7 @@ function _updateCfNav() {
   document.getElementById('cf-pagenum').textContent = pg;
   document.getElementById('cf-prev-arrow').disabled = _cfPhysPage === 0;
   document.getElementById('cf-next-arrow').disabled = _cfPhysPage === total - 1;
+  document.getElementById('cf-toc-jump').classList.toggle('cf-toc-jump-hidden', _cfPhysPage === 0);
   // Mobile nav bar
   const mobPg  = document.getElementById('cf-mob-pagenum');
   const mobPrev = document.getElementById('cf-mob-prev');
@@ -3693,6 +3710,8 @@ document.getElementById('cf-prev-arrow').addEventListener('click', _cfSafe(() =>
 document.getElementById('cf-next-arrow').addEventListener('click', _cfSafe(() => _cfFlip(1)));
 document.getElementById('cf-mob-prev').addEventListener('click', _cfSafe(() => _cfFlipMobile(-1)));
 document.getElementById('cf-mob-next').addEventListener('click', _cfSafe(() => _cfFlipMobile(1)));
+document.getElementById('cf-mob-toc').addEventListener('click', _cfSafe(() => cfJumpTo(0, 0)));
+document.getElementById('cf-toc-jump').addEventListener('click', _cfSafe(() => cfJumpTo(0, 0)));
 
 /* ── Mobile: swipe left/right on the page to flip ────────── */
 (function() {

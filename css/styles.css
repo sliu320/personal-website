@@ -642,6 +642,11 @@
     .hotspot.egg:hover .hs-ring { opacity:0 !important; animation:none !important; }
     .hotspot.egg .hs-label      { opacity:0 !important; }
 
+    /* Clock, music notes, and monitor LED are decorative only — not clickable */
+    body:not(.edit-mode) #hs-clock,
+    body:not(.edit-mode) #hs-music-notes,
+    body:not(.edit-mode) #hs-monitor-led { cursor:default; }
+
     /* Edit mode */
     body.edit-mode .hotspot { cursor:grab !important; }
     body.edit-mode .hotspot.dragging-hs { cursor:grabbing !important; z-index:20; }
@@ -1803,9 +1808,19 @@
     .cf-nav {
       position:absolute; bottom:1%; left:50%; right:4%;
       display:flex; justify-content:center; align-items:center;
-      padding:0.2rem;
+      gap:0.9rem; padding:0.2rem;
     }
     .cf-page-num { font-size:0.55rem; color:#666; font-family:'Courier New',monospace; }
+
+    /* Desktop-only: jump back to the case files table of contents */
+    .cf-toc-jump {
+      font-size:0.55rem; letter-spacing:0.06em; text-transform:uppercase;
+      color:#1a4a2e; font-family:Georgia,serif; text-decoration:underline;
+      text-underline-offset:2px; background:none; border:none;
+      padding:0; cursor:pointer; transition:color 0.15s;
+    }
+    .cf-toc-jump:hover { color:#2a6040; }
+    .cf-toc-jump.cf-toc-jump-hidden { visibility:hidden; }
 
     /* ── PDF-style page layouts ──────────────────────────────── */
     /* Page content wrapper — flex column distributes sections evenly */
@@ -2116,8 +2131,8 @@
       min-width:200px; text-align:center; letter-spacing:0.03em;
     }
     .music-hint {
-      font-size:0.52rem; letter-spacing:0.14em; text-transform:uppercase;
-      color:rgba(240,226,200,0.25); font-family:'Courier New',monospace;
+      font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase;
+      color:rgba(240,226,200,0.6); font-family:'Courier New',monospace;
     }
 
     /* ── ABOUT card ────────────────────────────────────────────── */
@@ -3027,7 +3042,10 @@
     }
     /* Doorknob */
     .door-knob {
-      position:absolute; right:10px; top:50%; transform:translateY(-50%);
+      position:absolute; right:10px; top:50%;
+      transform:translateY(-50%) translateZ(0);
+      -webkit-transform:translateY(-50%) translateZ(0);
+      -webkit-backface-visibility:hidden; backface-visibility:hidden;
       width:8px; height:8px; border-radius:50%;
       background:radial-gradient(circle at 35% 35%, #e8d5a0, #a07830);
       box-shadow:0 1px 3px rgba(0,0,0,0.4);
@@ -3684,13 +3702,22 @@
       /* Mobile nav bar below the document */
       .cf-mobile-nav {
         display: flex !important;
+        flex-direction: column !important;
         align-items: center !important;
-        justify-content: space-between !important;
+        justify-content: center !important;
+        gap: 0.4rem !important;
         width: 100vw !important;
-        height: 3.5rem !important;
-        padding: 0 1.2rem !important;
+        height: 5rem !important;
+        padding: 0.5rem 1.2rem !important;
         flex-shrink: 0 !important;
         background: rgba(0,0,0,0.35) !important;
+        box-sizing: border-box !important;
+      }
+      .cf-mobile-nav-row {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
       }
       /* In tour mode, the bottom-fixed tour bar covers the bottom nav —
          move prev/next above the case files document instead. */
@@ -3706,6 +3733,7 @@
         cursor: pointer !important;
       }
       .cf-mob-btn:disabled { opacity: 0.3 !important; }
+      .cf-mob-toc { font-size: 0.78rem !important; padding: 0.3rem 0.9rem !important; }
       #cf-mob-pagenum {
         color: rgba(255,255,255,0.7) !important;
         font-size: 0.75rem !important;
@@ -4015,7 +4043,7 @@
     }
     .casefiles-bg { display: block !important; object-fit: fill !important; }
     .casefiles-zoom-card {
-      width: 110vw !important; height: 82vh !important;
+      width: 110vw !important; height: 74vh !important;
       aspect-ratio: unset !important; filter: none !important; flex-shrink: 0 !important;
     }
     .casefiles-pages {
@@ -4038,9 +4066,15 @@
     #cf-prev-arrow, #cf-next-arrow { display: none !important; }
     .cf-nav { display: none !important; }
     .cf-mobile-nav {
+      display: flex !important; flex-direction: column !important;
+      align-items: center !important; justify-content: center !important;
+      gap: 0.4rem !important;
+      width: 72vw !important; padding: 0.5rem 0 !important; flex-shrink: 0 !important;
+    }
+    .cf-mobile-nav-row {
       display: flex !important; align-items: center !important;
       justify-content: space-between !important;
-      width: 72vw !important; padding: 0.5rem 0 !important; flex-shrink: 0 !important;
+      width: 100% !important;
     }
     /* In tour mode, the bottom-fixed tour bar covers the bottom nav —
        move prev/next above the case files document instead. */
@@ -4053,6 +4087,7 @@
       padding: 0.35rem 1rem !important; cursor: pointer !important;
     }
     .cf-mob-btn:disabled { opacity: 0.3 !important; }
+    .cf-mob-toc { font-size: 0.78rem !important; padding: 0.3rem 0.9rem !important; }
     #cf-mob-pagenum { color: rgba(255,255,255,0.7) !important; font-size: 0.75rem !important; font-family: Georgia, serif !important; }
     .cf-right-page > div, .cf-turner-face > div, .cf-turner-back > div {
       height: auto !important; overflow: visible !important; flex-shrink: 0 !important;
@@ -4130,10 +4165,6 @@
       padding: 0 !important;
       align-items: stretch !important;
       justify-content: center !important;
-    }
-    /* Back button is redundant on mobile — the browser's own X closes it */
-    #monitor-zoom-back {
-      display: none !important;
     }
     .monitor-zoom-card {
       width: 100vw !important;
