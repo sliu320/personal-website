@@ -3303,32 +3303,7 @@ document.getElementById('hs-lamp-toggle').addEventListener('mouseenter', () => {
 document.getElementById('tree-hover-zone').addEventListener('mouseenter', _doRustle);
 
 /* ── Trophy zoom ─────────────────────────────────────────── */
-const TROPHY_DATA = {
-  mens: {
-    name: 'Mens et Manus Award',
-    issuedBy: 'MIT',
-    scope: "MIT's highest student honor",
-    desc: "Recognizes a student for exceptional contribution to the MIT community through leadership, service, or achievement — embodying MIT's motto of \"mind and hand.\"",
-    criteria: 'Awarded to a small number of students each year, selected for impact beyond academics.',
-    img: 'assets/images/trophies/mens-et-manus-detail.webp',
-  },
-  genai: {
-    name: 'Best Project — GenAI Lab',
-    issuedBy: 'MIT Sloan',
-    scope: 'GenAI Lab, Spring 2025',
-    desc: "Recognized for the top project in MIT Sloan's GenAI Lab, an applied generative AI practicum.",
-    criteria: 'Selected by faculty and industry judges based on technical execution, business impact, and presentation.',
-    img: 'assets/images/trophies/genai-lab-detail.jpg',
-  },
-  deans: {
-    name: "Dean's List",
-    issuedBy: 'University of Chicago',
-    scope: 'Academic year',
-    desc: 'Recognizes undergraduate students for outstanding academic performance.',
-    criteria: 'Awarded based on GPA ranking within the top percentile of the class each term.',
-    img: 'assets/images/trophies/deans-list-detail.webp',
-  },
-};
+// TROPHY_DATA is defined in js/content-trophy.js (loaded before this file)
 let _trophyZoomed = false, _activeTrophy = null;
 
 function openTrophyZoom() {
