@@ -304,7 +304,7 @@
         font-size:max(0.78rem,12px);
         line-height:1.55;
       }
-      #door-area { left:50%; top:62%; width:min(54vw,198px); }
+      #door-area { left:50%; top:66%; width:min(54vw,198px); }
       .door-hint { bottom:-2.4rem; font-size:max(0.72rem,11px); }
       .door-subhint {
         display:block;
