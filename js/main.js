@@ -3144,8 +3144,21 @@ function _wmoToScene(code, windKph, hour) {
   return { sky, weather };
 }
 
+// When geolocation is unavailable/denied/times out, _syncedSky would
+// otherwise stay null forever, leaving applyLandingLighting() stuck in
+// "stillResolving" — sky image never shows, just the blue placeholder.
+// Fall back to the time-of-day default so the landing page resolves.
+function _fallbackToDefaultSky() {
+  if (_syncedSky !== null) return;
+  _syncedSky = getTimeCfg().sky;
+  _currentSkyAnim = null;
+  applySky(_syncedSky);
+  updateSkyAnims(_syncedSky);
+  if (typeof applyLandingLighting === 'function') applyLandingLighting();
+}
+
 async function syncRealWeather() {
-  if (!navigator.geolocation) return;
+  if (!navigator.geolocation) { _fallbackToDefaultSky(); return; }
   try {
     const pos = await new Promise((res, rej) =>
       navigator.geolocation.getCurrentPosition(res, rej, { timeout:8000, maximumAge:300000 })
@@ -3189,6 +3202,7 @@ async function syncRealWeather() {
     console.log(`🌤 Weather synced: code=${c.weather_code}, wind=${c.wind_speed_10m}kph, ${c.temperature_2m}°C → sky:${sky}, weather:${weather}`);
   } catch (e) {
     console.log('Weather sync skipped:', e.message);
+    _fallbackToDefaultSky();
   }
 }
 
