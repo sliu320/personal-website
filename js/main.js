@@ -2151,15 +2151,16 @@ function clamp(x)    { return Math.max(maxScroll(),Math.min(0,x)); }
 function moveTo(x)   { curX=clamp(x); wrapper.style.transform=`translateX(${curX}px)`; }
 
 function initRoom() {
-  // .room-layer is sized via height:100vh, width:auto, so the rendered width
-  // can be derived from the image's intrinsic aspect ratio without waiting
-  // for layout — offsetWidth is sometimes still 0 on first paint on mobile,
-  // which previously caused a hardcoded 3000px fallback and misaligned hotspots.
-  if (img.naturalWidth && img.naturalHeight) {
-    imgW = Math.round(img.naturalWidth * (window.innerHeight / img.naturalHeight));
-  } else {
-    imgW = img.offsetWidth || 3000;
+  // offsetWidth can be 0 on first paint on mobile (layout not flushed yet).
+  // Retry on the next frame instead of guessing a width from naturalWidth,
+  // since CSS height:100vh can differ from window.innerHeight on mobile
+  // browsers and produce a wrapper width that doesn't match the rendered image.
+  const w = img.offsetWidth;
+  if (!w) {
+    initRoom._tries = (initRoom._tries || 0) + 1;
+    if (initRoom._tries < 30) { requestAnimationFrame(initRoom); return; }
   }
+  imgW = w || img.naturalWidth || 3000;
   wrapper.style.width = imgW+'px';
   moveTo(maxScroll()*0.32);
   loadPositions();
@@ -2168,7 +2169,7 @@ function initRoom() {
 img.addEventListener('load', initRoom);
 // Fallback: run initRoom even if image fails/is cached
 window.addEventListener('load', () => { if(imgW===0) initRoom(); });
-if(img.complete) initRoom();
+if(img.complete) requestAnimationFrame(initRoom);
 
 container.addEventListener('mousedown', e => {
   if(editMode || e.target.closest('.hotspot')) return;
@@ -2214,15 +2215,7 @@ function momentum() {
   cancelAnimationFrame(rafId);
   (function tick() { if(Math.abs(vel)<0.4) return; vel*=0.91; moveTo(curX+vel); rafId=requestAnimationFrame(tick); })();
 }
-window.addEventListener('resize', () => {
-  if (img.naturalWidth && img.naturalHeight) {
-    imgW = Math.round(img.naturalWidth * (window.innerHeight / img.naturalHeight));
-    wrapper.style.width = imgW+'px';
-  } else {
-    imgW = img.offsetWidth || imgW;
-  }
-  moveTo(curX);
-});
+window.addEventListener('resize', () => { imgW=img.offsetWidth||imgW; moveTo(curX); });
 
 /* ============================================================
    EDIT MODE
