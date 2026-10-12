@@ -2700,9 +2700,10 @@ document.getElementById('hs-lamp-toggle').addEventListener('click', e => {
   // iPod center button — toggle lofi on/off, or switch back to lofi from Spotify
   document.getElementById('ipod-center-btn').addEventListener('click', (e) => {
     e.stopPropagation();
-    if (_spotifyPlaying) {
-      // Spotify is playing → switch back to lofi
-      _resumeLofi();
+    if (_ipodIsSpotifyMode()) {
+      // On a Spotify station → play/pause the embed (lofi ducks via playback_update)
+      if (_spotifyCtrl) { try { _spotifyCtrl.togglePlay(); } catch (e) {} }
+      return;
     } else if (_lofiAudio && !_lofiAudio.paused) {
       // Lofi is playing → stop it for people who don't want music
       _stopLofi();
@@ -2713,6 +2714,8 @@ document.getElementById('hs-lamp-toggle').addEventListener('click', e => {
     // Update now-playing strip to show lofi info
     _updateIpodScreen();
   });
+  document.getElementById('ipod-prev').addEventListener('click', (e) => { e.stopPropagation(); _setIpodMode(_ipodMode - 1); });
+  document.getElementById('ipod-next').addEventListener('click', (e) => { e.stopPropagation(); _setIpodMode(_ipodMode + 1); });
 
   // Monitor LED blink cycle — starts on room entry, 20s blink / 40s solid per minute
   document.getElementById('entry-door').addEventListener('click', function startLedCycle() {
@@ -3246,6 +3249,7 @@ function _isMusicPlaying() {
 
 /* Show/hide the floating music notes based on whether anything is playing */
 function _syncMusicNotes() {
+  _updateIpodScreen();
   if (!document.body.classList.contains('room-entered')) return;
   if (_isMusicPlaying()) {
     startMusicNotes();
@@ -3756,15 +3760,86 @@ const LOFI_CREDITS = {
   weather:   { name:'Green Tea',       artist:'Purrple Cat',          license:'CC BY-SA 3.0 · chosic.com' },
 };
 
+/* iPod stations — ◀◀ / ▶▶ on the wheel cycle through these. Spotify
+   stations share the one embed controller (loadUri swaps the content). */
+const SPOTIFY_PLAYLIST_URI = 'spotify:playlist:57ead1xpqfIzlP8Gcb0yCm';
+const SPOTIFY_PODCAST_URI  = 'spotify:show:3g3aGjVw2253I5QAfMoEun'; // Field Notes
+/* Spotify's show embed only ever displays the latest episode, so the iPod
+   renders its own list and loads the picked episode into the embed.
+   Newest first — add new episodes to the top (id = open.spotify.com/episode/<id>). */
+const PODCAST_EPISODES = [
+  { id:'4sk4ILCGKys09kxGXOTnfW', title:'Start Where You Live: Finding the Community Outside Your Door', date:'Oct 11', mins:46 },
+  { id:'1Hsl4lhzF7JiDOJ4neSMp4', title:'Reimagining Consumption: From Ownership to Access',            date:'Oct 11', mins:38 },
+  { id:'6N1kfVeBlinhgvVApQkRpK', title:'Why We Learn When Answers Are Easy: Education in the Age of AI', date:'Oct 5',  mins:65 },
+];
+let _podcastEpisode = PODCAST_EPISODES[0].id;
+const IPOD_MODES = [
+  { key:'lofi',     label:'lofi · now playing' },
+  { key:'playlist', label:'my playlist', title:'Blue',        sub:'Susy Liu', uri:SPOTIFY_PLAYLIST_URI },
+  { key:'podcast',  label:'podcast',     title:'Field Notes on the Future', sub:'Susy Liu', uri:SPOTIFY_PODCAST_URI, height:152 },
+].filter(m => m.key === 'lofi' || m.uri);
+let _ipodMode = 0;
+const _ipodIsSpotifyMode = () => IPOD_MODES[_ipodMode].key !== 'lofi';
+
 function _updateIpodScreen() {
-  const key = _lofiKey || 'afternoon';
-  const info = LOFI_CREDITS[key] || {};
-  const nameEl    = document.getElementById('ipod-track-name');
-  const artistEl  = document.getElementById('ipod-track-artist');
-  const licenseEl = document.getElementById('ipod-track-license');
-  if (nameEl)    nameEl.textContent    = info.name    || '—';
-  if (artistEl)  artistEl.textContent  = info.artist  || '—';
-  if (licenseEl) licenseEl.textContent = info.license || '';
+  const mode = IPOD_MODES[_ipodMode];
+  const lofi = LOFI_CREDITS[_lofiKey || 'afternoon'] || {};
+  const lofiOn = !!(_lofiAudio && !_lofiAudio.paused);
+  const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+  set('ipod-mode-label', mode.label);
+  set('ipod-track-name',   mode.key === 'lofi' ? (lofi.name   || '—') : mode.title);
+  set('ipod-track-artist', mode.key === 'lofi' ? (lofi.artist || '—') : mode.sub);
+  set('ipod-track-license', lofi.license || '');
+  set('ipod-lofi-status', lofiOn ? '▶ playing' : '❚❚ paused');
+  const disc = document.getElementById('ipod-lofi-disc');
+  if (disc) disc.classList.toggle('spinning', lofiOn);
+  const slot = document.getElementById('ipod-spotify-slot');
+  if (slot) slot.dataset.mode = mode.key;
+  const list = document.getElementById('ipod-episode-list');
+  if (list) {
+    if (!list.children.length) {
+      list.innerHTML = PODCAST_EPISODES.map(ep =>
+        `<li data-ep="${ep.id}"><span class="ipod-ep-title">${ep.title}</span>` +
+        `<span class="ipod-ep-meta">${ep.date} · ${ep.mins} min</span></li>`).join('');
+      list.addEventListener('click', (e) => {
+        const li = e.target.closest('li[data-ep]');
+        if (!li) return;
+        e.stopPropagation();
+        _playPodcastEpisode(li.dataset.ep);
+      });
+    }
+    [...list.children].forEach(li => li.classList.toggle('active', li.dataset.ep === _podcastEpisode));
+  }
+  const dots = document.getElementById('ipod-mode-dots');
+  if (dots) dots.innerHTML = IPOD_MODES.map((_, i) => i === _ipodMode ? '<b>●</b>' : '○').join('');
+}
+
+/* Switch station. Lofi: pause Spotify, hide the embed, play lofi.
+   Spotify station: load its URI into the embed and show it — lofi keeps
+   going until the visitor presses play inside the embed. */
+function _setIpodMode(i) {
+  _ipodMode = (i + IPOD_MODES.length) % IPOD_MODES.length;
+  const mode = IPOD_MODES[_ipodMode];
+  if (mode.key === 'lofi') {
+    _parkSpotify();
+    _resumeLofi();
+  } else {
+    _loadSpotifyUri(_ipodStationUri(mode));
+    _updateIpodScreen(); // podcast view must be laid out before we measure it
+    if (_speakerZoomed) _placeSpotifyOverSlot();
+  }
+  _updateIpodScreen();
+}
+
+function _ipodStationUri(mode) {
+  return mode.key === 'podcast' ? 'spotify:episode:' + _podcastEpisode : mode.uri;
+}
+
+function _playPodcastEpisode(id) {
+  _podcastEpisode = id;
+  _loadSpotifyUri('spotify:episode:' + id);
+  if (_spotifyCtrl) { try { _spotifyCtrl.play(); } catch (e) {} }
+  _updateIpodScreen();
 }
 
 let _speakerZoomed = false;
@@ -3875,7 +3950,7 @@ function openSpeakerZoom() {
   // flash into view in the wrong spot ahead of the modal itself.
   _zoomToHotspot('speaker', 2.2, () => {
     _openZoomUI('speaker-zoom-overlay', 'speaker-zoom-back');
-    setTimeout(_placeSpotifyOverSlot, 460);
+    setTimeout(() => { if (_speakerZoomed && _ipodIsSpotifyMode()) _placeSpotifyOverSlot(); }, 460);
   }, '14%');
 }
 
@@ -4777,13 +4852,20 @@ function initSpotifyAPI() {
 }
 
 let _spotifyCtrlPending = false;
+let _spotifyUri = SPOTIFY_PLAYLIST_URI; // what the embed has (or will have) loaded
+function _loadSpotifyUri(uri) {
+  if (uri === _spotifyUri) return;
+  _spotifyUri = uri;
+  if (_spotifyCtrl) { try { _spotifyCtrl.loadUri(uri); } catch (e) {} }
+  // no controller yet → _createSpotifyController picks up _spotifyUri
+}
 function _createSpotifyController() {
   if (_spotifyCtrl || _spotifyCtrlPending || !_spotifyAPI) return;
   _spotifyCtrlPending = true;
   _ensureSpotifyEl();
   _spotifyAPI.createController(_spotifyEl, {
     width:'100%', height:'352',
-    uri:'spotify:playlist:57ead1xpqfIzlP8Gcb0yCm',
+    uri:_spotifyUri,
   }, (ctrl) => {
     _spotifyCtrl = ctrl;
     _spotifyCtrlPending = false;
@@ -4807,7 +4889,8 @@ function _ensureSpotifyEl() {
    iPod screen slot. No DOM reparenting — the iframe never reloads. */
 function _placeSpotifyOverSlot() {
   const bg   = document.getElementById('spotify-bg');
-  const slot = document.getElementById('ipod-spotify-slot');
+  const slot = document.getElementById(
+    IPOD_MODES[_ipodMode].key === 'podcast' ? 'ipod-podcast-player' : 'ipod-spotify-slot');
   if (!bg || !slot) return;
   const r = slot.getBoundingClientRect();
   bg.style.top    = r.top + 'px';
@@ -4837,7 +4920,7 @@ function _parkSpotify() {
 }
 
 // Keep the embed aligned with the iPod slot if the window resizes while open
-window.addEventListener('resize', () => { if (_speakerZoomed) _placeSpotifyOverSlot(); });
+window.addEventListener('resize', () => { if (_speakerZoomed && _ipodIsSpotifyMode()) _placeSpotifyOverSlot(); });
 
 /* ============================================================
    SCROLL TO PAN

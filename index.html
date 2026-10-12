@@ -24,7 +24,7 @@
   <meta name="twitter:title" content="Susy Liu">
   <meta name="twitter:description" content="Step into my room — an interactive portfolio exploring projects, community building, and what's next.">
   <meta name="twitter:image" content="assets/images/room.webp">
-  <link rel="stylesheet" href="css/styles.css?v=20261011b">
+  <link rel="stylesheet" href="css/styles.css?v=20261012b">
   <!-- Leaflet — loaded here, map only initialises when modal opens -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
@@ -397,25 +397,36 @@
     <!-- iPod Nano — Spotify embedded in screen -->
     <div class="ipod-body">
       <div class="ipod-screen">
-        <!-- Compact lofi banner at top of screen -->
+        <!-- Compact now-playing banner at top of screen (mode-aware) -->
         <div class="ipod-now-strip">
-          <span class="ipod-now-strip-label">lofi · now playing</span>
+          <span class="ipod-now-strip-label"><span id="ipod-mode-label">lofi · now playing</span><span class="ipod-mode-dots" id="ipod-mode-dots"></span></span>
           <span class="ipod-now-strip-track" id="ipod-track-name">—</span>
           <span class="ipod-now-strip-artist" id="ipod-track-artist">—</span>
         </div>
-        <!-- Spotify fills the rest of the screen -->
-        <div id="ipod-spotify-slot" class="ipod-spotify-inset"></div>
+        <!-- Lofi mode shows this view; Spotify modes overlay the embed on top -->
+        <div id="ipod-spotify-slot" class="ipod-spotify-inset">
+          <div class="ipod-lofi-view">
+            <div class="ipod-lofi-disc" id="ipod-lofi-disc"></div>
+            <div class="ipod-lofi-status" id="ipod-lofi-status">paused</div>
+            <div class="ipod-lofi-license" id="ipod-track-license"></div>
+          </div>
+          <!-- Podcast station: our own episode list + compact embed below it -->
+          <div class="ipod-podcast-view">
+            <ol class="ipod-episode-list" id="ipod-episode-list"></ol>
+            <div class="ipod-podcast-player" id="ipod-podcast-player"></div>
+          </div>
+        </div>
       </div>
       <div class="ipod-wheel-wrap">
         <div class="ipod-wheel">
           <span class="ipod-wheel-label top">menu</span>
           <span class="ipod-wheel-label bottom">▶︎</span>
-          <span class="ipod-wheel-label left">◀◀</span>
-          <span class="ipod-wheel-label right">▶▶</span>
-          <div class="ipod-wheel-center" id="ipod-center-btn" title="return to lofi"></div>
+          <button class="ipod-wheel-label left" id="ipod-prev" aria-label="previous station">◀◀</button>
+          <button class="ipod-wheel-label right" id="ipod-next" aria-label="next station">▶▶</button>
+          <div class="ipod-wheel-center" id="ipod-center-btn" title="play / pause"></div>
         </div>
       </div>
-      <div class="ipod-lofi-hint">press ● to return to lofi</div>
+      <div class="ipod-lofi-hint">◀◀ ▶▶ switch station · ● play/pause</div>
     </div>
   </div>
 </div>
@@ -902,6 +913,6 @@
 <script src="js/content-stickies.js?v=20260609t"></script>
 <script src="js/content-projects.js?v=20260609t"></script>
 <script src="js/content-music.js?v=20260609t"></script>
-<script src="js/main.js?v=20261011b"></script>
+<script src="js/main.js?v=20261012b"></script>
 </body>
 </html>
