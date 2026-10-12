@@ -1149,15 +1149,17 @@ function renderWorldMap() {
       center: isMob ? [20, 0] : [30, 10],
       zoom: isMob ? 1 : 2,
       zoomControl: true,
-      attributionControl: false,
+      attributionControl: true,
       scrollWheelZoom: true,
     });
     _wmMap.zoomControl.setPosition('bottomright');
+    _wmMap.attributionControl.setPrefix(false);
 
-    // CartoDB Positron — clean, muted, no API key needed
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      subdomains: 'abcd',
-      maxZoom: 19,
+    // Esri Light Gray Canvas — clean, muted, no API key needed
+    // (CARTO basemaps started requiring a key and returned watermark tiles)
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 16,
+      attribution: 'Tiles &copy; Esri',
     }).addTo(_wmMap);
 
     // Custom terracotta pin icon
@@ -3834,14 +3836,9 @@ function openSpeakerZoom() {
   if (_spotifyCtrl) {
     // already initialized; just leave it as-is
   } else if (_spotifyAPI) {
-    _spotifyAPI.createController(_spotifyEl, {
-      width:'100%', height:'352',
-      uri:'spotify:playlist:37i9dQZEVXdgEheV90pQ48',
-    }, (ctrl) => {
-      _spotifyCtrl = ctrl;
-      _wireSpotifyLofi(ctrl);
-    });
+    _createSpotifyController();
   } else {
+    // API still loading — the ready callback creates the controller
     initSpotifyAPI();
   }
 
@@ -4739,12 +4736,31 @@ let _spotifyPlaying = false; // is Spotify currently audible?
 function initSpotifyAPI() {
   if (document.getElementById('spotify-api-script')) return;
   // Set up callback BEFORE adding script so it fires reliably
-  window.onSpotifyIframeApiReady = (IFrameAPI) => { _spotifyAPI = IFrameAPI; };
+  window.onSpotifyIframeApiReady = (IFrameAPI) => {
+    _spotifyAPI = IFrameAPI;
+    // iPod was opened before the API finished loading — build the embed now
+    if (_speakerZoomed && !_spotifyCtrl) _createSpotifyController();
+  };
   const s = document.createElement('script');
   s.id  = 'spotify-api-script';
   s.src = 'https://open.spotify.com/embed/iframe-api/v1';
   s.async = true;
   document.head.appendChild(s);
+}
+
+let _spotifyCtrlPending = false;
+function _createSpotifyController() {
+  if (_spotifyCtrl || _spotifyCtrlPending || !_spotifyAPI) return;
+  _spotifyCtrlPending = true;
+  _ensureSpotifyEl();
+  _spotifyAPI.createController(_spotifyEl, {
+    width:'100%', height:'352',
+    uri:'spotify:playlist:57ead1xpqfIzlP8Gcb0yCm',
+  }, (ctrl) => {
+    _spotifyCtrl = ctrl;
+    _spotifyCtrlPending = false;
+    _wireSpotifyLofi(ctrl);
+  });
 }
 
 /* Create the embed host div once, permanently inside #spotify-bg.
