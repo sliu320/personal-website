@@ -3092,7 +3092,7 @@
     .door-info-panel-inner {
       padding:1rem 1.4rem 1.1rem;
       background:#fff;
-      border-radius:8px;
+      border-radius:0;
       border-top:4px solid var(--door-color, #1a4a2e);
       box-shadow:0 2px 16px rgba(0,0,0,0.1);
     }
