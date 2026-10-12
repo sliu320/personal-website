@@ -3785,19 +3785,45 @@ function _wireSpotifyLofi(ctrl) {
       }
       _syncMusicNotes();
     } else {
-      // Spotify paused → resume lofi after 400ms (audio hw fully stops first),
-      // unless the user manually silenced the music via the iPod button.
+      // Spotify paused. While the iPod is open, don't bring lofi back —
+      // the embed emits brief pauses while buffering / changing tracks, and
+      // restarting lofi mid-transition fought the embed (lofi kept playing
+      // and Spotify skipped past the clicked track). Lofi returns when the
+      // iPod closes (closeSpeakerZoom) or via the center button.
       _resumeTimer = setTimeout(() => {
-        if (_lofiAudio && _lofiAudio.paused && !_lofiManuallyStopped) {
-          _lofiAudio.volume = 0;
-          _lofiAudio.play().then(() => { _fadeLofi(LOFI_VOL); _syncMusicNotes(); }).catch(() => {});
-        } else {
-          _syncMusicNotes();
-        }
+        if (!_speakerZoomed) _maybeResumeLofiAfterSpotify();
+        else _syncMusicNotes();
       }, 400);
     }
   });
 }
+
+/* Spotify is idle and the iPod is closed → bring lofi back, unless the
+   user silenced music via the iPod button. */
+function _maybeResumeLofiAfterSpotify() {
+  if (_spotifyPlaying || _lofiManuallyStopped) { _syncMusicNotes(); return; }
+  if (_lofiAudio && _lofiAudio.paused) {
+    _lofiAudio.volume = 0;
+    _lofiAudio.play().then(() => { _fadeLofi(LOFI_VOL); _syncMusicNotes(); }).catch(() => {});
+  } else {
+    _syncMusicNotes();
+  }
+}
+
+/* Clicking into the Spotify iframe moves focus to it (window blurs) —
+   cut lofi right away instead of waiting on the embed's playback_update,
+   which can arrive late or not at all. */
+window.addEventListener('blur', () => {
+  setTimeout(() => {
+    const f = document.activeElement;
+    if (!_speakerZoomed || !f || f.tagName !== 'IFRAME' || !f.closest('#spotify-bg')) return;
+    if (_lofiAudio && !_lofiAudio.paused) {
+      _lofiAudio.volume = 0;
+      _lofiAudio.pause();
+      _syncMusicNotes();
+    }
+  }, 0);
+});
 
 /* Switch back to lofi explicitly (iPod center button) */
 function _resumeLofi() {
@@ -3858,6 +3884,8 @@ function closeSpeakerZoom() {
   _speakerZoomed = false;
   // Park embed off-screen (keep playing — bug fix)
   _parkSpotify();
+  // Spotify not playing → lofi comes back now that the iPod is closed
+  setTimeout(_maybeResumeLofiAfterSpotify, 400);
   _closeZoomUI('speaker-zoom-overlay', 'speaker-zoom-back');
 }
 document.getElementById('speaker-zoom-back').addEventListener('click', closeSpeakerZoom);
